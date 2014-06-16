@@ -45,6 +45,13 @@ enum LootModes
     LOOT_MODE_JUNK_FISH                = 0x8000
 };
 
+enum Builds
+{
+	BUILD_CLASSIC                      = 5875,
+    BUILD_THE_BURNING_CRUSADE          = 8606,
+    BUILD_WRATH_OF_THE_LICH_KING       = 12340
+};
+
 enum Expansions
 {
     EXPANSION_CLASSIC                  = 0,
