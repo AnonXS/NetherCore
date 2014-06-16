@@ -1977,8 +1977,8 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
         charFlags |= CHARACTER_FLAG_GHOST;
     if (atLoginFlags & AT_LOGIN_RENAME)
         charFlags |= CHARACTER_FLAG_RENAME;
-    if (fields[20].GetUInt32())
-        charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
+    /*if (fields[20].GetUInt32())
+        charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;*/
     if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
     {
         if (!fields[21].GetString().empty())
@@ -1990,14 +1990,14 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
     *data << uint32(charFlags);                             // character flags
 
     // character customize flags
-    if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
+    /*if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
         *data << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);
     else if (atLoginFlags & AT_LOGIN_CHANGE_FACTION)
         *data << uint32(CHAR_CUSTOMIZE_FLAG_FACTION);
     else if (atLoginFlags & AT_LOGIN_CHANGE_RACE)
         *data << uint32(CHAR_CUSTOMIZE_FLAG_RACE);
     else
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_NONE);
+        *data << uint32(CHAR_CUSTOMIZE_FLAG_NONE);*/
 
     // First login
     *data << uint8(atLoginFlags & AT_LOGIN_FIRST ? 1 : 0);
