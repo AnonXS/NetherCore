@@ -167,22 +167,22 @@ int WorldSocket::SendPacket(WorldPacket const& pct)
 
 
     if (m_Session)
-        TC_LOG_TRACE("network.opcode", "S->C: %s %s", m_Session->GetPlayerInfo().c_str(), GetOpcodeNameForLogging(pkt->GetOpcode()).c_str());
+       TC_LOG_TRACE("network.opcode", "S->C: %s %s", m_Session->GetPlayerInfo().c_str(), GetOpcodeNameForLogging(pkt->GetOpcode()).c_str());
 
-    sScriptMgr->OnPacketSend(this, *pkt);
-
-    ServerPktHeader header(pkt->size()+2, pkt->GetOpcode());
-    m_Crypt.EncryptSend ((uint8*)header.header, header.getHeaderLength());
+    sScriptMgr->OnPacketSend(this, *pkt);   
+    
+    ServerPktHeader header(pkt->size() + 2, pkt->GetOpcode());
+    m_Crypt.EncryptSend((uint8*)header.header, header.getHeaderLength());
 
     if (m_OutBuffer->space() >= pkt->size() + header.getHeaderLength() && msg_queue()->is_empty())
     {
         // Put the packet on the buffer.
-        if (m_OutBuffer->copy((char*) header.header, header.getHeaderLength()) == -1)
-            ACE_ASSERT (false);
+        if (m_OutBuffer->copy((char*)header.header, header.getHeaderLength()) == -1)
+            ACE_ASSERT(false);
 
         if (!pkt->empty())
-            if (m_OutBuffer->copy((char*) pkt->contents(), pkt->size()) == -1)
-                ACE_ASSERT (false);
+        if (m_OutBuffer->copy((char*)pkt->contents(), pkt->size()) == -1)
+            ACE_ASSERT(false);
     }
     else
     {
@@ -191,7 +191,7 @@ int WorldSocket::SendPacket(WorldPacket const& pct)
 
         ACE_NEW_RETURN(mb, ACE_Message_Block(pkt->size() + header.getHeaderLength()), -1);
 
-        mb->copy((char*) header.header, header.getHeaderLength());
+        mb->copy((char*)header.header, header.getHeaderLength());
 
         if (!pkt->empty())
             mb->copy((const char*)pkt->contents(), pkt->size());
@@ -447,7 +447,7 @@ int WorldSocket::Update (void)
 
     if (m_OutActive)
         return 0;
-
+    
     {
         ACE_GUARD_RETURN (LockType, Guard, m_OutBufferLock, 0);
         if (m_OutBuffer->length() == 0 && msg_queue()->is_empty())
@@ -530,7 +530,7 @@ int WorldSocket::handle_input_payload (void)
 
 int WorldSocket::handle_input_missing_data (void)
 {
-    char buf [4096];
+    char buf[4096];
 
     ACE_Data_Block db (sizeof (buf),
                         ACE_Message_Block::MB_DATA,
@@ -729,18 +729,9 @@ int WorldSocket::ProcessIncoming(WorldPacket* new_pct)
 }
 
 int WorldSocket::HandleSendAuthSession()
-{
-    WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
-    packet << uint32(1);                                    // 1...31
+{ 
+    WorldPacket packet(SMSG_AUTH_CHALLENGE, 4);
     packet << uint32(m_Seed);
-
-    BigNumber seed1;
-    seed1.SetRand(16 * 8);
-    packet.append(seed1.AsByteArray(16).get(), 16);               // new encryption seeds
-
-    BigNumber seed2;
-    seed2.SetRand(16 * 8);
-    packet.append(seed2.AsByteArray(16).get(), 16);               // new encryption seeds
     return SendPacket(packet);
 }
 
@@ -754,12 +745,12 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     std::string account;
     SHA1Hash sha;
     uint32 clientBuild;
-    uint32 unk2, unk3, unk5, unk6, unk7;
-    uint64 unk4;
+    Builds expectedClientBuild = BUILD_THE_BURNING_CRUSADE;
+    uint32 unk2;
     WorldPacket packet, SendAddonPacked;
     BigNumber k;
 
-    if (sWorld->IsClosed())
+    if (sWorld->IsClosed()) 
     {
         SendAuthResponseError(AUTH_REJECT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: World closed, denying client (%s).", GetRemoteAddress().c_str());
@@ -770,18 +761,22 @@ int WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     recvPacket >> clientBuild;
     recvPacket >> unk2;
     recvPacket >> account;
-    recvPacket >> unk3;
     recvPacket >> clientSeed;
-    recvPacket >> unk5 >> unk6 >> unk7;
-    recvPacket >> unk4;
     recvPacket.read(digest, 20);
 
-    TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: client %u, unk2 %u, account %s, unk3 %u, clientseed %u",
-                clientBuild,
-                unk2,
-                account.c_str(),
-                unk3,
-                clientSeed);
+    TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: client %u, unk2 %u, account %s, clientseed %u",
+        clientBuild,
+        unk2,
+        account.c_str(),
+        clientSeed);
+
+    // Check the version of client trying to connect
+    if (clientBuild != expectedClientBuild)
+    {
+        SendAuthResponseError(AUTH_VERSION_MISMATCH);
+        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Sent Auth Response (version mismatch).");
+        return -1;
+    }
 
     // Get the account information from the realmd database
     //         0           1        2       3          4         5       6          7   8
@@ -1025,7 +1020,7 @@ int WorldSocket::HandlePing (WorldPacket& recvPacket)
 
 void WorldSocket::SendAuthResponseError(uint8 code)
 {
-        WorldPacket packet(SMSG_AUTH_RESPONSE, 1);
-        packet << uint8(code);
-        SendPacket(packet);
+    WorldPacket packet(SMSG_AUTH_RESPONSE, 1);
+    packet << uint8(code);
+    SendPacket(packet);
 }
