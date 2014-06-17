@@ -1050,6 +1050,16 @@ void WorldSession::HandleSetFactionCheat(WorldPacket & /*recvData*/)
     GetPlayer()->GetReputationMgr().SendStates();
 }
 
+void WorldSession::HandleMeetingStoneInfo(WorldPacket & /*recv_data*/)
+{
+    TC_LOG_DEBUG("network", "WORLD: Received CMSG_MEETING_STONE_INFO");
+
+    WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
+    data << uint32(0);
+    data << uint8(6);
+    SendPacket(&data);
+}
+
 void WorldSession::HandleTutorialFlag(WorldPacket& recvData)
 {
     uint32 data;
