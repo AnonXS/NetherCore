@@ -1977,8 +1977,8 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
         charFlags |= CHARACTER_FLAG_GHOST;
     if (atLoginFlags & AT_LOGIN_RENAME)
         charFlags |= CHARACTER_FLAG_RENAME;
-    /*if (fields[20].GetUInt32())
-        charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;*/
+    if (fields[20].GetUInt32())
+        charFlags |= CHARACTER_FLAG_LOCKED_BY_BILLING;
     if (sWorld->getBoolConfig(CONFIG_DECLINED_NAMES_USED))
     {
         if (!fields[21].GetString().empty())
@@ -1989,24 +1989,14 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
 
     *data << uint32(charFlags);                             // character flags
 
-    // character customize flags
-    /*if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);
-    else if (atLoginFlags & AT_LOGIN_CHANGE_FACTION)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_FACTION);
-    else if (atLoginFlags & AT_LOGIN_CHANGE_RACE)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_RACE);
-    else
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_NONE);*/
-
     // First login
     *data << uint8(atLoginFlags & AT_LOGIN_FIRST ? 1 : 0);
-
+    
     // Pets info
     uint32 petDisplayId = 0;
     uint32 petLevel = 0;
     uint32 petFamily = 0;
-
+    
     // show pet at selection character in character list only for non-ghost character
     if (result && !(playerFlags & PLAYER_FLAGS_GHOST) && (plrClass == CLASS_WARLOCK || plrClass == CLASS_HUNTER || plrClass == CLASS_DEATH_KNIGHT))
     {
@@ -2023,9 +2013,9 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
     *data << uint32(petDisplayId);
     *data << uint32(petLevel);
     *data << uint32(petFamily);
-
+    
     Tokenizer equipment(fields[19].GetString(), ' ');
-    for (uint8 slot = 0; slot < INVENTORY_SLOT_BAG_END; ++slot)
+    for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
         uint32 visualBase = slot * 2;
         uint32 itemId = GetUInt32ValueFromArray(equipment, visualBase);
@@ -2058,6 +2048,10 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
         *data << uint32(enchant ? enchant->aura_id : 0);
     }
 
+    *data << uint32(0);                                     // bag 1 display id
+    *data << uint8(0);                                      // bag 1 inventory type
+    *data << uint32(0);                                     // enchant?
+    
     return true;
 }
 
