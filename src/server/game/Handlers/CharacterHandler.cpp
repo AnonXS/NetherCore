@@ -893,10 +893,12 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         }
     }
 
+    /* Not used in 2.4.3
     data.Initialize(SMSG_LEARNED_DANCE_MOVES, 4+4);
     data << uint32(0);
     data << uint32(0);
     SendPacket(&data);
+    */
 
     pCurrChar->SendInitialPacketsBeforeAddToMap();
 
