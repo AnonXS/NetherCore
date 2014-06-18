@@ -796,7 +796,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     uint64 playerGuid = holder->GetGuid();
 
     Player* pCurrChar = new Player(this);
-     // for send server info and strings (config)
+    // for send server info and strings (config)
     ChatHandler chH = ChatHandler(pCurrChar->GetSession());
 
     // "GetAccountId() == db stored account id" checked in LoadFromDB (prevent login not own character using cheating tools)
@@ -880,7 +880,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
         pCurrChar->SetInGuild(0);
         pCurrChar->SetRank(0);
     }
-
+    
     if (pCurrChar->GetGuildId() != 0)
     {
         if (Guild* guild = sGuildMgr->GetGuildById(pCurrChar->GetGuildId()))
@@ -1055,8 +1055,7 @@ void WorldSession::HandleMeetingStoneInfo(WorldPacket & /*recv_data*/)
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_MEETING_STONE_INFO");
 
     WorldPacket data(SMSG_MEETINGSTONE_SETQUEUE, 5);
-    data << uint32(0);
-    data << uint8(6);
+    data << uint32(0) << uint8(6);
     SendPacket(&data);
 }
 
