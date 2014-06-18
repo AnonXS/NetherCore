@@ -13401,11 +13401,13 @@ void Unit::SetPower(Powers power, uint32 val)
 
     SetStatInt32Value(UNIT_FIELD_POWER1 + power, val);
 
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_POWER_UPDATE);
     data.append(GetPackGUID());
     data << uint8(power);
     data << uint32(val);
     SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER);
+    */
 
     // group update
     if (Player* player = ToPlayer())

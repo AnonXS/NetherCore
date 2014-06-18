@@ -466,16 +466,20 @@ void AchievementMgr::Reset()
 {
     for (CompletedAchievementMap::const_iterator iter = m_completedAchievements.begin(); iter != m_completedAchievements.end(); ++iter)
     {
+        /* Not used in 2.4.3
         WorldPacket data(SMSG_ACHIEVEMENT_DELETED, 4);
         data << uint32(iter->first);
         m_player->SendDirectMessage(&data);
+        */
     }
 
     for (CriteriaProgressMap::const_iterator iter = m_criteriaProgress.begin(); iter != m_criteriaProgress.end(); ++iter)
     {
+        /* Not used in 2.4.3
         WorldPacket data(SMSG_CRITERIA_DELETED, 4);
         data << uint32(iter->first);
         m_player->SendDirectMessage(&data);
+        */
     }
 
     m_completedAchievements.clear();
@@ -668,6 +672,7 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
 
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
+        /* Not used in 2.4.3
         // broadcast realm first reached
         WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, GetPlayer()->GetName().size() + 1 + 8 + 4 + 4);
         data << GetPlayer()->GetName();
@@ -675,6 +680,7 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         data << uint32(achievement->ID);
         data << uint32(0);                                  // 1=link supplied string as player name, 0=display plain string
         sWorld->SendGlobalMessage(&data);
+        */
     }
     // if player is in world he can tell his friends about new achievement
     else if (GetPlayer()->IsInWorld())
@@ -685,16 +691,19 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         GetPlayer()->VisitNearbyWorldObject(sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), _worker);
     }
 
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_ACHIEVEMENT_EARNED, 8+4+8);
     data.append(GetPlayer()->GetPackGUID());
     data << uint32(achievement->ID);
     data.AppendPackedTime(time(NULL));
     data << uint32(0);
     GetPlayer()->SendMessageToSetInRange(&data, sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), true);
+    */
 }
 
 void AchievementMgr::SendCriteriaUpdate(AchievementCriteriaEntry const* entry, CriteriaProgress const* progress, uint32 timeElapsed, bool timedCompleted) const
 {
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_CRITERIA_UPDATE, 8+4+8);
     data << uint32(entry->ID);
 
@@ -710,6 +719,7 @@ void AchievementMgr::SendCriteriaUpdate(AchievementCriteriaEntry const* entry, C
     data << uint32(timeElapsed);    // time elapsed in seconds
     data << uint32(0);              // unk
     GetPlayer()->SendDirectMessage(&data);
+    */
 }
 
 /**
@@ -1960,9 +1970,11 @@ void AchievementMgr::RemoveCriteriaProgress(AchievementCriteriaEntry const* entr
     if (criteriaProgress == m_criteriaProgress.end())
         return;
 
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_CRITERIA_DELETED, 4);
     data << uint32(entry->ID);
     m_player->SendDirectMessage(&data);
+    */
 
     m_criteriaProgress.erase(criteriaProgress);
 }
@@ -2117,17 +2129,21 @@ void AchievementMgr::CompletedAchievement(AchievementEntry const* achievement)
 
 void AchievementMgr::SendAllAchievementData() const
 {
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_ALL_ACHIEVEMENT_DATA, m_completedAchievements.size()*8+4+m_criteriaProgress.size()*38+4);
     BuildAllDataPacket(&data);
     GetPlayer()->GetSession()->SendPacket(&data);
+    */
 }
 
 void AchievementMgr::SendRespondInspectAchievements(Player* player) const
 {
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 9+m_completedAchievements.size()*8+4+m_criteriaProgress.size()*38+4);
     data.append(GetPlayer()->GetPackGUID());
     BuildAllDataPacket(&data);
     player->GetSession()->SendPacket(&data);
+    */
 }
 
 /**
