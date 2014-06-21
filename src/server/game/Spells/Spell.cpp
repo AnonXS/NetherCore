@@ -3931,6 +3931,7 @@ void Spell::WriteAmmoToPacket(WorldPacket* data)
             }
         }
     }
+    /* Not implemented in 2.4.3
     else
     {
         for (uint8 i = 0; i < 3; ++i)
@@ -3965,6 +3966,7 @@ void Spell::WriteAmmoToPacket(WorldPacket* data)
             }
         }
     }
+    */
 
     *data << uint32(ammoDisplayID);
     *data << uint32(ammoInventoryType);

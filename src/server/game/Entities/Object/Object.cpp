@@ -484,6 +484,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             *data << uint32(getMSTime());
     }
 
+    /* Not used in 2.4.3
     // 0x80
     if (flags & UPDATEFLAG_VEHICLE)
     {
@@ -497,10 +498,13 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         else
             *data << float(unit->GetOrientation());
     }
+    */
 
+    /* Not used in 2.4.3
     // 0x200
     if (flags & UPDATEFLAG_ROTATION)
         *data << int64(ToGameObject()->GetRotation());
+    */
 }
 
 void Object::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const

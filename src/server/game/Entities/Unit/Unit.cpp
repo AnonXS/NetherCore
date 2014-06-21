@@ -15467,8 +15467,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
 float Unit::GetPositionZMinusOffset() const
 {
     float offset = 0.0f;
+    /* Not implemented in 2.4.3
     if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         offset = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+    */
 
     return GetPositionZ() - offset;
 }
@@ -17527,7 +17529,10 @@ bool Unit::SetHover(bool enable, bool /*packetOnly = false*/)
     if (enable == HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         return false;
 
+    /* Not implemented in 2.4.3
     float hoverHeight = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+    */
+    bool hoverHeight = false;
 
     if (enable)
     {

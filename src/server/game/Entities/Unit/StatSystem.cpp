@@ -894,11 +894,19 @@ void Player::UpdateManaRegen()
 
     // Set regen rate in cast state apply only on spirit based regen
     int32 modManaRegenInterrupt = GetTotalAuraModifier(SPELL_AURA_MOD_MANA_REGEN_INTERRUPT);
+    /* Not implemented in 2.4.3
     if (modManaRegenInterrupt > 100)
         modManaRegenInterrupt = 100;
     SetStatFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, power_regen_mp5 + CalculatePct(power_regen, modManaRegenInterrupt));
 
     SetStatFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, power_regen_mp5 + power_regen);
+    */
+
+    if (modManaRegenInterrupt > 100)
+        modManaRegenInterrupt = 100;
+    SetStatFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT, power_regen_mp5 + CalculatePct(power_regen, modManaRegenInterrupt));
+
+    SetStatFloatValue(PLAYER_FIELD_MOD_MANA_REGEN, power_regen_mp5 + power_regen);
 }
 
 void Player::UpdateRuneRegen(RuneType rune)
@@ -919,7 +927,9 @@ void Player::UpdateRuneRegen(RuneType rune)
         return;
 
     float regen = float(1 * IN_MILLISECONDS) / float(cooldown);
+    /* Not implemented in 2.4.3
     SetFloatValue(PLAYER_RUNE_REGEN_1 + uint8(rune), regen);
+    */
 }
 
 void Player::_ApplyAllStatBonuses()
@@ -1461,6 +1471,8 @@ void Guardian::UpdateDamagePhysical(WeaponAttackType attType)
 void Guardian::SetBonusDamage(int32 damage)
 {
     m_bonusSpellDamage = damage;
+    /* Not implemented in 2.4.3
     if (GetOwner()->GetTypeId() == TYPEID_PLAYER)
         GetOwner()->SetUInt32Value(PLAYER_PET_SPELL_POWER, damage);
+    */
 }

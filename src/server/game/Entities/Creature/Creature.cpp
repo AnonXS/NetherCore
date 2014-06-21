@@ -341,7 +341,9 @@ bool Creature::InitEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
     // Will set UNIT_FIELD_BOUNDINGRADIUS and UNIT_FIELD_COMBATREACH
     SetObjectScale(cinfo->scale);
 
+    /* Not implemented in 2.4.3
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, cinfo->HoverHeight);
+    */
 
     // checked at loading
     m_defaultMovementType = MovementGeneratorType(cinfo->MovementType);
@@ -786,7 +788,9 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, 
     //! Need to be called after LoadCreaturesAddon - MOVEMENTFLAG_HOVER is set there
     if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
     {
+        /* Not implemented in 2.4.3
         z += GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+        */
 
         //! Relocate again with updated Z coord
         Relocate(x, y, z, ang);
@@ -1272,8 +1276,17 @@ void Creature::LoadEquipment(int8 id, bool force /*= true*/)
     {
         if (force)
         {
+            /* Not implemented in 2.4.3
             for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; ++i)
                 SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, 0);
+            m_equipmentId = 0;
+            */
+            for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; i++)
+            {
+                SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i, 0);
+                SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2), 0);
+                SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, 0);
+            }
             m_equipmentId = 0;
         }
         return;
@@ -1284,8 +1297,16 @@ void Creature::LoadEquipment(int8 id, bool force /*= true*/)
         return;
 
     m_equipmentId = id;
+    /* Not implemented in 2.4.3
     for (uint8 i = 0; i < 3; ++i)
         SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, einfo->ItemEntry[i]);
+    */
+    for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; i++)
+    {
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i, einfo->ItemEntry[i]);
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2), einfo->ItemEntry[i]);
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, einfo->ItemEntry[i]);
+    }
 }
 
 bool Creature::hasQuest(uint32 quest_id) const
