@@ -41,7 +41,8 @@ GameObject::GameObject() : WorldObject(false), MapObject(),
     m_objectType |= TYPEMASK_GAMEOBJECT;
     m_objectTypeId = TYPEID_GAMEOBJECT;
 
-    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_STATIONARY_POSITION | UPDATEFLAG_POSITION | UPDATEFLAG_ROTATION);
+    // TBC - 0x58
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID | UPDATEFLAG_STATIONARY_POSITION);
 
     m_valuesCount = GAMEOBJECT_END;
     m_respawnTime = 0;

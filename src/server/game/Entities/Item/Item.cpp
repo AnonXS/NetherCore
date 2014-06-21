@@ -239,7 +239,8 @@ Item::Item()
     m_objectType |= TYPEMASK_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-    m_updateFlag = UPDATEFLAG_LOWGUID;
+    // TBC - 0x18
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID);
 
     m_valuesCount = ITEM_END;
     m_slot = 0;
@@ -1182,7 +1183,7 @@ void Item::UpdatePlayedTime(Player* owner)
     if (new_playtime <= 2*HOUR)
     {
         // No? Proceed.
-        // Update the data field
+        // Update the data field     
         SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, new_playtime);
         // Flag as changed to get saved to DB
         SetState(ITEM_CHANGED, owner);
@@ -1223,7 +1224,7 @@ void Item::SetSoulboundTradeable(AllowedLooterSet const& allowedLooters)
 }
 
 void Item::ClearSoulboundTradeable(Player* currentOwner)
-{
+{   
     /* Not implemented in 2.4.3
     RemoveFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_BOP_TRADEABLE);
     if (allowedGUIDs.empty())
@@ -1246,7 +1247,7 @@ bool Item::CheckSoulboundTradeExpire()
         ClearSoulboundTradeable(GetOwner());
         return true; // remove from tradeable list
     }
-
+   
     return false;
     */
     return true;
