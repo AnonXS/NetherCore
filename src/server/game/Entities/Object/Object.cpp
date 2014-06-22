@@ -422,13 +422,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         }
     }
 
-    // 0x8
-    if (flags & UPDATEFLAG_UNKNOWN)
-    {
-        *data << uint32(0);
-    }
-
-    // 0x10
+    // 0x08
     if (flags & UPDATEFLAG_LOWGUID)
     {
         switch (GetTypeId())
@@ -439,22 +433,52 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             case TYPEID_GAMEOBJECT:
             case TYPEID_DYNAMICOBJECT:
             case TYPEID_CORPSE:
-                *data << uint32(GetGUIDLow());              // GetGUIDLow()
+                *data << uint32(GetGUIDLow());
                 break;
             //! Unit, Player and default here are sending wrong values.
             /// @todo Research the proper formula
             case TYPEID_UNIT:
-                *data << uint32(0x0000000B);                // unk
+                *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
                 break;
             case TYPEID_PLAYER:
                 if (flags & UPDATEFLAG_SELF)
-                    *data << uint32(0x0000002F);            // unk
+                    *data << uint32(0x0000002F);            // unk, can be 0x15 or 0x22
                 else
-                    *data << uint32(0x00000008);            // unk
+                    *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
                 break;
             default:
                 *data << uint32(0x00000000);                // unk
                 break;
+        }
+    }
+
+    // 0x10
+    if (flags & UPDATEFLAG_HIGHGUID)
+    {
+        switch (GetTypeId())
+        {
+        case TYPEID_OBJECT:
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        case TYPEID_GAMEOBJECT:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+            *data << uint32(GetGUIDHigh());
+            break;
+        //! Unit, Player and default here are sending wrong values.
+        /// @todo Research the proper formula
+        case TYPEID_UNIT:
+            *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
+            break;
+        case TYPEID_PLAYER:
+            if (flags & UPDATEFLAG_SELF)
+                *data << uint32(0x0000002F);            // unk, can be 0x15 or 0x22
+            else
+                *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
+            break;
+        default:
+            *data << uint32(0x00000000);                // unk
+            break;
         }
     }
 
