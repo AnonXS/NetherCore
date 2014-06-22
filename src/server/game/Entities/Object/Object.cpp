@@ -345,7 +345,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     else
         object = ((WorldObject*)this);
 
-    *data << uint16(flags);                                  // update flags
+    *data << uint8(flags);                                  // update flags
 
     // 0x20
     if (flags & UPDATEFLAG_LIVING)
