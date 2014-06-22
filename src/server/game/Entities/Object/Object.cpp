@@ -360,8 +360,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
               << unit->GetSpeed(MOVE_SWIM_BACK)
               << unit->GetSpeed(MOVE_FLIGHT)
               << unit->GetSpeed(MOVE_FLIGHT_BACK)
-              << unit->GetSpeed(MOVE_TURN_RATE)
-              << unit->GetSpeed(MOVE_PITCH_RATE);
+              << unit->GetSpeed(MOVE_TURN_RATE);
 
         // 0x08000000
         if (unit->m_movementInfo.GetMovementFlags() & MOVEMENTFLAG_SPLINE_ENABLED)
