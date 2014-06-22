@@ -22898,6 +22898,8 @@ void Player::SendInitialPacketsBeforeAddToMap()
     data << uint32(GetMap()->GetEntry()->IsDynamicDifficultyMap() && GetMap()->IsHeroic()); // Raid dynamic difficulty
     GetSession()->SendPacket(&data);
 
+    GetSession()->SendTutorialsData();
+
     SendInitialSpells();
 
     data.Initialize(SMSG_SEND_UNLEARN_SPELLS, 4);
