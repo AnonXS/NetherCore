@@ -2500,10 +2500,12 @@ void Map::SendInitSelf(Player* player)
     TC_LOG_INFO("maps", "Creating player data for himself %u", player->GetGUIDLow());
 
     UpdateData data;
+    bool hasTransport = false;
 
     // attach to player data current transport data
     if (Transport* transport = player->GetTransport())
     {
+        bool hasTransport = true;
         transport->BuildCreateUpdateBlockForPlayer(&data, player);
     }
 
@@ -2517,7 +2519,7 @@ void Map::SendInitSelf(Player* player)
                 (*itr)->BuildCreateUpdateBlockForPlayer(&data, player);
 
     WorldPacket packet;
-    data.BuildPacket(&packet);
+    data.BuildPacket(&packet, hasTransport);
     player->GetSession()->SendPacket(&packet);
 }
 
