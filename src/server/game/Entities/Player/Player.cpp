@@ -22983,6 +22983,7 @@ void Player::SendInitialPacketsAfterAddToMap()
     }
     else if (GetRaidDifficulty() != GetStoredRaidDifficulty())
         SendRaidDifficulty(GetGroup() != NULL);
+    */
 }
 
 void Player::SendUpdateToOutOfRangeGroupMembers()
@@ -23283,7 +23284,7 @@ void Player::SendAurasForTarget(Unit* target)
 
     if (target->HasAuraType(SPELL_AURA_HOVER))
         target->SetHover(true, true);
-
+    /*
     WorldPacket data(SMSG_AURA_UPDATE_ALL);
     data.append(target->GetPackGUID());
 
