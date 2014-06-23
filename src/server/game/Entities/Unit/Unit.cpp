@@ -16988,7 +16988,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 void Unit::BuildMovementPacket(ByteBuffer *data) const
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
-    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
+    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0  -> TODO: Maybe needs to be a uint8
     *data << uint32(getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
@@ -16998,9 +16998,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEMENTFLAG_ONTRANSPORT)
     {
-        if (m_vehicle)
-            data->append(m_vehicle->GetBase()->GetPackGUID());
-        else if (GetTransport())
+        if (GetTransport())
             data->append(GetTransport()->GetPackGUID());
         else
             *data << (uint8)0;
@@ -17010,10 +17008,6 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
         *data << float (GetTransOffsetZ());
         *data << float (GetTransOffsetO());
         *data << uint32(GetTransTime());
-        *data << uint8 (GetTransSeat());
-
-        if (GetExtraUnitMovementFlags() & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT)
-            *data << uint32(m_movementInfo.transport.time2);
     }
 
     // 0x02200000
