@@ -435,14 +435,12 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             case TYPEID_CORPSE:
                 *data << uint32(GetGUIDLow());
                 break;
-            //! Unit, Player and default here are sending wrong values.
-            /// @todo Research the proper formula
             case TYPEID_UNIT:
                 *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
                 break;
             case TYPEID_PLAYER:
                 if (flags & UPDATEFLAG_SELF)
-                    *data << uint32(0x0000002F);            // unk, can be 0x15 or 0x22
+                    *data << uint32(0x00000015);            // unk, can be 0x15 or 0x22
                 else
                     *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
                 break;
@@ -464,17 +462,6 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         case TYPEID_DYNAMICOBJECT:
         case TYPEID_CORPSE:
             *data << uint32(GetGUIDHigh());
-            break;
-        //! Unit, Player and default here are sending wrong values.
-        /// @todo Research the proper formula
-        case TYPEID_UNIT:
-            *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
-            break;
-        case TYPEID_PLAYER:
-            if (flags & UPDATEFLAG_SELF)
-                *data << uint32(0x0000002F);            // unk, can be 0x15 or 0x22
-            else
-                *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
             break;
         default:
             *data << uint32(0x00000000);                // unk
