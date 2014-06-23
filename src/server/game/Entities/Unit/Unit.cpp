@@ -16982,7 +16982,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 void Unit::BuildMovementPacket(ByteBuffer *data) const
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
-    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0  -> TODO: Maybe needs to be a uint8
+    *data << uint8(GetExtraUnitMovementFlags());        // 2.3.0
     *data << uint32(getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
