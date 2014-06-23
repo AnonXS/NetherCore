@@ -16840,7 +16840,7 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
             TC_LOG_DEBUG("entities.vehicle", "EnterVehicle: %u exit %u and enter %u.", GetEntry(), m_vehicle->GetBase()->GetEntry(), vehicle->GetBase()->GetEntry());
             ExitVehicle();
         }
-        else if (seatId >= 0 && seatId == GetTransSeat())
+        else if (seatId >= 0 /*&& seatId == GetTransSeat()*/)
             return;
     }
 
@@ -16866,10 +16866,10 @@ void Unit::ChangeSeat(int8 seatId, bool next)
         return;
 
     // Don't change if current and new seat are identical
-    if (seatId == GetTransSeat())
-        return;
+    /*if (seatId == GetTransSeat())
+        return;*/
 
-    SeatMap::const_iterator seat = (seatId < 0 ? m_vehicle->GetNextEmptySeat(GetTransSeat(), next) : m_vehicle->Seats.find(seatId));
+    SeatMap::const_iterator seat = (seatId < 0 ? m_vehicle->GetNextEmptySeat(/*GetTransSeat()*/0, next) : m_vehicle->Seats.find(seatId));
     // The second part of the check will only return true if seatId >= 0. @Vehicle::GetNextEmptySeat makes sure of that.
     if (seat == m_vehicle->Seats.end() || !seat->second.IsEmpty())
         return;

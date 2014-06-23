@@ -266,19 +266,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 
     /* extract packet */
-    uint64 guid;
-
-    recvData.readPackGUID(guid);
-
     MovementInfo movementInfo;
-    movementInfo.guid = guid;
     ReadMovementInfo(recvData, &movementInfo);
 
     recvData.rfinish();                         // prevent warnings spam
-
-    // prevent tampered movement data
-    if (guid != mover->GetGUID())
-        return;
 
     if (!movementInfo.pos.IsPositionValid())
     {

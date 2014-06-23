@@ -412,7 +412,7 @@ struct MovementInfo
     // common
     uint64 guid;
     uint32 flags;
-    uint16 flags2;
+    uint8 flags2;
     Position pos;
     uint32 time;
 
@@ -423,16 +423,12 @@ struct MovementInfo
         {
             guid = 0;
             pos.Relocate(0.0f, 0.0f, 0.0f, 0.0f);
-            seat = -1;
             time = 0;
-            time2 = 0;
         }
 
         uint64 guid;
         Position pos;
-        int8 seat;
         uint32 time;
-        uint32 time2;
     } transport;
 
     // swimming/flying
@@ -441,7 +437,7 @@ struct MovementInfo
     // falling
     uint32 fallTime;
 
-        // jumping
+    // jumping
     struct JumpInfo
     {
         void Reset()
@@ -471,8 +467,8 @@ struct MovementInfo
     bool HasMovementFlag(uint32 flag) const { return flags & flag; }
 
     uint16 GetExtraMovementFlags() const { return flags2; }
-    void AddExtraMovementFlag(uint16 flag) { flags2 |= flag; }
-    bool HasExtraMovementFlag(uint16 flag) const { return flags2 & flag; }
+    void AddExtraMovementFlag(uint8 flag) { flags2 |= flag; }
+    bool HasExtraMovementFlag(uint8 flag) const { return flags2 & flag; }
 
     void SetFallTime(uint32 time) { fallTime = time; }
 
@@ -750,7 +746,6 @@ class WorldObject : public Object, public WorldLocation
         float GetTransOffsetZ() const { return m_movementInfo.transport.pos.GetPositionZ(); }
         float GetTransOffsetO() const { return m_movementInfo.transport.pos.GetOrientation(); }
         uint32 GetTransTime()   const { return m_movementInfo.transport.time; }
-        int8 GetTransSeat()     const { return m_movementInfo.transport.seat; }
         virtual uint64 GetTransGUID()   const;
         void SetTransport(Transport* t) { m_transport = t; }
 
