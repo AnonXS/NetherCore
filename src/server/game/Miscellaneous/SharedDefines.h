@@ -192,12 +192,15 @@ enum Powers
     POWER_FOCUS                         = 2,
     POWER_ENERGY                        = 3,
     POWER_HAPPINESS                     = 4,
-    POWER_RUNE                          = 5,
-    POWER_RUNIC_POWER                   = 6,
-    MAX_POWERS                          = 7,
-    POWER_ALL                           = 127,    // default for class?
+
+    POWER_RUNE                          = 5,            // Not used in 2.4.3
+    POWER_RUNIC_POWER                   = 6,            // Not used in 2.4.3
+
+    POWER_ALL                           = 127,          // default for class?
     POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
 };
+
+#define MAX_POWERS                        5
 
 enum SpellSchools
 {
@@ -254,7 +257,7 @@ enum ItemQualities
     ITEM_QUALITY_EPIC                  = 4,                 //PURPLE
     ITEM_QUALITY_LEGENDARY             = 5,                 //ORANGE
     ITEM_QUALITY_ARTIFACT              = 6,                 //LIGHT YELLOW
-    ITEM_QUALITY_HEIRLOOM              = 7
+    ITEM_QUALITY_HEIRLOOM              = 7                  //LIGHT YELLOW
 };
 
 #define MAX_ITEM_QUALITY                 8
@@ -1490,7 +1493,7 @@ enum GameobjectTypes
     GAMEOBJECT_TYPE_TRAPDOOR               = 35
 };
 
-#define MAX_GAMEOBJECT_TYPE                  36             // sending to client this or greater value can crash client.
+#define MAX_GAMEOBJECT_TYPE                  35             // sending to client this or greater value can crash client.
 #define MAX_GAMEOBJECT_DATA                  24             // Max number of uint32 vars in gameobject_template data field
 
 enum GameObjectFlags
