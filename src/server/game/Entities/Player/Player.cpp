@@ -22907,10 +22907,9 @@ void Player::SendInitialPacketsBeforeAddToMap()
     SendEquipmentSetList();
     */
 
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
+    data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4);
     data.AppendPackedTime(sWorld->GetGameTime());
     data << float(0.01666667f);                             // game speed
-    data << uint32(0);                                      // added in 3.1.2
     GetSession()->SendPacket(&data);
 
     GetReputationMgr().SendForceReactions();                // SMSG_SET_FORCED_REACTIONS
