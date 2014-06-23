@@ -1006,7 +1006,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
         SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_PVP);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     }
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);               // fix cast time showed in spell tooltip on client
     
     /* Not implemented in 2.4.3
@@ -3284,7 +3283,6 @@ void Player::InitStatsForLevel(bool reapplyMods)
         UNIT_FLAG_SKINNABLE      | UNIT_FLAG_MOUNT        | UNIT_FLAG_TAXI_FLIGHT      );
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);   // must be set
 
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);// must be set
 
     // cleanup player flags (will be re-applied if need at aura load), to avoid have ghost flag without ghost aura, for example.
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK | PLAYER_FLAGS_DND | PLAYER_FLAGS_GM | PLAYER_FLAGS_GHOST | PLAYER_ALLOW_ONLY_ABILITY);
@@ -3306,7 +3304,6 @@ void Player::InitStatsForLevel(bool reapplyMods)
         SetPower(POWER_RAGE, GetMaxPower(POWER_RAGE));
     SetPower(POWER_FOCUS, 0);
     SetPower(POWER_HAPPINESS, 0);
-    SetPower(POWER_RUNIC_POWER, 0);
 
     // update level to hunter/summon pet
     if (Pet* pet = GetPet())
@@ -17279,7 +17276,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     */
 
     // load achievements before anything else to prevent multiple gains for the same achievement/criteria on every loading (as loading does call UpdateAchievementCriteria)
-    m_achievementMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACHIEVEMENTS), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS));
+    // m_achievementMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACHIEVEMENTS), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS));
 
     uint32 money = fields[8].GetUInt32();
     if (money > MAX_MONEY_AMOUNT)
@@ -17684,9 +17681,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // reset stats before loading any modifiers
     InitStatsForLevel();
-    InitGlyphsForLevel();
     InitTaxiNodesForLevel();
-    InitRunes();
 
     // rest bonus can only be calculated after InitStatsForLevel()
     m_rest_bonus = fields[21].GetFloat();
@@ -19290,9 +19285,7 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 0));
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
-        /* Not implemented in 2.4.3
-        stmt->setUInt64(index++, GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES));
-        */
+        stmt->setUInt64(index++, GetUInt64Value(0)); //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
         stmt->setUInt64(index++, GetUInt64Value(0));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
         stmt->setUInt8(index++, GetDrunkValue());
@@ -22910,7 +22903,9 @@ void Player::SendInitialPacketsBeforeAddToMap()
     m_reputationMgr->SendInitialReputations();
     m_achievementMgr->SendAllAchievementData();
 
+    /* Not implemented in 2.4.3
     SendEquipmentSetList();
+    */
 
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
     data.AppendPackedTime(sWorld->GetGameTime());
@@ -22985,7 +22980,6 @@ void Player::SendInitialPacketsAfterAddToMap()
     }
     else if (GetRaidDifficulty() != GetStoredRaidDifficulty())
         SendRaidDifficulty(GetGroup() != NULL);
-    */
 }
 
 void Player::SendUpdateToOutOfRangeGroupMembers()
@@ -23298,6 +23292,7 @@ void Player::SendAurasForTarget(Unit* target)
     }
 
     GetSession()->SendPacket(&data);
+    */
 }
 
 void Player::SetDailyQuestStatus(uint32 quest_id)
