@@ -1239,16 +1239,9 @@ void WorldSession::HandleSocketOpcode(WorldPacket& recvData)
         if (!GemProps[i])
             continue;
 
-        // tried to put gem in socket where no socket exists (take care about prismatic sockets)
+        // tried to put gem in socket where no socket exists
         if (!itemProto->Socket[i].Color)
-        {
-            // no prismatic socket
-            if (!itemTarget->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT))
-                return;
-
-            if (i != firstPrismatic)
-                return;
-        }
+            return;
 
         // tried to put normal gem in meta socket
         if (itemProto->Socket[i].Color == SOCKET_COLOR_META && GemProps[i]->color != SOCKET_COLOR_META)

@@ -833,8 +833,10 @@ enum SpellEffects
     SPELL_EFFECT_SUMMON_RAF_FRIEND                  = 152,
     SPELL_EFFECT_CREATE_TAMED_PET                   = 153,
     SPELL_EFFECT_DISCOVER_TAXI                      = 154,
+
+    //WOTLK
     SPELL_EFFECT_TITAN_GRIP                         = 155,
-    SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC             = 156,
+    //SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC             = 156,
     SPELL_EFFECT_CREATE_ITEM_2                      = 157,
     SPELL_EFFECT_MILLING                            = 158,
     SPELL_EFFECT_ALLOW_RENAME_PET                   = 159,

@@ -161,18 +161,17 @@ enum EnchantmentSlot
     SOCK_ENCHANTMENT_SLOT_2         = 3,
     SOCK_ENCHANTMENT_SLOT_3         = 4,
     BONUS_ENCHANTMENT_SLOT          = 5,
-    PRISMATIC_ENCHANTMENT_SLOT      = 6,                    // added at apply special permanent enchantment
-    MAX_INSPECTED_ENCHANTMENT_SLOT  = 7,
+    MAX_INSPECTED_ENCHANTMENT_SLOT  = 6,
 
-    PROP_ENCHANTMENT_SLOT_0         = 7,                    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_1         = 8,                    // used with RandomSuffix
-    PROP_ENCHANTMENT_SLOT_2         = 9,                    // used with RandomSuffix and RandomProperty
-    PROP_ENCHANTMENT_SLOT_3         = 10,                   // used with RandomProperty
-    PROP_ENCHANTMENT_SLOT_4         = 11,                   // used with RandomProperty
-    MAX_ENCHANTMENT_SLOT            = 12
+    PROP_ENCHANTMENT_SLOT_0         = 6,                    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_1         = 7,                    // used with RandomSuffix
+    PROP_ENCHANTMENT_SLOT_2         = 8,                    // used with RandomSuffix and RandomProperty
+    PROP_ENCHANTMENT_SLOT_3         = 9,                    // used with RandomProperty
+    PROP_ENCHANTMENT_SLOT_4         = 10,                   // used with RandomProperty
+    MAX_ENCHANTMENT_SLOT            = 11
 };
 
-#define MAX_VISIBLE_ITEM_OFFSET       2                     // 2 fields per visible item (entry+enchantment)
+#define MAX_VISIBLE_ITEM_OFFSET       16                    // 16 fields per visible item (creator(2) + enchantments(12) + properties(1) + pad(1))
 
 #define MAX_GEM_SOCKETS               MAX_ITEM_PROTO_SOCKETS// (BONUS_ENCHANTMENT_SLOT-SOCK_ENCHANTMENT_SLOT) and item proto size, equal value expected
 

@@ -5966,65 +5966,6 @@ SpellCastResult Spell::CheckItems()
                     }
                 }
                 // no break
-            case SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC:
-            {
-                Item* targetItem = m_targets.GetItemTarget();
-                if (!targetItem)
-                    return SPELL_FAILED_ITEM_NOT_FOUND;
-
-                if (targetItem->GetTemplate()->ItemLevel < m_spellInfo->BaseLevel)
-                    return SPELL_FAILED_LOWLEVEL;
-
-                bool isItemUsable = false;
-                for (uint8 e = 0; e < MAX_ITEM_PROTO_SPELLS; ++e)
-                {
-                    ItemTemplate const* proto = targetItem->GetTemplate();
-                    if (proto->Spells[e].SpellId && (
-                        proto->Spells[e].SpellTrigger == ITEM_SPELLTRIGGER_ON_USE ||
-                        proto->Spells[e].SpellTrigger == ITEM_SPELLTRIGGER_ON_NO_DELAY_USE))
-                    {
-                        isItemUsable = true;
-                        break;
-                    }
-                }
-
-                SpellItemEnchantmentEntry const* enchantEntry = sSpellItemEnchantmentStore.LookupEntry(m_spellInfo->Effects[i].MiscValue);
-                // do not allow adding usable enchantments to items that have use effect already
-                if (enchantEntry)
-                {
-                    for (uint8 s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
-                    {
-                        switch (enchantEntry->type[s])
-                        {
-                            case ITEM_ENCHANTMENT_TYPE_USE_SPELL:
-                                if (isItemUsable)
-                                    return SPELL_FAILED_ON_USE_ENCHANT;
-                                break;
-                            case ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET:
-                            {
-                                uint32 numSockets = 0;
-                                for (uint32 socket = 0; socket < MAX_ITEM_PROTO_SOCKETS; ++socket)
-                                    if (targetItem->GetTemplate()->Socket[socket].Color)
-                                        ++numSockets;
-
-                                if (numSockets == MAX_ITEM_PROTO_SOCKETS || targetItem->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT))
-                                    return SPELL_FAILED_MAX_SOCKETS;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // Not allow enchant in trade slot for some enchant type
-                if (targetItem->GetOwner() != m_caster)
-                {
-                    if (!enchantEntry)
-                        return SPELL_FAILED_ERROR;
-                    if (enchantEntry->slot & ENCHANTMENT_CAN_SOULBOUND)
-                        return SPELL_FAILED_NOT_TRADEABLE;
-                }
-                break;
-            }
             case SPELL_EFFECT_ENCHANT_ITEM_TEMPORARY:
             {
                 Item* item = m_targets.GetItemTarget();

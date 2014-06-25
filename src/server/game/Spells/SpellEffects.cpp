@@ -221,8 +221,10 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectSummonRaFFriend,                          //152 SPELL_EFFECT_SUMMON_RAF_FRIEND        summon Refer-a-Friend
     &Spell::EffectCreateTamedPet,                           //153 SPELL_EFFECT_CREATE_TAMED_PET         misc value is creature entry
     &Spell::EffectDiscoverTaxi,                             //154 SPELL_EFFECT_DISCOVER_TAXI
+    
+    //WOTLK
     &Spell::EffectTitanGrip,                                //155 SPELL_EFFECT_TITAN_GRIP Allows you to equip two-handed axes, maces and swords in one hand, but you attack $49152s1% slower than normal.
-    &Spell::EffectEnchantItemPrismatic,                     //156 SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC
+    //&Spell::EffectEnchantItemPrismatic,                     //156 SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC
     &Spell::EffectCreateItem2,                              //157 SPELL_EFFECT_CREATE_ITEM_2            create item or create item template and replace by some randon spell loot item
     &Spell::EffectMilling,                                  //158 SPELL_EFFECT_MILLING                  milling
     &Spell::EffectRenamePet,                                //159 SPELL_EFFECT_ALLOW_RENAME_PET         allow rename pet once again
@@ -2713,69 +2715,6 @@ void Spell::EffectEnchantItemPerm(SpellEffIndex effIndex)
     }
 }
 
-void Spell::EffectEnchantItemPrismatic(SpellEffIndex effIndex)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    if (!itemTarget)
-        return;
-
-    Player* player = m_caster->ToPlayer();
-    if (!player)
-        return;
-
-    uint32 enchantId = m_spellInfo->Effects[effIndex].MiscValue;
-    if (!enchantId)
-        return;
-
-    SpellItemEnchantmentEntry const* enchant = sSpellItemEnchantmentStore.LookupEntry(enchantId);
-    if (!enchant)
-        return;
-
-    // support only enchantings with add socket in this slot
-    {
-        bool add_socket = false;
-        for (uint8 i = 0; i < MAX_ITEM_ENCHANTMENT_EFFECTS; ++i)
-        {
-            if (enchant->type[i] == ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET)
-            {
-                add_socket = true;
-                break;
-            }
-        }
-        if (!add_socket)
-        {
-            TC_LOG_ERROR("spells", "Spell::EffectEnchantItemPrismatic: attempt apply enchant spell %u with SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC (%u) but without ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET (%u), not suppoted yet.",
-                m_spellInfo->Id, SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC, ITEM_ENCHANTMENT_TYPE_PRISMATIC_SOCKET);
-            return;
-        }
-    }
-
-    // item can be in trade slot and have owner diff. from caster
-    Player* item_owner = itemTarget->GetOwner();
-    if (!item_owner)
-        return;
-
-    if (item_owner != player && player->GetSession()->HasPermission(rbac::RBAC_PERM_LOG_GM_TRADE))
-    {
-        sLog->outCommand(player->GetSession()->GetAccountId(), "GM %s (Account: %u) enchanting(perm): %s (Entry: %d) for player: %s (Account: %u)",
-            player->GetName().c_str(), player->GetSession()->GetAccountId(),
-            itemTarget->GetTemplate()->Name1.c_str(), itemTarget->GetEntry(),
-            item_owner->GetName().c_str(), item_owner->GetSession()->GetAccountId());
-    }
-
-    // remove old enchanting before applying new if equipped
-    item_owner->ApplyEnchantment(itemTarget, PRISMATIC_ENCHANTMENT_SLOT, false);
-
-    itemTarget->SetEnchantment(PRISMATIC_ENCHANTMENT_SLOT, enchantId, 0, 0, m_caster->GetGUID());
-
-    // add new enchanting if equipped
-    item_owner->ApplyEnchantment(itemTarget, PRISMATIC_ENCHANTMENT_SLOT, true);
-
-    item_owner->RemoveTradeableItem(itemTarget);
-    itemTarget->ClearSoulboundTradeable(item_owner);
-}
 
 void Spell::EffectEnchantItemTmp(SpellEffIndex effIndex)
 {
