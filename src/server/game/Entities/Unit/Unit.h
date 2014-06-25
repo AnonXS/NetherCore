@@ -95,7 +95,7 @@ enum SpellModOp
     SPELLMOD_CASTING_TIME           = 10,
     SPELLMOD_COOLDOWN               = 11,
     SPELLMOD_EFFECT2                = 12,
-    SPELLMOD_IGNORE_ARMOR           = 13,
+    SPELLMOD_IGNORE_ARMOR           = 13, // Maybe usefull for 2.4.3 ignore armor implemention
     SPELLMOD_COST                   = 14,
     SPELLMOD_CRIT_DAMAGE_BONUS      = 15,
     SPELLMOD_RESIST_MISS_CHANCE     = 16,
@@ -581,11 +581,10 @@ enum CombatRating
     CR_WEAPON_SKILL_MAINHAND    = 20,
     CR_WEAPON_SKILL_OFFHAND     = 21,
     CR_WEAPON_SKILL_RANGED      = 22,
-    CR_EXPERTISE                = 23,
-    CR_ARMOR_PENETRATION        = 24
+    CR_EXPERTISE                = 23
 };
 
-#define MAX_COMBAT_RATING         25
+#define MAX_COMBAT_RATING         24
 
 enum DamageEffectType
 {
