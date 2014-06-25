@@ -501,6 +501,18 @@ enum UnitState
     UNIT_STATE_CASTING         = 0x00008000,
     UNIT_STATE_POSSESSED       = 0x00010000,
     UNIT_STATE_CHARGING        = 0x00020000,
+
+    //UNIT_STAT_UNUSED           = 0x00040000,
+    //UNIT_STAT_UNUSED           = 0x00100000,
+
+    /* 2.4.3 Codes
+    UNIT_STAT_ROTATING           = 0x00200000,                  // unit is rotating
+    UNIT_STAT_CASTING_NOT_MOVE   = 0x00400000,                  // unit is casting a spell and can NOT move
+    UNIT_STAT_IGNORE_PATHFINDING = 0x00800000,                  // unit won't generate path
+    */
+
+
+    /* Not implemented in 2.4.3 */
     UNIT_STATE_JUMPING         = 0x00040000,
     UNIT_STATE_MOVE            = 0x00100000,
     UNIT_STATE_ROTATING        = 0x00200000,
