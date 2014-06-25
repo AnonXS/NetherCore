@@ -6624,9 +6624,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         case POWER_ENERGY:
                             triggered_spell_id = 71882;
                             break;
-                        case POWER_RUNIC_POWER:
-                            triggered_spell_id = 71884;
-                            break;
                         default:
                             return false;
                     }
@@ -6645,9 +6642,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                             break;
                         case POWER_ENERGY:
                             triggered_spell_id = 71887;
-                            break;
-                        case POWER_RUNIC_POWER:
-                            triggered_spell_id = 71885;
                             break;
                         default:
                             return false;
@@ -8594,7 +8588,6 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit* victim, uint32 /*damage*/, Au
                 case POWER_MANA:   triggered_spell_id = 48542; break;
                 case POWER_RAGE:   triggered_spell_id = 48541; break;
                 case POWER_ENERGY: triggered_spell_id = 48540; break;
-                case POWER_RUNIC_POWER: triggered_spell_id = 48543; break;
                 default:
                     break;
             }

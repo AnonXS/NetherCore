@@ -1126,14 +1126,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
         SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
     }
 
-    if (getPowerType() == POWER_RUNIC_POWER)
-    {
-        SetPower(POWER_RUNE, 8);
-        SetMaxPower(POWER_RUNE, 8);
-        SetPower(POWER_RUNIC_POWER, 0);
-        SetMaxPower(POWER_RUNIC_POWER, 1000);
-    }
-
     // original spells
     learnDefaultSpells();
 
@@ -2483,8 +2475,6 @@ void Player::RegenerateAll()
         }
 
         Regenerate(POWER_RAGE);
-        if (getClass() == CLASS_DEATH_KNIGHT)
-            Regenerate(POWER_RUNIC_POWER);
 
         m_regenTimerCount -= 2000;
     }
@@ -2537,15 +2527,6 @@ void Player::Regenerate(Powers power)
         case POWER_ENERGY:                                  // Regenerate energy (rogue)
             addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY);
             break;
-        case POWER_RUNIC_POWER:
-        {
-            if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
-            {
-                float RunicPowerDecreaseRate = sWorld->getRate(RATE_POWER_RUNICPOWER_LOSS);
-                addvalue += -30 * RunicPowerDecreaseRate;         // 3 RunicPower by tick
-            }
-        }   break;
-        case POWER_RUNE:
         case POWER_FOCUS:
         case POWER_HAPPINESS:
             break;
@@ -2562,10 +2543,6 @@ void Player::Regenerate(Powers power)
         for (AuraEffectList::const_iterator i = ModPowerRegenPCTAuras.begin(); i != ModPowerRegenPCTAuras.end(); ++i)
             if (Powers((*i)->GetMiscValue()) == power)
                 AddPct(addvalue, (*i)->GetAmount());
-
-        // Butchery requires combat for this effect
-        if (power != POWER_RUNIC_POWER || IsInCombat())
-            addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, power) * ((power != POWER_ENERGY) ? m_regenTimerCount : m_regenTimer) / (5 * IN_MILLISECONDS);
     }
 
     if (addvalue < 0.0f)
@@ -2675,9 +2652,6 @@ void Player::ResetAllPowers()
             break;
         case POWER_ENERGY:
             SetPower(POWER_ENERGY, GetMaxPower(POWER_ENERGY));
-            break;
-        case POWER_RUNIC_POWER:
-            SetPower(POWER_RUNIC_POWER, 0);
             break;
         default:
             break;

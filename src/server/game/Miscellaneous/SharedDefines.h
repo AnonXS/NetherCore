@@ -193,9 +193,6 @@ enum Powers
     POWER_ENERGY                        = 3,
     POWER_HAPPINESS                     = 4,
 
-    POWER_RUNE                          = 5,            // Not used in 2.4.3
-    POWER_RUNIC_POWER                   = 6,            // Not used in 2.4.3
-
     POWER_ALL                           = 127,          // default for class?
     POWER_HEALTH                        = 0xFFFFFFFE    // (-2 as signed value)
 };
