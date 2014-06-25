@@ -632,12 +632,6 @@ enum KeyRingSlots                                           // 32 slots
     KEYRING_SLOT_END            = 118
 };
 
-enum CurrencyTokenSlots                                     // 32 slots
-{
-    CURRENCYTOKEN_SLOT_START    = 118,
-    CURRENCYTOKEN_SLOT_END      = 150
-};
-
 enum EquipmentSetUpdateState
 {
     EQUIPMENT_SET_UNCHANGED = 0,

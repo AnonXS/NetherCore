@@ -513,11 +513,6 @@ void Loot::FillNotNormalLootFor(Player* player, bool presentAtLooting)
             item = &items[i];
         else
             item = &quest_items[i-itemsSize];
-
-        if (!item->is_looted && item->freeforall && item->AllowedForPlayer(player))
-            if (ItemTemplate const* proto = sObjectMgr->GetItemTemplate(item->itemid))
-                if (proto->IsCurrencyToken())
-                    player->StoreLootItem(i, this);
     }
 }
 
