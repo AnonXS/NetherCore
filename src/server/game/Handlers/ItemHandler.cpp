@@ -338,7 +338,6 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
         data << pProto->DisplayInfoID;
         data << pProto->Quality;
         data << pProto->Flags;
-        data << pProto->Flags2;
         data << pProto->BuyPrice;
         data << pProto->SellPrice;
         data << pProto->InventoryType;
@@ -356,14 +355,13 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
         data << int32(pProto->MaxCount);
         data << int32(pProto->Stackable);
         data << pProto->ContainerSlots;
-        data << pProto->StatsCount;                         // item stats count
-        for (uint32 i = 0; i < pProto->StatsCount; ++i)
+
+        for (uint32 i = 0; i < MAX_ITEM_PROTO_STATS; ++i)
         {
             data << pProto->ItemStat[i].ItemStatType;
             data << pProto->ItemStat[i].ItemStatValue;
         }
-        data << pProto->ScalingStatDistribution;            // scaling stats distribution
-        data << pProto->ScalingStatValue;                   // some kind of flags used to determine stat values column
+
         for (int i = 0; i < MAX_ITEM_PROTO_DAMAGES; ++i)
         {
             data << pProto->Damage[i].DamageMin;
@@ -448,8 +446,8 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
         data << pProto->RequiredDisenchantSkill;
         data << pProto->ArmorDamageModifier;
         data << pProto->Duration;                           // added in 2.4.2.8209, duration (seconds)
-        data << pProto->ItemLimitCategory;                  // WotLK, ItemLimitCategory
-        data << pProto->HolidayId;                          // Holiday.dbc?
+        data << pProto->ItemLimitCategory;                  // Not sure if 2.4.3 can use this, but seems to work
+        data << pProto->HolidayId;                          // Not sure if 2.4.3 can use this, but seems to work
         SendPacket(&data);
     }
     else
