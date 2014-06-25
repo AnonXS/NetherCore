@@ -33,24 +33,23 @@
 
 void WorldSession::SendNameQueryOpcode(uint64 guid)
 {
-    Player* player = ObjectAccessor::FindPlayer(guid);
+    Player const* player = ObjectAccessor::FindPlayer(guid);
     CharacterNameData const* nameData = sWorld->GetCharacterNameData(GUID_LOPART(guid));
 
-    WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8+1+1+1+1+1+10));
-    data.appendPackGUID(guid);
-    if (!nameData)
+    WorldPacket data(SMSG_NAME_QUERY_RESPONSE, (8 + 1 + 4 + 4 + 4 + 10));
+    data << guid;                                   // player guid
+    if (!nameData)                                  // name unknown, not supported in 2.4.3, but sill works. client just keeps unknown name
     {
-        data << uint8(1);                           // name unknown
+        data << uint8(1);
         SendPacket(&data);
         return;
     }
 
-    data << uint8(0);                               // name known
     data << nameData->m_name;                       // played name
     data << uint8(0);                               // realm name - only set for cross realm interaction (such as Battlegrounds)
-    data << uint8(nameData->m_race);
-    data << uint8(nameData->m_gender);
-    data << uint8(nameData->m_class);
+    data << uint32(nameData->m_race);
+    data << uint32(nameData->m_gender);
+    data << uint32(nameData->m_class);
 
     if (DeclinedName const* names = (player ? player->GetDeclinedNames() : NULL))
     {
