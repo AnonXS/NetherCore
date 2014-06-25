@@ -41,39 +41,39 @@ uint32 ItemUpdateFieldFlags[CONTAINER_END] =
     UF_FLAG_OWNER | UF_FLAG_ITEM_OWNER,                     // ITEM_FIELD_SPELL_CHARGES+3
     UF_FLAG_OWNER | UF_FLAG_ITEM_OWNER,                     // ITEM_FIELD_SPELL_CHARGES+4
     UF_FLAG_PUBLIC,                                         // ITEM_FIELD_FLAGS
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+1
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+2
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+3
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+4
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+5
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+6
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+7
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+8
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+9
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+10
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+11
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+12
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+13
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+14
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+15
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+16
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+17
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+18
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+19
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+20
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+21
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+22
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+23
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+24
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+25
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+26
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+27
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+28
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+29
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+30
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+31
-    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT+32
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+1
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+2
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+3
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+4
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+5
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+6
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+7
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+8
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+9
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+10
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+11
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+12
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+13
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+14
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+15
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+16
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+17
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+18
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+19
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+20
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+21
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+22
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+23
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+24
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+25
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+26
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+27
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+28
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+29
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+30
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+31
+    UF_FLAG_PUBLIC,                                         // ITEM_FIELD_ENCHANTMENT_1_1+32
     UF_FLAG_PUBLIC,                                         // ITEM_FIELD_PROPERTY_SEED
     UF_FLAG_PUBLIC,                                         // ITEM_FIELD_RANDOM_PROPERTIES_ID
     UF_FLAG_OWNER,                                          // ITEM_FIELD_ITEM_TEXT_ID
