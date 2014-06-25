@@ -137,7 +137,6 @@ public:
 
         target->_ApplyAllLevelScaleItemMods(false);
         target->SetLevel(startLevel);
-        target->InitRunes();
         target->InitStatsForLevel(true);
         target->InitTaxiNodesForLevel();
         target->InitGlyphsForLevel();
@@ -193,7 +192,6 @@ public:
         if (!HandleResetStatsOrLevelHelper(target))
             return false;
 
-        target->InitRunes();
         target->InitStatsForLevel(true);
         target->InitTaxiNodesForLevel();
         target->InitGlyphsForLevel();

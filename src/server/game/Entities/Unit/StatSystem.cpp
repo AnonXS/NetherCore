@@ -902,29 +902,6 @@ void Player::UpdateManaRegen()
     SetStatFloatValue(PLAYER_FIELD_MOD_MANA_REGEN, power_regen_mp5 + power_regen);
 }
 
-void Player::UpdateRuneRegen(RuneType rune)
-{
-    if (rune >= NUM_RUNE_TYPES)
-        return;
-
-    uint32 cooldown = 0;
-
-    for (uint32 i = 0; i < MAX_RUNES; ++i)
-        if (GetBaseRune(i) == rune)
-        {
-            cooldown = GetRuneBaseCooldown(i);
-            break;
-        }
-
-    if (cooldown <= 0)
-        return;
-
-    float regen = float(1 * IN_MILLISECONDS) / float(cooldown);
-    /* Not implemented in 2.4.3
-    SetFloatValue(PLAYER_RUNE_REGEN_1 + uint8(rune), regen);
-    */
-}
-
 void Player::_ApplyAllStatBonuses()
 {
     SetCanModifyStats(false);
