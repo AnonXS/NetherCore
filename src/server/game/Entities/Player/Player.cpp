@@ -19240,14 +19240,15 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 0));
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
-        stmt->setUInt64(index++, GetUInt64Value(0)); //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
-        stmt->setUInt64(index++, GetUInt64Value(0));
+        stmt->setUInt64(index++, uint64(0));    //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
         stmt->setUInt8(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
             stmt->setUInt32(index++, GetPower(Powers(i)));
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNE not implemented in 2.4.3
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNIC_POWER not implemented in 2.4.3
 
         stmt->setUInt32(index++, GetSession()->GetLatency());
 
@@ -19259,12 +19260,16 @@ void Player::SaveToDB(bool create /*=false*/)
             ss << GetUInt32Value(PLAYER_EXPLORED_ZONES_1 + i) << ' ';
         stmt->setString(index++, ss.str());
 
-        /* Not implemented in 2.4.3
         ss.str("");
         // cache equipment...
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END * 2; ++i)
-            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + i) << ' ';
-        */
+        for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
+        {
+            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
+
+            uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
+            uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
+            ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
+        }
 
         // ...and bags for enum opcode
         for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
@@ -19363,16 +19368,15 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 0));
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
-        /* Not implemented in 2.4.3
-        stmt->setUInt64(index++, GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES));
-        */
-        stmt->setUInt64(index++, GetUInt64Value(0));
+        stmt->setUInt64(index++, uint64(0));    //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
         stmt->setUInt8(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
             stmt->setUInt32(index++, GetPower(Powers(i)));
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNE not implemented in 2.4.3
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNIC_POWER not implemented in 2.4.3
 
         stmt->setUInt32(index++, GetSession()->GetLatency());
 
@@ -19384,12 +19388,16 @@ void Player::SaveToDB(bool create /*=false*/)
             ss << GetUInt32Value(PLAYER_EXPLORED_ZONES_1 + i) << ' ';
         stmt->setString(index++, ss.str());
 
-        /* Not implemented in 2.4.3
         ss.str("");
         // cache equipment...
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END * 2; ++i)
-            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + i) << ' ';
-        */
+        for (uint32 i = 0; i < EQUIPMENT_SLOT_END ; ++i)
+        {
+            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
+
+            uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
+            uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
+            ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
+        }
 
         // ...and bags for enum opcode
         for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
