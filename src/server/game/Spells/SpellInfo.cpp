@@ -1376,7 +1376,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         }
 
         if (!found)
-            return SPELL_FAILED_INCORRECT_AREA;
+            return SPELL_FAILED_REQUIRES_AREA;
     }
 
     // continent limitation (virtual continent)
@@ -1385,7 +1385,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         uint32 v_map = GetVirtualMapForMapAndZone(map_id, zone_id);
         MapEntry const* mapEntry = sMapStore.LookupEntry(v_map);
         if (!mapEntry || mapEntry->addon < 1 || !mapEntry->IsContinent())
-            return SPELL_FAILED_INCORRECT_AREA;
+            return SPELL_FAILED_REQUIRES_AREA;
     }
 
     // raid instance limitation
@@ -1393,7 +1393,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
     {
         MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
         if (!mapEntry || mapEntry->IsRaid())
-            return SPELL_FAILED_NOT_IN_RAID_INSTANCE;
+            return SPELL_FAILED_REQUIRES_AREA;
     }
 
     // DB base check (if non empty then must fit at least single for allow)
@@ -1405,7 +1405,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
             if (itr->second.IsFitToRequirements(player, zone_id, area_id))
                 return SPELL_CAST_OK;
         }
-        return SPELL_FAILED_INCORRECT_AREA;
+        return SPELL_FAILED_REQUIRES_AREA;
     }
 
     // bg spell checks
@@ -1426,7 +1426,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         {
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
             if (!mapEntry)
-                return SPELL_FAILED_INCORRECT_AREA;
+                return SPELL_FAILED_REQUIRES_AREA;
 
             return zone_id == 4197 || (mapEntry->IsBattleground() && player && player->InBattleground()) ? SPELL_CAST_OK : SPELL_FAILED_REQUIRES_AREA;
         }
@@ -1437,7 +1437,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
 
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
             if (!mapEntry)
-                return SPELL_FAILED_INCORRECT_AREA;
+                return SPELL_FAILED_REQUIRES_AREA;
 
             if (!mapEntry->IsBattleground())
                 return SPELL_FAILED_REQUIRES_AREA;
@@ -1452,7 +1452,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
         {
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
             if (!mapEntry)
-                return SPELL_FAILED_INCORRECT_AREA;
+                return SPELL_FAILED_REQUIRES_AREA;
 
             return mapEntry->IsBattleArena() && player && player->InBattleground() ? SPELL_CAST_OK : SPELL_FAILED_REQUIRES_AREA;
         }
@@ -1463,7 +1463,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
 
             MapEntry const* mapEntry = sMapStore.LookupEntry(map_id);
             if (!mapEntry)
-                return SPELL_FAILED_INCORRECT_AREA;
+                return SPELL_FAILED_REQUIRES_AREA;
 
             if (!mapEntry->IsBattleArena())
                 return SPELL_FAILED_REQUIRES_AREA;
@@ -1484,7 +1484,7 @@ SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 a
             case SPELL_AURA_FLY:
             {
                 if (player && !player->IsKnowHowFlyIn(map_id, zone_id))
-                    return SPELL_FAILED_INCORRECT_AREA;
+                    return SPELL_FAILED_REQUIRES_AREA;
             }
         }
     }
@@ -1710,7 +1710,7 @@ SpellCastResult SpellInfo::CheckVehicle(Unit const* caster) const
         VehicleSeatEntry const* vehicleSeat = vehicle->GetSeatForPassenger(caster);
         if (!(AttributesEx6 & SPELL_ATTR6_CASTABLE_WHILE_ON_VEHICLE) && !(Attributes & SPELL_ATTR0_CASTABLE_WHILE_MOUNTED)
             && (vehicleSeat->m_flags & checkMask) != checkMask)
-            return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+            return SPELL_FAILED_NOT_READY;
 
         // Can only summon uncontrolled minions/guardians when on controlled vehicle
         if (vehicleSeat->m_flags & (VEHICLE_SEAT_FLAG_CAN_CONTROL | VEHICLE_SEAT_FLAG_UNK2))
@@ -1722,7 +1722,7 @@ SpellCastResult SpellInfo::CheckVehicle(Unit const* caster) const
 
                 SummonPropertiesEntry const* props = sSummonPropertiesStore.LookupEntry(Effects[i].MiscValueB);
                 if (props && props->Category != SUMMON_CATEGORY_WILD)
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                    return SPELL_FAILED_NOT_READY;
             }
         }
     }

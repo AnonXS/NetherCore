@@ -1399,8 +1399,7 @@ class spell_item_book_of_glyph_mastery : public SpellScriptLoader
             {
                 if (HasDiscoveredAllSpells(GetSpellInfo()->Id, GetCaster()->ToPlayer()))
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_LEARNED_EVERYTHING);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;
@@ -1450,8 +1449,7 @@ class spell_item_gift_of_the_harvester : public SpellScriptLoader
                 GetCaster()->GetAllMinionsByEntry(ghouls, NPC_GHOUL);
                 if (ghouls.size() >= MAX_GHOULS)
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_TOO_MANY_GHOULS);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;
@@ -1493,8 +1491,7 @@ class spell_item_map_of_the_geyser_fields : public SpellScriptLoader
                     caster->FindNearestCreature(NPC_NORTHWEST_SINKHOLE, 30.0f, true))
                     return SPELL_CAST_OK;
 
-                SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_MUST_BE_CLOSE_TO_SINKHOLE);
-                return SPELL_FAILED_CUSTOM_ERROR;
+                return SPELL_FAILED_UNKNOWN;
             }
 
             void Register() override
@@ -2025,7 +2022,7 @@ class spell_item_demon_broiled_surprise : public SpellScriptLoader
             {
                 Player* player = GetCaster()->ToPlayer();
                 if (player->GetQuestStatus(QUEST_SUPER_HOT_STEW) != QUEST_STATUS_INCOMPLETE)
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                    return SPELL_FAILED_NOT_READY;
 
                 if (Creature* creature = player->FindNearestCreature(NPC_ABYSSAL_FLAMEBRINGER, 10, false))
                     if (creature->isDead())

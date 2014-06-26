@@ -279,7 +279,7 @@ class spell_hun_disengage : public SpellScriptLoader
             {
                 Unit* caster = GetCaster();
                 if (caster->GetTypeId() == TYPEID_PLAYER && !caster->IsInCombat())
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                    return SPELL_FAILED_NOT_READY;
 
                 return SPELL_CAST_OK;
             }

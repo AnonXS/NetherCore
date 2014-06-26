@@ -478,8 +478,7 @@ class spell_sha_fire_nova : public SpellScriptLoader
                 // fire totem
                 if (!GetCaster()->m_SummonSlot[1])
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_MUST_HAVE_FIRE_TOTEM);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;

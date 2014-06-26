@@ -176,7 +176,7 @@ class spell_gen_allow_cast_from_item_only : public SpellScriptLoader
             SpellCastResult CheckRequirement()
             {
                 if (!GetCastItem())
-                    return SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW;
+                    return SPELL_FAILED_NOT_READY;
                 return SPELL_CAST_OK;
             }
 
@@ -2902,8 +2902,7 @@ class spell_gen_profession_research : public SpellScriptLoader
             {
                 if (HasDiscoveredAllSpells(GetSpellInfo()->Id, GetCaster()->ToPlayer()))
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_NOTHING_TO_DISCOVER);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;
@@ -3269,8 +3268,7 @@ class spell_gen_summon_tournament_mount : public SpellScriptLoader
 
                 if (!GetCaster()->HasAura(SPELL_LANCE_EQUIPPED))
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_MUST_HAVE_LANCE_EQUIPPED);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;

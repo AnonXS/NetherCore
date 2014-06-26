@@ -619,17 +619,6 @@ void SpellScript::FinishCast(SpellCastResult result)
     m_spell->finish(result == SPELL_CAST_OK);
 }
 
-void SpellScript::SetCustomCastResultMessage(SpellCustomErrors result)
-{
-    if (!IsInCheckCastHook())
-    {
-        TC_LOG_ERROR("scripts", "Script: `%s` Spell: `%u`: function SpellScript::SetCustomCastResultMessage was called while spell not in check cast phase!", m_scriptName->c_str(), m_scriptSpellId);
-        return;
-    }
-
-    m_spell->m_customError = result;
-}
-
 SpellValue const* SpellScript::GetSpellValue()
 {
     return m_spell->m_spellValue;

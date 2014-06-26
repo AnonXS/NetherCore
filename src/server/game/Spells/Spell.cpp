@@ -507,7 +507,6 @@ m_spellInfo(sSpellMgr->GetSpellForDifficultyFromSpell(info, caster)),
 m_caster((info->AttributesEx6 & SPELL_ATTR6_CAST_BY_CHARMER && caster->GetCharmerOrOwner()) ? caster->GetCharmerOrOwner() : caster)
 , m_spellValue(new SpellValue(m_spellInfo)), m_preGeneratedPath(PathGenerator(m_caster))
 {
-    m_customError = SPELL_CUSTOM_ERROR_NONE;
     m_skipCheck = skipCheck;
     m_selfContainer = NULL;
     m_referencedFromCurrentSpell = false;
@@ -3593,7 +3592,7 @@ void Spell::finish(bool ok)
         m_caster->AttackStop();
 }
 
-void Spell::WriteCastResultInfo(WorldPacket& data, Player* caster, SpellInfo const* spellInfo, uint8 castCount, SpellCastResult result, SpellCustomErrors customError)
+void Spell::WriteCastResultInfo(WorldPacket& data, Player* caster, SpellInfo const* spellInfo, uint8 castCount, SpellCastResult result)
 {
     data << uint8(castCount);                               // single cast or multi 2.3 (0/1)
     data << uint32(spellInfo->Id);
@@ -3652,9 +3651,6 @@ void Spell::WriteCastResultInfo(WorldPacket& data, Player* caster, SpellInfo con
                  data << uint32(proto->ItemLimitCategory);
              break;
         }
-        case SPELL_FAILED_CUSTOM_ERROR:
-            data << uint32(customError);
-            break;
         case SPELL_FAILED_REAGENTS:
         {
             uint32 missingItem = 0;
@@ -3682,29 +3678,22 @@ void Spell::WriteCastResultInfo(WorldPacket& data, Player* caster, SpellInfo con
         case SPELL_FAILED_NEED_EXOTIC_AMMO:
             data << uint32(spellInfo->EquippedItemSubClassMask);
             break;
-        case SPELL_FAILED_NEED_MORE_ITEMS:
-            data << uint32(0); // Item entry
-            data << uint32(0); // Count
-            break;
         case SPELL_FAILED_MIN_SKILL:
             data << uint32(0); // SkillLine.dbc Id
             data << uint32(0); // Amount
-            break;
-        case SPELL_FAILED_FISHING_TOO_LOW:
-            data << uint32(0); // Skill level
             break;
         default:
             break;
     }
 }
 
-void Spell::SendCastResult(Player* caster, SpellInfo const* spellInfo, uint8 castCount, SpellCastResult result, SpellCustomErrors customError /*= SPELL_CUSTOM_ERROR_NONE*/)
+void Spell::SendCastResult(Player* caster, SpellInfo const* spellInfo, uint8 castCount, SpellCastResult result)
 {
     if (result == SPELL_CAST_OK)
         return;
 
     WorldPacket data(SMSG_CAST_FAILED, 1 + 4 + 1);
-    WriteCastResultInfo(data, caster, spellInfo, castCount, result, customError);
+    WriteCastResultInfo(data, caster, spellInfo, castCount, result);
 
     caster->GetSession()->SendPacket(&data);
 }
@@ -3720,7 +3709,7 @@ void Spell::SendCastResult(SpellCastResult result)
     if (m_caster->ToPlayer()->GetSession()->PlayerLoading())  // don't send cast results at loading time
         return;
 
-    SendCastResult(m_caster->ToPlayer(), m_spellInfo, m_cast_count, result, m_customError);
+    SendCastResult(m_caster->ToPlayer(), m_spellInfo, m_cast_count, result);
 }
 
 void Spell::SendPetCastResult(SpellCastResult result)
@@ -3737,7 +3726,7 @@ void Spell::SendPetCastResult(SpellCastResult result)
         return;
 
     WorldPacket data(SMSG_PET_CAST_FAILED, 1 + 4 + 1);
-    WriteCastResultInfo(data, player, m_spellInfo, m_cast_count, result, m_customError);
+    WriteCastResultInfo(data, player, m_spellInfo, m_cast_count, result);
 
     player->GetSession()->SendPacket(&data);
 }
@@ -4480,8 +4469,7 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     if (m_spellInfo->AttributesEx7 & SPELL_ATTR7_IS_CHEAT_SPELL && !m_caster->HasFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_ALLOW_CHEAT_SPELLS))
     {
-        m_customError = SPELL_CUSTOM_ERROR_GM_ONLY;
-        return SPELL_FAILED_CUSTOM_ERROR;
+        return SPELL_FAILED_UNKNOWN;
     }
 
     // Check global cooldown
@@ -4598,8 +4586,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             // mLastFailedCondition can be NULL if there was an error processing the condition in Condition::Meets (i.e. wrong data for ConditionTarget or others)
             if (condInfo.mLastFailedCondition && condInfo.mLastFailedCondition->ErrorType)
             {
-                if (condInfo.mLastFailedCondition->ErrorType == SPELL_FAILED_CUSTOM_ERROR)
-                    m_customError = SpellCustomErrors(condInfo.mLastFailedCondition->ErrorTextId);
+                if (condInfo.mLastFailedCondition->ErrorType == SPELL_FAILED_UNKNOWN)
                 return SpellCastResult(condInfo.mLastFailedCondition->ErrorType);
             }
             if (!condInfo.mLastFailedCondition || !condInfo.mLastFailedCondition->ConditionTarget)
@@ -4832,7 +4819,7 @@ SpellCastResult Spell::CheckCast(bool strict)
                 uint32 glyphId = m_spellInfo->Effects[i].MiscValue;
                 if (GlyphPropertiesEntry const* gp = sGlyphPropertiesStore.LookupEntry(glyphId))
                     if (m_caster->HasAura(gp->SpellId))
-                        return SPELL_FAILED_UNIQUE_GLYPH;
+                        return SPELL_FAILED_UNKNOWN;
                 break;
             }
             case SPELL_EFFECT_FEED_PET:
@@ -5262,8 +5249,9 @@ SpellCastResult Spell::CheckCast(bool strict)
     // check trade slot case (last, for allow catch any another cast problems)
     if (m_targets.GetTargetMask() & TARGET_FLAG_TRADE_ITEM)
     {
+        // Enchanting items using a vellum is no longer possible in trade
         if (m_CastItem)
-            return SPELL_FAILED_ITEM_ENCHANT_TRADE_WINDOW;
+            return SPELL_FAILED_NOT_TRADING;
 
         if (m_caster->GetTypeId() != TYPEID_PLAYER)
             return SPELL_FAILED_NOT_TRADING;
@@ -5874,7 +5862,7 @@ SpellCastResult Spell::CheckItems()
                     return SPELL_FAILED_LOW_CASTLEVEL;
                 //make sure the player has the required ores in inventory
                 if (m_targets.GetItemTarget()->GetCount() < 5)
-                    return SPELL_FAILED_NEED_MORE_ITEMS;
+                    return SPELL_FAILED_PROSPECT_NEED_MORE;
 
                 if (!LootTemplates_Prospecting.HaveLootFor(m_targets.GetItemTargetEntry()))
                     return SPELL_FAILED_CANT_BE_PROSPECTED;
@@ -5884,23 +5872,23 @@ SpellCastResult Spell::CheckItems()
             case SPELL_EFFECT_MILLING:
             {
                 if (!m_targets.GetItemTarget())
-                    return SPELL_FAILED_CANT_BE_MILLED;
+                    return SPELL_FAILED_UNKNOWN;
                 //ensure item is a millable herb
                 if (!(m_targets.GetItemTarget()->GetTemplate()->Flags & ITEM_PROTO_FLAG_MILLABLE))
-                    return SPELL_FAILED_CANT_BE_MILLED;
+                    return SPELL_FAILED_UNKNOWN;
                 //prevent milling in trade slot
                 if (m_targets.GetItemTarget()->GetOwnerGUID() != m_caster->GetGUID())
-                    return SPELL_FAILED_CANT_BE_MILLED;
+                    return SPELL_FAILED_UNKNOWN;
                 //Check for enough skill in inscription
                 uint32 item_millingskilllevel = m_targets.GetItemTarget()->GetTemplate()->RequiredSkillRank;
                 if (item_millingskilllevel > player->GetSkillValue(SKILL_INSCRIPTION))
                     return SPELL_FAILED_LOW_CASTLEVEL;
                 //make sure the player has the required herbs in inventory
                 if (m_targets.GetItemTarget()->GetCount() < 5)
-                    return SPELL_FAILED_NEED_MORE_ITEMS;
+                    return SPELL_FAILED_UNKNOWN;
 
                 if (!LootTemplates_Milling.HaveLootFor(m_targets.GetItemTargetEntry()))
-                    return SPELL_FAILED_CANT_BE_MILLED;
+                    return SPELL_FAILED_UNKNOWN;
 
                 break;
             }
@@ -5980,13 +5968,13 @@ SpellCastResult Spell::CheckItems()
                  ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(item_id);
 
                  if (!pProto)
-                     return SPELL_FAILED_ITEM_AT_MAX_CHARGES;
+                     return SPELL_FAILED_TOO_MANY_OF_ITEM;
 
                  if (Item* pitem = player->GetItemByEntry(item_id))
                  {
                      for (int x = 0; x < MAX_ITEM_PROTO_SPELLS; ++x)
                          if (pProto->Spells[x].SpellCharges != 0 && pitem->GetSpellCharges(x) == pProto->Spells[x].SpellCharges)
-                             return SPELL_FAILED_ITEM_AT_MAX_CHARGES;
+                             return SPELL_FAILED_TOO_MANY_OF_ITEM;
                  }
                  break;
             }

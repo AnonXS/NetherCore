@@ -426,8 +426,6 @@ class SpellScript : public _SpellScript
 
         // finishes spellcast prematurely with selected error message
         void FinishCast(SpellCastResult result);
-
-        void SetCustomCastResultMessage(SpellCustomErrors result);
 };
 
 // AuraScript interface - enum used for runtime checks of script function calls

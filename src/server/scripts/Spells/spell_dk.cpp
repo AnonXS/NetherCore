@@ -388,7 +388,7 @@ class spell_dk_corpse_explosion : public SpellScriptLoader
                     targets.remove_if(CorpseExplosionCheck(GetCaster()->GetGUID(), false));
                     if (targets.empty())
                     {
-                        FinishCast(SPELL_FAILED_CANT_DO_THAT_RIGHT_NOW);
+                        FinishCast(SPELL_FAILED_NOT_READY);
                         return;
                     }
                     target = Trinity::Containers::SelectRandomContainerElement(targets);
@@ -526,8 +526,7 @@ class spell_dk_death_gate : public SpellScriptLoader
             {
                 if (GetCaster()->getClass() != CLASS_DEATH_KNIGHT)
                 {
-                    SetCustomCastResultMessage(SPELL_CUSTOM_ERROR_MUST_BE_DEATH_KNIGHT);
-                    return SPELL_FAILED_CUSTOM_ERROR;
+                    return SPELL_FAILED_UNKNOWN;
                 }
 
                 return SPELL_CAST_OK;

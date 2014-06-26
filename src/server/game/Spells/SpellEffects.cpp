@@ -4225,7 +4225,7 @@ void Spell::EffectApplyGlyph(SpellEffIndex effIndex)
     }
     if (minLevel && m_caster->getLevel() < minLevel)
     {
-        SendCastResult(SPELL_FAILED_GLYPH_SOCKET_LOCKED);
+        SendCastResult(SPELL_FAILED_UNKNOWN);
         return;
     }
 
@@ -4238,7 +4238,7 @@ void Spell::EffectApplyGlyph(SpellEffIndex effIndex)
             {
                 if (gp->TypeFlags != gs->TypeFlags)
                 {
-                    SendCastResult(SPELL_FAILED_INVALID_GLYPH);
+                    SendCastResult(SPELL_FAILED_UNKNOWN);
                     return;                                 // glyph slot mismatch
                 }
             }
