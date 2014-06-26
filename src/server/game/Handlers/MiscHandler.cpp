@@ -1154,13 +1154,9 @@ void WorldSession::HandleSetActionBarToggles(WorldPacket& recvData)
 
 void WorldSession::HandlePlayedTime(WorldPacket& recvData)
 {
-    uint8 unk1;
-    recvData >> unk1;                                      // 0 or 1 expected
-
-    WorldPacket data(SMSG_PLAYED_TIME, 4 + 4 + 1);
+    WorldPacket data(SMSG_PLAYED_TIME, 4 + 4 );
     data << uint32(_player->GetTotalPlayedTime());
     data << uint32(_player->GetLevelPlayedTime());
-    data << uint8(unk1);                                    // 0 - will not show in chat frame
     SendPacket(&data);
 }
 
