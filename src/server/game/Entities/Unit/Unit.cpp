@@ -167,7 +167,8 @@ Unit::Unit(bool isWorldObject) :
     m_objectType |= TYPEMASK_UNIT;
     m_objectTypeId = TYPEID_UNIT;
 
-    m_updateFlag = (UPDATEFLAG_LIVING | UPDATEFLAG_STATIONARY_POSITION);
+    // TBC - 0x70
+    m_updateFlag = (UPDATEFLAG_HIGHGUID | UPDATEFLAG_LIVING | UPDATEFLAG_STATIONARY_POSITION);
 
     m_attackTimer[BASE_ATTACK] = 0;
     m_attackTimer[OFF_ATTACK] = 0;
@@ -1474,6 +1475,8 @@ bool Unit::IsDamageReducedByArmor(SpellSchoolMask schoolMask, SpellInfo const* s
 
 uint32 Unit::CalcArmorReducedDamage(Unit* victim, const uint32 damage, SpellInfo const* spellInfo, WeaponAttackType /*attackType*/)
 {
+    // TODO
+    /*
     float armor = float(victim->GetArmor());
 
     // Ignore enemy armor by SPELL_AURA_MOD_TARGET_RESISTANCE aura
@@ -1549,6 +1552,8 @@ uint32 Unit::CalcArmorReducedDamage(Unit* victim, const uint32 damage, SpellInfo
         tmpvalue = 0.75f;
 
     return std::max<uint32>(damage * (1.0f - tmpvalue), 1);
+    */
+    return damage;
 }
 
 uint32 Unit::CalcSpellResistance(Unit* victim, SpellSchoolMask schoolMask, SpellInfo const* spellInfo) const
@@ -6634,9 +6639,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         case POWER_ENERGY:
                             triggered_spell_id = 71882;
                             break;
-                        case POWER_RUNIC_POWER:
-                            triggered_spell_id = 71884;
-                            break;
                         default:
                             return false;
                     }
@@ -6655,9 +6657,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                             break;
                         case POWER_ENERGY:
                             triggered_spell_id = 71887;
-                            break;
-                        case POWER_RUNIC_POWER:
-                            triggered_spell_id = 71885;
                             break;
                         default:
                             return false;
@@ -7581,88 +7580,6 @@ bool Unit::HandleAuraProc(Unit* victim, uint32 damage, Aura* triggeredByAura, Sp
             }
             break;
         }
-        case SPELLFAMILY_DEATHKNIGHT:
-        {
-            // Blood of the North
-            // Reaping
-            // Death Rune Mastery
-            /// @todo move those to spell scripts
-            if (dummySpell->SpellIconID == 3041 || (dummySpell->SpellIconID == 22 && dummySpell->Id != 62459) || dummySpell->SpellIconID == 2622)
-            {
-                *handled = true;
-                // Convert recently used Blood Rune to Death Rune
-                if (Player* player = ToPlayer())
-                {
-                    if (player->getClass() != CLASS_DEATH_KNIGHT)
-                        return false;
-
-                    RuneType rune = ToPlayer()->GetLastUsedRune();
-                    // can't proc from death rune use
-                    if (rune == RUNE_DEATH)
-                        return false;
-                    AuraEffect* aurEff = triggeredByAura->GetEffect(EFFECT_0);
-                    if (!aurEff)
-                        return false;
-
-                    // Reset amplitude - set death rune remove timer to 30s
-                    aurEff->ResetPeriodic(true);
-                    uint32 runesLeft;
-
-                    if (dummySpell->SpellIconID == 2622)
-                        runesLeft = 2;
-                    else
-                        runesLeft = 1;
-
-                    for (uint8 i = 0; i < MAX_RUNES && runesLeft; ++i)
-                    {
-                        if (dummySpell->SpellIconID == 2622)
-                        {
-                            if (player->GetCurrentRune(i) == RUNE_DEATH ||
-                                player->GetBaseRune(i) == RUNE_BLOOD)
-                                continue;
-                        }
-                        else
-                        {
-                            if (player->GetCurrentRune(i) == RUNE_DEATH ||
-                                player->GetBaseRune(i) != RUNE_BLOOD)
-                                continue;
-                        }
-                        if (player->GetRuneCooldown(i) != player->GetRuneBaseCooldown(i))
-                            continue;
-
-                        --runesLeft;
-                        // Mark aura as used
-                        player->AddRuneByAuraEffect(i, RUNE_DEATH, aurEff);
-                    }
-                    return true;
-                }
-                return false;
-            }
-
-            switch (dummySpell->Id)
-            {
-                // Bone Shield cooldown
-                case 49222:
-                {
-                    *handled = true;
-                    if (cooldown && GetTypeId() == TYPEID_PLAYER)
-                    {
-                        if (ToPlayer()->HasSpellCooldown(100000))
-                            return false;
-                        ToPlayer()->AddSpellCooldown(100000, 0, time(NULL) + cooldown);
-                    }
-                    return true;
-                }
-                // Hungering Cold aura drop
-                case 51209:
-                    *handled = true;
-                    // Drop only in not disease case
-                    if (procSpell && procSpell->Dispel == DISPEL_DISEASE)
-                        return false;
-                    return true;
-            }
-            break;
-        }
         case SPELLFAMILY_WARRIOR:
         {
             switch (dummySpell->Id)
@@ -8119,16 +8036,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                     trigger_spell_id = 50475;
                     basepoints0 = CalculatePct(int32(damage), triggerAmount);
                 }
-                // Item - Death Knight T10 Melee 4P Bonus
-                else if (auraSpellInfo->Id == 70656)
-                {
-                    if (GetTypeId() != TYPEID_PLAYER || getClass() != CLASS_DEATH_KNIGHT)
-                        return false;
-
-                    for (uint8 i = 0; i < MAX_RUNES; ++i)
-                        if (ToPlayer()->GetRuneCooldown(i) == 0)
-                            return false;
-                }
                 break;
             }
             case SPELLFAMILY_ROGUE:
@@ -8297,27 +8204,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
         }
         default:
             break;
-    }
-
-    // Blade Barrier
-    if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 85 && procSpell)
-    {
-        Player* player = ToPlayer();
-        if (!player || player->getClass() != CLASS_DEATH_KNIGHT)
-            return false;
-
-        if (!player->IsBaseRuneSlotsOnCooldown(RUNE_BLOOD))
-            return false;
-    }
-
-    // Rime
-    else if (auraSpellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && auraSpellInfo->SpellIconID == 56)
-    {
-        if (GetTypeId() != TYPEID_PLAYER)
-            return false;
-
-        // Howling Blast
-        ToPlayer()->RemoveSpellCategoryCooldown(1248, true);
     }
 
     // Custom basepoints/target for exist spell
@@ -8604,7 +8490,6 @@ bool Unit::HandleOverrideClassScriptAuraProc(Unit* victim, uint32 /*damage*/, Au
                 case POWER_MANA:   triggered_spell_id = 48542; break;
                 case POWER_RAGE:   triggered_spell_id = 48541; break;
                 case POWER_ENERGY: triggered_spell_id = 48540; break;
-                case POWER_RUNIC_POWER: triggered_spell_id = 48543; break;
                 default:
                     break;
             }
@@ -13180,9 +13065,7 @@ bool Unit::HandleStatModifier(UnitMods unitMod, UnitModifierType modifierType, f
         case UNIT_MOD_RAGE:
         case UNIT_MOD_FOCUS:
         case UNIT_MOD_ENERGY:
-        case UNIT_MOD_HAPPINESS:
-        case UNIT_MOD_RUNE:
-        case UNIT_MOD_RUNIC_POWER:          UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod));          break;
+        case UNIT_MOD_HAPPINESS:           UpdateMaxPower(GetPowerTypeByAuraGroup(unitMod));          break;
 
         case UNIT_MOD_RESISTANCE_HOLY:
         case UNIT_MOD_RESISTANCE_FIRE:
@@ -13301,8 +13184,6 @@ Powers Unit::GetPowerTypeByAuraGroup(UnitMods unitMod) const
         case UNIT_MOD_FOCUS:       return POWER_FOCUS;
         case UNIT_MOD_ENERGY:      return POWER_ENERGY;
         case UNIT_MOD_HAPPINESS:   return POWER_HAPPINESS;
-        case UNIT_MOD_RUNE:        return POWER_RUNE;
-        case UNIT_MOD_RUNIC_POWER: return POWER_RUNIC_POWER;
         default:
         case UNIT_MOD_MANA:        return POWER_MANA;
     }
@@ -13425,11 +13306,13 @@ void Unit::SetPower(Powers power, uint32 val)
 
     SetStatInt32Value(UNIT_FIELD_POWER1 + power, val);
 
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_POWER_UPDATE);
     data.append(GetPackGUID());
     data << uint8(power);
     data << uint32(val);
     SendMessageToSet(&data, GetTypeId() == TYPEID_PLAYER);
+    */
 
     // group update
     if (Player* player = ToPlayer())
@@ -13487,8 +13370,6 @@ uint32 Unit::GetCreatePowers(Powers power) const
         case POWER_FOCUS:     return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->IsPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 100);
         case POWER_ENERGY:    return 100;
         case POWER_HAPPINESS: return (GetTypeId() == TYPEID_PLAYER || !((Creature const*)this)->IsPet() || ((Pet const*)this)->getPetType() != HUNTER_PET ? 0 : 1050000);
-        case POWER_RUNIC_POWER: return 1000;
-        case POWER_RUNE:      return 0;
         case POWER_HEALTH:    return 0;
         default:
             break;
@@ -15492,8 +15373,10 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
 float Unit::GetPositionZMinusOffset() const
 {
     float offset = 0.0f;
+    /* Not implemented in 2.4.3
     if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         offset = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+    */
 
     return GetPositionZ() - offset;
 }
@@ -16874,7 +16757,7 @@ void Unit::_EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* a
             TC_LOG_DEBUG("entities.vehicle", "EnterVehicle: %u exit %u and enter %u.", GetEntry(), m_vehicle->GetBase()->GetEntry(), vehicle->GetBase()->GetEntry());
             ExitVehicle();
         }
-        else if (seatId >= 0 && seatId == GetTransSeat())
+        else if (seatId >= 0 /*&& seatId == GetTransSeat()*/)
             return;
     }
 
@@ -16900,10 +16783,10 @@ void Unit::ChangeSeat(int8 seatId, bool next)
         return;
 
     // Don't change if current and new seat are identical
-    if (seatId == GetTransSeat())
-        return;
+    /*if (seatId == GetTransSeat())
+        return;*/
 
-    SeatMap::const_iterator seat = (seatId < 0 ? m_vehicle->GetNextEmptySeat(GetTransSeat(), next) : m_vehicle->Seats.find(seatId));
+    SeatMap::const_iterator seat = (seatId < 0 ? m_vehicle->GetNextEmptySeat(/*GetTransSeat()*/0, next) : m_vehicle->Seats.find(seatId));
     // The second part of the check will only return true if seatId >= 0. @Vehicle::GetNextEmptySeat makes sure of that.
     if (seat == m_vehicle->Seats.end() || !seat->second.IsEmpty())
         return;
@@ -17016,7 +16899,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 void Unit::BuildMovementPacket(ByteBuffer *data) const
 {
     *data << uint32(GetUnitMovementFlags());            // movement flags
-    *data << uint16(GetExtraUnitMovementFlags());       // 2.3.0
+    *data << uint8(GetExtraUnitMovementFlags());        // 2.3.0
     *data << uint32(getMSTime());                       // time / counter
     *data << GetPositionX();
     *data << GetPositionY();
@@ -17026,9 +16909,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEMENTFLAG_ONTRANSPORT)
     {
-        if (m_vehicle)
-            data->append(m_vehicle->GetBase()->GetPackGUID());
-        else if (GetTransport())
+        if (GetTransport())
             data->append(GetTransport()->GetPackGUID());
         else
             *data << (uint8)0;
@@ -17038,10 +16919,6 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
         *data << float (GetTransOffsetZ());
         *data << float (GetTransOffsetO());
         *data << uint32(GetTransTime());
-        *data << uint8 (GetTransSeat());
-
-        if (GetExtraUnitMovementFlags() & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT)
-            *data << uint32(m_movementInfo.transport.time2);
     }
 
     // 0x02200000
@@ -17558,7 +17435,10 @@ bool Unit::SetHover(bool enable, bool /*packetOnly = false*/)
     if (enable == HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         return false;
 
+    /* Not implemented in 2.4.3
     float hoverHeight = GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+    */
+    bool hoverHeight = false;
 
     if (enable)
     {

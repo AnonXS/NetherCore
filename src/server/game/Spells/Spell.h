@@ -331,11 +331,11 @@ class Spell
         void EffectGameObjectDamage(SpellEffIndex effIndex);
         void EffectGameObjectRepair(SpellEffIndex effIndex);
         void EffectGameObjectSetDestructionState(SpellEffIndex effIndex);
-        void EffectActivateRune(SpellEffIndex effIndex);
+        //void EffectActivateRune(SpellEffIndex effIndex);
         void EffectCreateTamedPet(SpellEffIndex effIndex);
         void EffectDiscoverTaxi(SpellEffIndex effIndex);
         void EffectTitanGrip(SpellEffIndex effIndex);
-        void EffectEnchantItemPrismatic(SpellEffIndex effIndex);
+        //void EffectEnchantItemPrismatic(SpellEffIndex effIndex);
         void EffectPlayMusic(SpellEffIndex effIndex);
         void EffectSpecCount(SpellEffIndex effIndex);
         void EffectActivateSpec(SpellEffIndex effIndex);
@@ -385,7 +385,6 @@ class Spell
         void TakePower();
         void TakeAmmo();
 
-        void TakeRunePower(bool didHit);
         void TakeReagents();
         void TakeCastItem();
 
@@ -402,7 +401,6 @@ class Spell
         SpellCastResult CheckItems();
         SpellCastResult CheckRange(bool strict);
         SpellCastResult CheckPower();
-        SpellCastResult CheckRuneCost(uint32 runeCostID);
         SpellCastResult CheckCasterAuras() const;
 
         int32 CalculateDamage(uint8 i, Unit const* target) const { return m_caster->CalculateSpellDamage(target, m_spellInfo, i, &m_spellValue->EffectBasePoints[i]); }

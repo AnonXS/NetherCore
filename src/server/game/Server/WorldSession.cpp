@@ -804,10 +804,6 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo* mi)
 
         data >> mi->transport.pos.PositionXYZOStream();
         data >> mi->transport.time;
-        data >> mi->transport.seat;
-
-        if (mi->HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
-            data >> mi->transport.time2;
     }
 
     if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || (mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING)))
@@ -921,10 +917,6 @@ void WorldSession::WriteMovementInfo(WorldPacket* data, MovementInfo* mi)
 
        *data << mi->transport.pos.PositionXYZOStream();
        *data << mi->transport.time;
-       *data << mi->transport.seat;
-
-       if (mi->HasExtraMovementFlag(MOVEMENTFLAG2_INTERPOLATED_MOVEMENT))
-           *data << mi->transport.time2;
     }
 
     if (mi->HasMovementFlag(MovementFlags(MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || mi->HasExtraMovementFlag(MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))

@@ -564,7 +564,7 @@ enum PlayerSlots
     // first slot for item stored (in any way in player m_items data)
     PLAYER_SLOT_START           = 0,
     // last+1 slot for item stored (in any way in player m_items data)
-    PLAYER_SLOT_END             = 150,
+    PLAYER_SLOT_END             = 118,
     PLAYER_SLOTS_COUNT          = (PLAYER_SLOT_END - PLAYER_SLOT_START)
 };
 
@@ -630,12 +630,6 @@ enum KeyRingSlots                                           // 32 slots
 {
     KEYRING_SLOT_START          = 86,
     KEYRING_SLOT_END            = 118
-};
-
-enum CurrencyTokenSlots                                     // 32 slots
-{
-    CURRENCYTOKEN_SLOT_START    = 118,
-    CURRENCYTOKEN_SLOT_END      = 150
 };
 
 enum EquipmentSetUpdateState
@@ -1607,8 +1601,8 @@ class Player : public Unit, public GridObject<Player>
         void ActivateSpec(uint8 spec);
 
         void InitGlyphsForLevel();
-        void SetGlyphSlot(uint8 slot, uint32 slottype) { SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot, slottype); }
-        uint32 GetGlyphSlot(uint8 slot) { return GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot); }
+        void SetGlyphSlot(uint8 slot, uint32 slottype) { /* Not used in 2.4.3 --- SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot, slottype); */ }
+        uint32 GetGlyphSlot(uint8 slot) { return 0; /* Not used in 2.4.3 --- GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot); */ }
         void SetGlyph(uint8 slot, uint32 glyph);
         uint32 GetGlyph(uint8 slot) { return m_Glyphs[m_activeSpec][slot]; }
 
@@ -1788,12 +1782,10 @@ class Player : public Unit, public GridObject<Player>
 
         void UpdateAllSpellCritChances();
         void UpdateSpellCritChance(uint32 school);
-        void UpdateArmorPenetration(int32 amount);
         void UpdateExpertise(WeaponAttackType attType);
         void ApplyManaRegenBonus(int32 amount, bool apply);
         void ApplyHealthRegenBonus(int32 amount, bool apply);
         void UpdateManaRegen();
-        void UpdateRuneRegen(RuneType rune);
 
         uint64 GetLootGUID() const { return m_lootGuid; }
         void SetLootGUID(uint64 guid) { m_lootGuid = guid; }
@@ -1986,7 +1978,7 @@ class Player : public Unit, public GridObject<Player>
         void ApplyEquipSpell(SpellInfo const* spellInfo, Item* item, bool apply, bool form_change = false);
         void UpdateEquipSpellsAtFormChange();
         void CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 procVictim, uint32 procEx);
-        void CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 cast_count, uint32 glyphIndex);
+        void CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 castCount);
         void CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, Item* item, ItemTemplate const* proto);
 
         void SendEquipmentSetList();
@@ -2240,26 +2232,6 @@ class Player : public Unit, public GridObject<Player>
         bool isAllowedToLoot(const Creature* creature);
 
         DeclinedName const* GetDeclinedNames() const { return m_declinedname; }
-        uint8 GetRunesState() const { return m_runes->runeState; }
-        RuneType GetBaseRune(uint8 index) const { return RuneType(m_runes->runes[index].BaseRune); }
-        RuneType GetCurrentRune(uint8 index) const { return RuneType(m_runes->runes[index].CurrentRune); }
-        uint32 GetRuneCooldown(uint8 index) const { return m_runes->runes[index].Cooldown; }
-        uint32 GetRuneBaseCooldown(uint8 index);
-        bool IsBaseRuneSlotsOnCooldown(RuneType runeType) const;
-        RuneType GetLastUsedRune() { return m_runes->lastUsedRune; }
-        void SetLastUsedRune(RuneType type) { m_runes->lastUsedRune = type; }
-        void SetBaseRune(uint8 index, RuneType baseRune) { m_runes->runes[index].BaseRune = baseRune; }
-        void SetCurrentRune(uint8 index, RuneType currentRune) { m_runes->runes[index].CurrentRune = currentRune; }
-        void SetRuneCooldown(uint8 index, uint32 cooldown);
-        void SetRuneConvertAura(uint8 index, AuraEffect const* aura);
-        void AddRuneByAuraEffect(uint8 index, RuneType newType, AuraEffect const* aura);
-        void RemoveRunesByAuraEffect(AuraEffect const* aura);
-        void RestoreBaseRune(uint8 index);
-        void ConvertRune(uint8 index, RuneType newType);
-        void ResyncRunes(uint8 count);
-        void AddRunePower(uint8 index);
-        void InitRunes();
-
         void SendRespondInspectAchievements(Player* player) const;
         bool HasAchieved(uint32 achievementId) const;
         void ResetAchievements();

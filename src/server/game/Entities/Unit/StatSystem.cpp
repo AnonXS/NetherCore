@@ -214,7 +214,6 @@ bool Player::UpdateAllStats()
     UpdateManaRegen();
     UpdateExpertise(BASE_ATTACK);
     UpdateExpertise(OFF_ATTACK);
-    RecalculateRating(CR_ARMOR_PENETRATION);
     UpdateAllResistances();
 
     return true;
@@ -797,12 +796,6 @@ void Player::UpdateSpellCritChance(uint32 school)
     SetFloatValue(PLAYER_SPELL_CRIT_PERCENTAGE1 + school, crit);
 }
 
-void Player::UpdateArmorPenetration(int32 amount)
-{
-    // Store Rating Value
-    SetUInt32Value(PLAYER_FIELD_COMBAT_RATING_1 + CR_ARMOR_PENETRATION, amount);
-}
-
 void Player::UpdateMeleeHitChances()
 {
     m_modMeleeHitChance = (float)GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE);
@@ -894,32 +887,19 @@ void Player::UpdateManaRegen()
 
     // Set regen rate in cast state apply only on spirit based regen
     int32 modManaRegenInterrupt = GetTotalAuraModifier(SPELL_AURA_MOD_MANA_REGEN_INTERRUPT);
+    /* Not implemented in 2.4.3
     if (modManaRegenInterrupt > 100)
         modManaRegenInterrupt = 100;
     SetStatFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER, power_regen_mp5 + CalculatePct(power_regen, modManaRegenInterrupt));
 
     SetStatFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER, power_regen_mp5 + power_regen);
-}
+    */
 
-void Player::UpdateRuneRegen(RuneType rune)
-{
-    if (rune >= NUM_RUNE_TYPES)
-        return;
+    if (modManaRegenInterrupt > 100)
+        modManaRegenInterrupt = 100;
+    SetStatFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT, power_regen_mp5 + CalculatePct(power_regen, modManaRegenInterrupt));
 
-    uint32 cooldown = 0;
-
-    for (uint32 i = 0; i < MAX_RUNES; ++i)
-        if (GetBaseRune(i) == rune)
-        {
-            cooldown = GetRuneBaseCooldown(i);
-            break;
-        }
-
-    if (cooldown <= 0)
-        return;
-
-    float regen = float(1 * IN_MILLISECONDS) / float(cooldown);
-    SetFloatValue(PLAYER_RUNE_REGEN_1 + uint8(rune), regen);
+    SetStatFloatValue(PLAYER_FIELD_MOD_MANA_REGEN, power_regen_mp5 + power_regen);
 }
 
 void Player::_ApplyAllStatBonuses()
@@ -1461,6 +1441,8 @@ void Guardian::UpdateDamagePhysical(WeaponAttackType attType)
 void Guardian::SetBonusDamage(int32 damage)
 {
     m_bonusSpellDamage = damage;
+    /* Not implemented in 2.4.3
     if (GetOwner()->GetTypeId() == TYPEID_PLAYER)
         GetOwner()->SetUInt32Value(PLAYER_PET_SPELL_POWER, damage);
+    */
 }

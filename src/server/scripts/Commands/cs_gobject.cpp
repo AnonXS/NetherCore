@@ -671,9 +671,12 @@ public:
 
         int32 objectState = atoi(state);
 
+        /* Not implemented in 2.4.3
         if (objectType < 4)
             object->SetByteValue(GAMEOBJECT_BYTES_1, objectType, objectState);
         else if (objectType == 4)
+        */
+        if (objectType == 4)
         {
             WorldPacket data(SMSG_GAMEOBJECT_CUSTOM_ANIM, 8+4);
             data << object->GetGUID();

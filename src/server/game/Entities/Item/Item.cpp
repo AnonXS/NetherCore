@@ -239,7 +239,8 @@ Item::Item()
     m_objectType |= TYPEMASK_ITEM;
     m_objectTypeId = TYPEID_ITEM;
 
-    m_updateFlag = UPDATEFLAG_LOWGUID;
+    // TBC - 0x18
+    m_updateFlag = (UPDATEFLAG_LOWGUID | UPDATEFLAG_HIGHGUID);
 
     m_valuesCount = ITEM_END;
     m_slot = 0;
@@ -277,7 +278,9 @@ bool Item::Create(uint32 guidlow, uint32 itemid, Player const* owner)
         SetSpellCharges(i, itemProto->Spells[i].SpellCharges);
 
     SetUInt32Value(ITEM_FIELD_DURATION, itemProto->Duration);
+    /* Not implemented in 2.4.3
     SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, 0);
+    */
     return true;
 }
 
@@ -347,7 +350,10 @@ void Item::SaveToDB(SQLTransaction& trans)
 
             stmt->setInt16 (++index, GetItemRandomPropertyId());
             stmt->setUInt16(++index, GetUInt32Value(ITEM_FIELD_DURABILITY));
+            /* Not implemented in 2.4.3
             stmt->setUInt32(++index, GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME));
+            */
+            stmt->setUInt32(++index, 0);
             stmt->setString(++index, m_text);
             stmt->setUInt32(++index, guid);
 
@@ -460,7 +466,9 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, Field* fields, uint32 entr
         need_save = true;
     }
 
+    /* Not implemented in 2.4.3
     SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, fields[9].GetUInt32());
+    */
     SetText(fields[10].GetString());
 
     if (need_save)                                           // normal item changed state set not work at loading
@@ -1162,17 +1170,20 @@ void Item::UpdatePlayedTime(Player* owner)
         We simply add a number to the current played time,
         based on the time elapsed since the last update hereof.
     */
+
+    /* Not implemented in 2.4.3
     // Get current played time
     uint32 current_playtime = GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME);
     // Calculate time elapsed since last played time update
     time_t curtime = time(NULL);
     uint32 elapsed = uint32(curtime - m_lastPlayedTimeUpdate);
     uint32 new_playtime = current_playtime + elapsed;
+    
     // Check if the refund timer has expired yet
     if (new_playtime <= 2*HOUR)
     {
         // No? Proceed.
-        // Update the data field
+        // Update the data field     
         SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, new_playtime);
         // Flag as changed to get saved to DB
         SetState(ITEM_CHANGED, owner);
@@ -1180,30 +1191,41 @@ void Item::UpdatePlayedTime(Player* owner)
         m_lastPlayedTimeUpdate = curtime;
         return;
     }
+    
     // Yes
     SetNotRefundable(owner);
+    */
 }
 
 uint32 Item::GetPlayedTime()
 {
+    /* Not implemented in 2.4.3
     time_t curtime = time(NULL);
     uint32 elapsed = uint32(curtime - m_lastPlayedTimeUpdate);
     return GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + elapsed;
+    */
+    return 0;
 }
 
 bool Item::IsRefundExpired()
 {
+    /* Not implemented in 2.4.3
     return (GetPlayedTime() > 2*HOUR);
+    */
+    return true;
 }
 
 void Item::SetSoulboundTradeable(AllowedLooterSet const& allowedLooters)
 {
+    /* Not implemented in 2.4.3
     SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_BOP_TRADEABLE);
     allowedGUIDs = allowedLooters;
+    */
 }
 
 void Item::ClearSoulboundTradeable(Player* currentOwner)
-{
+{   
+    /* Not implemented in 2.4.3
     RemoveFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_BOP_TRADEABLE);
     if (allowedGUIDs.empty())
         return;
@@ -1213,18 +1235,22 @@ void Item::ClearSoulboundTradeable(Player* currentOwner)
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_ITEM_BOP_TRADE);
     stmt->setUInt32(0, GetGUIDLow());
     CharacterDatabase.Execute(stmt);
+    */
 }
 
 bool Item::CheckSoulboundTradeExpire()
 {
+    /* Not implemented in 2.4.3
     // called from owner's update - GetOwner() MUST be valid
     if (GetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME) + 2*HOUR < GetOwner()->GetTotalPlayedTime())
     {
         ClearSoulboundTradeable(GetOwner());
         return true; // remove from tradeable list
     }
-
+   
     return false;
+    */
+    return true;
 }
 
 void Item::ItemContainerSaveLootToDB()

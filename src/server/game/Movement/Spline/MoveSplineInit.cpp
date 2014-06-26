@@ -122,7 +122,7 @@ namespace Movement
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data.appendPackGUID(unit->GetTransGUID());
-            data << int8(unit->GetTransSeat());
+            //data << int8(unit->GetTransSeat());
         }
 
         PacketBuilder::WriteMonsterMove(move_spline, data);
@@ -168,7 +168,7 @@ namespace Movement
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data.appendPackGUID(unit->GetTransGUID());
-            data << int8(unit->GetTransSeat());
+            //data << int8(unit->GetTransSeat());
         }
 
         PacketBuilder::WriteStopMovement(loc, args.splineId, data);

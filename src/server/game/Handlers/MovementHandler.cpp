@@ -86,8 +86,10 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     }
 
     float z = loc.GetPositionZ();
+    /* Not implemented in 2.4.3
     if (GetPlayer()->HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
         z += GetPlayer()->GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+    */
     GetPlayer()->Relocate(loc.GetPositionX(), loc.GetPositionY(), z, loc.GetOrientation());
 
     GetPlayer()->ResetMap();
@@ -264,19 +266,10 @@ void WorldSession::HandleMovementOpcodes(WorldPacket& recvData)
     }
 
     /* extract packet */
-    uint64 guid;
-
-    recvData.readPackGUID(guid);
-
     MovementInfo movementInfo;
-    movementInfo.guid = guid;
     ReadMovementInfo(recvData, &movementInfo);
 
     recvData.rfinish();                         // prevent warnings spam
-
-    // prevent tampered movement data
-    if (guid != mover->GetGUID())
-        return;
 
     if (!movementInfo.pos.IsPositionValid())
     {

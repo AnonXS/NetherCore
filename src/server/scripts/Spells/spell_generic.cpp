@@ -800,6 +800,7 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                 if (!caster)
                     return;
 
+                /* Not implemented in 2.4.3
                 switch (GetSpellInfo()->Id)
                 {
                     case SPELL_COPY_WEAPON_AURA:
@@ -847,12 +848,14 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                     default:
                         break;
                 }
+                */
             }
 
             void OnRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
                 Unit* target = GetTarget();
 
+                /* Not implemented in 2.4.3
                 switch (GetSpellInfo()->Id)
                 {
                     case SPELL_COPY_WEAPON_AURA:
@@ -870,6 +873,7 @@ class spell_gen_clone_weapon_aura : public SpellScriptLoader
                     default:
                         break;
                 }
+                */
             }
 
             void Register() override

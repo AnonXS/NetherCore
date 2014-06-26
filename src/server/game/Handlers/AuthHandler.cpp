@@ -39,7 +39,9 @@ void WorldSession::SendAuthResponse(uint8 code, bool shortForm, uint32 queuePos)
 
 void WorldSession::SendClientCacheVersion(uint32 version)
 {
+    /* Not used in 2.4.3
     WorldPacket data(SMSG_CLIENTCACHE_VERSION, 4);
     data << uint32(version);
     SendPacket(&data);
+    */
 }

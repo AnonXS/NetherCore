@@ -55,7 +55,7 @@ enum SpellAuraInterruptFlags
     AURA_INTERRUPT_FLAG_CAST                = 0x00000004,   // 2    cast any spells
     AURA_INTERRUPT_FLAG_MOVE                = 0x00000008,   // 3    removed by any movement
     AURA_INTERRUPT_FLAG_TURNING             = 0x00000010,   // 4    removed by any turning
-    AURA_INTERRUPT_FLAG_JUMP                = 0x00000020,   // 5    removed by entering combat
+    AURA_INTERRUPT_FLAG_JUMP                = 0x00000020,   // 5    removed by entering combat      TODO: entering combat or jump ?
     AURA_INTERRUPT_FLAG_NOT_MOUNTED         = 0x00000040,   // 6    removed by dismounting
     AURA_INTERRUPT_FLAG_NOT_ABOVEWATER      = 0x00000080,   // 7    removed by entering water
     AURA_INTERRUPT_FLAG_NOT_UNDERWATER      = 0x00000100,   // 8    removed by leaving water
@@ -95,7 +95,7 @@ enum SpellModOp
     SPELLMOD_CASTING_TIME           = 10,
     SPELLMOD_COOLDOWN               = 11,
     SPELLMOD_EFFECT2                = 12,
-    SPELLMOD_IGNORE_ARMOR           = 13,
+    SPELLMOD_IGNORE_ARMOR           = 13, // Maybe usefull for 2.4.3 ignore armor implemention
     SPELLMOD_COST                   = 14,
     SPELLMOD_CRIT_DAMAGE_BONUS      = 15,
     SPELLMOD_RESIST_MISS_CHANCE     = 16,
@@ -429,13 +429,11 @@ enum UnitMods
     UNIT_MOD_STAT_INTELLECT,
     UNIT_MOD_STAT_SPIRIT,
     UNIT_MOD_HEALTH,
-    UNIT_MOD_MANA,                                          // UNIT_MOD_MANA..UNIT_MOD_RUNIC_POWER must be in existed order, it's accessed by index values of Powers enum.
+    UNIT_MOD_MANA,                                          // UNIT_MOD_MANA..UNIT_MOD_HAPPINESS must be in existed order, it's accessed by index values of Powers enum.
     UNIT_MOD_RAGE,
     UNIT_MOD_FOCUS,
     UNIT_MOD_ENERGY,
     UNIT_MOD_HAPPINESS,
-    UNIT_MOD_RUNE,
-    UNIT_MOD_RUNIC_POWER,
     UNIT_MOD_ARMOR,                                         // UNIT_MOD_ARMOR..UNIT_MOD_RESISTANCE_ARCANE must be in existed order, it's accessed by index values of SpellSchools enum.
     UNIT_MOD_RESISTANCE_HOLY,
     UNIT_MOD_RESISTANCE_FIRE,
@@ -455,7 +453,7 @@ enum UnitMods
     UNIT_MOD_RESISTANCE_START = UNIT_MOD_ARMOR,
     UNIT_MOD_RESISTANCE_END = UNIT_MOD_RESISTANCE_ARCANE + 1,
     UNIT_MOD_POWER_START = UNIT_MOD_MANA,
-    UNIT_MOD_POWER_END = UNIT_MOD_RUNIC_POWER + 1
+    UNIT_MOD_POWER_END = UNIT_MOD_HAPPINESS + 1
 };
 
 enum BaseModGroup
@@ -503,6 +501,18 @@ enum UnitState
     UNIT_STATE_CASTING         = 0x00008000,
     UNIT_STATE_POSSESSED       = 0x00010000,
     UNIT_STATE_CHARGING        = 0x00020000,
+
+    //UNIT_STAT_UNUSED           = 0x00040000,
+    //UNIT_STAT_UNUSED           = 0x00100000,
+
+    /* 2.4.3 Codes
+    UNIT_STAT_ROTATING           = 0x00200000,                  // unit is rotating
+    UNIT_STAT_CASTING_NOT_MOVE   = 0x00400000,                  // unit is casting a spell and can NOT move
+    UNIT_STAT_IGNORE_PATHFINDING = 0x00800000,                  // unit won't generate path
+    */
+
+
+    /* Not implemented in 2.4.3 */
     UNIT_STATE_JUMPING         = 0x00040000,
     UNIT_STATE_MOVE            = 0x00100000,
     UNIT_STATE_ROTATING        = 0x00200000,
@@ -583,11 +593,10 @@ enum CombatRating
     CR_WEAPON_SKILL_MAINHAND    = 20,
     CR_WEAPON_SKILL_OFFHAND     = 21,
     CR_WEAPON_SKILL_RANGED      = 22,
-    CR_EXPERTISE                = 23,
-    CR_ARMOR_PENETRATION        = 24
+    CR_EXPERTISE                = 23
 };
 
-#define MAX_COMBAT_RATING         25
+#define MAX_COMBAT_RATING         24
 
 enum DamageEffectType
 {
@@ -1658,8 +1667,8 @@ class Unit : public WorldObject
         uint64 GetCharmGUID() const { return  GetUInt64Value(UNIT_FIELD_CHARM); }
         void SetPetGUID(uint64 guid) { m_SummonSlot[SUMMON_SLOT_PET] = guid; }
         uint64 GetPetGUID() const { return m_SummonSlot[SUMMON_SLOT_PET]; }
-        void SetCritterGUID(uint64 guid) { SetUInt64Value(UNIT_FIELD_CRITTER, guid); }
-        uint64 GetCritterGUID() const { return GetUInt64Value(UNIT_FIELD_CRITTER); }
+        void SetCritterGUID(uint64 guid) { /* Not implemented in 2.4.3 --- SetUInt64Value(UNIT_FIELD_CRITTER, guid); */ }
+        uint64 GetCritterGUID() const { return 0; /* Not implemented in 2.4.3 --- GetUInt64Value(UNIT_FIELD_CRITTER); */ }
 
         bool IsControlledByPlayer() const { return m_ControlledByPlayer; }
         uint64 GetCharmerOrOwnerGUID() const;

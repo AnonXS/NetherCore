@@ -252,6 +252,8 @@ enum AuraType
     SPELL_AURA_MOD_FACTION_REPUTATION_GAIN                  = 190,
     SPELL_AURA_USE_NORMAL_MOVEMENT_SPEED                    = 191,
     SPELL_AURA_MOD_MELEE_RANGED_HASTE                       = 192,
+
+    // WOTLK CHANGE from here on
     SPELL_AURA_MELEE_SLOW                                   = 193,
     SPELL_AURA_MOD_TARGET_ABSORB_SCHOOL                     = 194,
     SPELL_AURA_MOD_TARGET_ABILITY_ABSORB_SCHOOL             = 195,

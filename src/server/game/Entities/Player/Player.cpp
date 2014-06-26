@@ -1006,9 +1006,11 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
         SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_PVP);
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
     }
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);
     SetFloatValue(UNIT_MOD_CAST_SPEED, 1.0f);               // fix cast time showed in spell tooltip on client
+    
+    /* Not implemented in 2.4.3
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);            // default for players in 3.0.3
+    */
 
     SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, uint32(-1));  // -1 is default value
 
@@ -1046,8 +1048,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     }
 
     SetUInt32Value(UNIT_FIELD_LEVEL, start_level);
-
-    InitRunes();
 
     SetUInt32Value(PLAYER_FIELD_COINAGE, sWorld->getIntConfig(CONFIG_START_PLAYER_MONEY));
     SetHonorPoints(sWorld->getIntConfig(CONFIG_START_HONOR_POINTS));
@@ -1122,14 +1122,6 @@ bool Player::Create(uint32 guidlow, CharacterCreateInfo* createInfo)
     {
         UpdateMaxPower(POWER_MANA);                         // Update max Mana (for add bonus from intellect)
         SetPower(POWER_MANA, GetMaxPower(POWER_MANA));
-    }
-
-    if (getPowerType() == POWER_RUNIC_POWER)
-    {
-        SetPower(POWER_RUNE, 8);
-        SetMaxPower(POWER_RUNE, 8);
-        SetPower(POWER_RUNIC_POWER, 0);
-        SetMaxPower(POWER_RUNIC_POWER, 1000);
     }
 
     // original spells
@@ -1989,24 +1981,14 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
 
     *data << uint32(charFlags);                             // character flags
 
-    // character customize flags
-    if (atLoginFlags & AT_LOGIN_CUSTOMIZE)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_CUSTOMIZE);
-    else if (atLoginFlags & AT_LOGIN_CHANGE_FACTION)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_FACTION);
-    else if (atLoginFlags & AT_LOGIN_CHANGE_RACE)
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_RACE);
-    else
-        *data << uint32(CHAR_CUSTOMIZE_FLAG_NONE);
-
     // First login
     *data << uint8(atLoginFlags & AT_LOGIN_FIRST ? 1 : 0);
-
+    
     // Pets info
     uint32 petDisplayId = 0;
     uint32 petLevel = 0;
     uint32 petFamily = 0;
-
+    
     // show pet at selection character in character list only for non-ghost character
     if (result && !(playerFlags & PLAYER_FLAGS_GHOST) && (plrClass == CLASS_WARLOCK || plrClass == CLASS_HUNTER || plrClass == CLASS_DEATH_KNIGHT))
     {
@@ -2023,9 +2005,9 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
     *data << uint32(petDisplayId);
     *data << uint32(petLevel);
     *data << uint32(petFamily);
-
+    
     Tokenizer equipment(fields[19].GetString(), ' ');
-    for (uint8 slot = 0; slot < INVENTORY_SLOT_BAG_END; ++slot)
+    for (uint8 slot = 0; slot < EQUIPMENT_SLOT_END; ++slot)
     {
         uint32 visualBase = slot * 2;
         uint32 itemId = GetUInt32ValueFromArray(equipment, visualBase);
@@ -2058,6 +2040,10 @@ bool Player::BuildEnumData(PreparedQueryResult result, WorldPacket* data)
         *data << uint32(enchant ? enchant->aura_id : 0);
     }
 
+    *data << uint32(0);                                     // bag 1 display id
+    *data << uint8(0);                                      // bag 1 inventory type
+    *data << uint32(0);                                     // enchant?
+    
     return true;
 }
 
@@ -2203,8 +2189,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
         if (!GetSession()->PlayerLogout())
         {
             Position oldPos = GetPosition();
+            /* Not implemented in 2.4.3
             if (HasUnitMovementFlag(MOVEMENTFLAG_HOVER))
                 z += GetFloatValue(UNIT_FIELD_HOVERHEIGHT);
+            */
             Relocate(x, y, z, orientation);
             SendTeleportAckPacket();
             SendTeleportPacket(oldPos); // this automatically relocates to oldPos in order to broadcast the packet in the right place
@@ -2468,12 +2456,6 @@ void Player::RegenerateAll()
 
     Regenerate(POWER_MANA);
 
-    // Runes act as cooldowns, and they don't need to send any data
-    if (getClass() == CLASS_DEATH_KNIGHT)
-        for (uint8 i = 0; i < MAX_RUNES; ++i)
-            if (uint32 cd = GetRuneCooldown(i))
-                SetRuneCooldown(i, (cd > m_regenTimer) ? cd - m_regenTimer : 0);
-
     if (m_regenTimerCount >= 2000)
     {
         // Not in combat or they have regeneration
@@ -2485,8 +2467,6 @@ void Player::RegenerateAll()
         }
 
         Regenerate(POWER_RAGE);
-        if (getClass() == CLASS_DEATH_KNIGHT)
-            Regenerate(POWER_RUNIC_POWER);
 
         m_regenTimerCount -= 2000;
     }
@@ -2517,11 +2497,16 @@ void Player::Regenerate(Powers power)
 
             if (getLevel() < 15)
                 ManaIncreaseRate = sWorld->getRate(RATE_POWER_MANA) * (2.066f - (getLevel() * 0.066f));
-
+            /* Not implemented in 2.4.3
             if (recentCast) // Trinity Updates Mana in intervals of 2s, which is correct
                 addvalue += GetFloatValue(UNIT_FIELD_POWER_REGEN_INTERRUPTED_FLAT_MODIFIER) *  ManaIncreaseRate * 0.001f * m_regenTimer;
             else
                 addvalue += GetFloatValue(UNIT_FIELD_POWER_REGEN_FLAT_MODIFIER) * ManaIncreaseRate * 0.001f * m_regenTimer;
+            */
+            if (recentCast) // Trinity Updates Mana in intervals of 2s, which is correct
+                addvalue += GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN_INTERRUPT) *  ManaIncreaseRate * 0.001f * m_regenTimer;
+            else
+                addvalue += GetFloatValue(PLAYER_FIELD_MOD_MANA_REGEN) * ManaIncreaseRate * 0.001f * m_regenTimer;
         }   break;
         case POWER_RAGE:                                    // Regenerate rage
         {
@@ -2534,15 +2519,6 @@ void Player::Regenerate(Powers power)
         case POWER_ENERGY:                                  // Regenerate energy (rogue)
             addvalue += 0.01f * m_regenTimer * sWorld->getRate(RATE_POWER_ENERGY);
             break;
-        case POWER_RUNIC_POWER:
-        {
-            if (!IsInCombat() && !HasAuraType(SPELL_AURA_INTERRUPT_REGEN))
-            {
-                float RunicPowerDecreaseRate = sWorld->getRate(RATE_POWER_RUNICPOWER_LOSS);
-                addvalue += -30 * RunicPowerDecreaseRate;         // 3 RunicPower by tick
-            }
-        }   break;
-        case POWER_RUNE:
         case POWER_FOCUS:
         case POWER_HAPPINESS:
             break;
@@ -2559,10 +2535,6 @@ void Player::Regenerate(Powers power)
         for (AuraEffectList::const_iterator i = ModPowerRegenPCTAuras.begin(); i != ModPowerRegenPCTAuras.end(); ++i)
             if (Powers((*i)->GetMiscValue()) == power)
                 AddPct(addvalue, (*i)->GetAmount());
-
-        // Butchery requires combat for this effect
-        if (power != POWER_RUNIC_POWER || IsInCombat())
-            addvalue += GetTotalAuraModifierByMiscValue(SPELL_AURA_MOD_POWER_REGEN, power) * ((power != POWER_ENERGY) ? m_regenTimerCount : m_regenTimer) / (5 * IN_MILLISECONDS);
     }
 
     if (addvalue < 0.0f)
@@ -2672,9 +2644,6 @@ void Player::ResetAllPowers()
             break;
         case POWER_ENERGY:
             SetPower(POWER_ENERGY, GetMaxPower(POWER_ENERGY));
-            break;
-        case POWER_RUNIC_POWER:
-            SetPower(POWER_RUNIC_POWER, 0);
             break;
         default:
             break;
@@ -3252,9 +3221,11 @@ void Player::InitStatsForLevel(bool reapplyMods)
         SetUInt32Value(UNIT_FIELD_POWER_COST_MODIFIER+i, 0);
         SetFloatValue(UNIT_FIELD_POWER_COST_MULTIPLIER+i, 0.0f);
     }
+    /* Not implemented in 2.4.3
     // Reset no reagent cost field
     for (uint8 i = 0; i < 3; ++i)
         SetUInt32Value(PLAYER_NO_REAGENT_COST_1 + i, 0);
+    */
     // Init data for form but skip reapply item mods for form
     InitDataForForm(reapplyMods);
 
@@ -3277,7 +3248,6 @@ void Player::InitStatsForLevel(bool reapplyMods)
         UNIT_FLAG_SKINNABLE      | UNIT_FLAG_MOUNT        | UNIT_FLAG_TAXI_FLIGHT      );
     SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);   // must be set
 
-    SetFlag(UNIT_FIELD_FLAGS_2, UNIT_FLAG2_REGENERATE_POWER);// must be set
 
     // cleanup player flags (will be re-applied if need at aura load), to avoid have ghost flag without ghost aura, for example.
     RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_AFK | PLAYER_FLAGS_DND | PLAYER_FLAGS_GM | PLAYER_FLAGS_GHOST | PLAYER_ALLOW_ONLY_ABILITY);
@@ -3299,7 +3269,6 @@ void Player::InitStatsForLevel(bool reapplyMods)
         SetPower(POWER_RAGE, GetMaxPower(POWER_RAGE));
     SetPower(POWER_FOCUS, 0);
     SetPower(POWER_HAPPINESS, 0);
-    SetPower(POWER_RUNIC_POWER, 0);
 
     // update level to hunter/summon pet
     if (Pet* pet = GetPet())
@@ -3327,7 +3296,7 @@ void Player::SendInitialSpells()
         if (!itr->second->active || itr->second->disabled)
             continue;
 
-        data << uint32(itr->first);
+        data << uint16(itr->first);
         data << uint16(0);                                  // it's not slot id
 
         spellCount +=1;
@@ -3343,7 +3312,7 @@ void Player::SendInitialSpells()
         if (!sEntry)
             continue;
 
-        data << uint32(itr->first);
+        data << uint16(itr->first);
 
         data << uint16(itr->second.itemid);                 // cast item id
         data << uint16(sEntry->GetCategory());              // spell category
@@ -4524,7 +4493,7 @@ void Player::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
 
             m_items[i]->BuildCreateUpdateBlockForPlayer(data, target);
         }
-        for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+        for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         {
             if (m_items[i] == NULL)
                 continue;
@@ -4557,7 +4526,7 @@ void Player::DestroyForPlayer(Player* target, bool onDeath) const
 
             m_items[i]->DestroyForPlayer(target);
         }
-        for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+        for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         {
             if (m_items[i] == NULL)
                 continue;
@@ -6043,10 +6012,6 @@ void Player::UpdateRating(CombatRating cr)
                 UpdateExpertise(BASE_ATTACK);
                 UpdateExpertise(OFF_ATTACK);
             }
-            break;
-        case CR_ARMOR_PENETRATION:
-            if (affectStats)
-                UpdateArmorPenetration(amount);
             break;
     }
 }
@@ -7972,9 +7937,6 @@ void Player::_ApplyItemBonuses(ItemTemplate const* proto, uint8 slot, bool apply
             case ITEM_MOD_MANA_REGENERATION:
                 ApplyManaRegenBonus(int32(val), apply);
                 break;
-            case ITEM_MOD_ARMOR_PENETRATION_RATING:
-                ApplyRatingMod(CR_ARMOR_PENETRATION, int32(val), apply);
-                break;
             case ITEM_MOD_SPELL_POWER:
                 ApplySpellPowerBonus(int32(val), apply);
                 break;
@@ -8470,7 +8432,7 @@ void Player::CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 
     }
 }
 
-void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 cast_count, uint32 glyphIndex)
+void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 castCount)
 {
     ItemTemplate const* proto = item->GetTemplate();
     // special learning case
@@ -8489,7 +8451,7 @@ void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8
 
         Spell* spell = new Spell(this, spellInfo, TRIGGERED_NONE);
         spell->m_CastItem = item;
-        spell->m_cast_count = cast_count;                   //set count of casts
+        spell->m_cast_count = castCount;                   //set count of casts
         spell->SetSpellValue(SPELLVALUE_BASE_POINT0, learning_spell_id);
         spell->prepare(&targets);
         return;
@@ -8520,8 +8482,7 @@ void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8
 
         Spell* spell = new Spell(this, spellInfo, (count > 0) ? TRIGGERED_FULL_MASK : TRIGGERED_NONE);
         spell->m_CastItem = item;
-        spell->m_cast_count = cast_count;                   // set count of casts
-        spell->m_glyphIndex = glyphIndex;                   // glyph index
+        spell->m_cast_count = castCount;                   // set count of casts
         spell->prepare(&targets);
 
         ++count;
@@ -8548,8 +8509,7 @@ void Player::CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8
 
             Spell* spell = new Spell(this, spellInfo, (count > 0) ? TRIGGERED_FULL_MASK : TRIGGERED_NONE);
             spell->m_CastItem = item;
-            spell->m_cast_count = cast_count;               // set count of casts
-            spell->m_glyphIndex = glyphIndex;               // glyph index
+            spell->m_cast_count = castCount;               // set count of casts
             spell->prepare(&targets);
 
             ++count;
@@ -10069,7 +10029,7 @@ InventoryResult Player::CanUnequipItems(uint32 item, uint32 count) const
                     return EQUIP_ERR_OK;
             }
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem->GetEntry() == item)
             {
@@ -10101,7 +10061,7 @@ uint32 Player::GetItemCount(uint32 item, bool inBankAlso, Item* skipItem) const
             if (pItem != skipItem &&  pItem->GetEntry() == item)
                 count += pItem->GetCount();
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem != skipItem && pItem->GetEntry() == item)
                 count += pItem->GetCount();
@@ -10148,7 +10108,7 @@ uint32 Player::GetItemCountWithLimitCategory(uint32 limitCategory, Item* skipIte
                     if (pProto->ItemLimitCategory == limitCategory)
                         count += pItem->GetCount();
 
-    for (int i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (int i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem != skipItem)
                 if (ItemTemplate const* pProto = pItem->GetTemplate())
@@ -10180,7 +10140,7 @@ Item* Player::GetItemByGuid(uint64 guid) const
             if (pItem->GetGUID() == guid)
                 return pItem;
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem->GetGUID() == guid)
                 return pItem;
@@ -10216,7 +10176,7 @@ Item* Player::GetItemByPos(uint16 pos) const
 
 Item* Player::GetItemByPos(uint8 bag, uint8 slot) const
 {
-    if (bag == INVENTORY_SLOT_BAG_0 && (slot < BANK_SLOT_BAG_END || (slot >= KEYRING_SLOT_START && slot < CURRENCYTOKEN_SLOT_END)))
+    if (bag == INVENTORY_SLOT_BAG_0 && (slot < BANK_SLOT_BAG_END || (slot >= KEYRING_SLOT_START && slot < KEYRING_SLOT_END)))
         return m_items[slot];
     else if (Bag* pBag = GetBagByPos(bag))
         return pBag->GetItemByPos(slot);
@@ -10306,7 +10266,7 @@ bool Player::IsInventoryPos(uint8 bag, uint8 slot)
         return true;
     if (bag >= INVENTORY_SLOT_BAG_START && bag < INVENTORY_SLOT_BAG_END)
         return true;
-    if (bag == INVENTORY_SLOT_BAG_0 && (slot >= KEYRING_SLOT_START && slot < CURRENCYTOKEN_SLOT_END))
+    if (bag == INVENTORY_SLOT_BAG_0 && (slot >= KEYRING_SLOT_START && slot < KEYRING_SLOT_END))
         return true;
     return false;
 }
@@ -10409,7 +10369,7 @@ bool Player::HasItemCount(uint32 item, uint32 count, bool inBankAlso) const
                 return true;
         }
     }
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
     {
         Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
         if (pItem && pItem->GetEntry() == item && !pItem->IsInTrade())
@@ -10530,7 +10490,7 @@ bool Player::HasItemOrGemWithLimitCategoryEquipped(uint32 limitCategory, uint32 
                 return true;
         }
 
-        if (pProto->Socket[0].Color || pItem->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT))
+        if (pProto->Socket[0].Color)
         {
             tempcount += pItem->GetGemCountWithLimitCategory(limitCategory);
             if (tempcount >= count)
@@ -10617,7 +10577,7 @@ bool Player::HasItemTotemCategory(uint32 TotemCategory) const
         if (pItem && IsTotemCategoryCompatiableWith(pItem->GetTemplate()->TotemCategory, TotemCategory))
             return true;
     }
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
     {
         pItem = GetUseableItemByPos(INVENTORY_SLOT_BAG_0, i);
         if (pItem && IsTotemCategoryCompatiableWith(pItem->GetTemplate()->TotemCategory, TotemCategory))
@@ -10658,10 +10618,6 @@ InventoryResult Player::CanStoreItem_InSpecificSlot(uint8 bag, uint8 slot, ItemP
         {
             // keyring case
             if (slot >= KEYRING_SLOT_START && slot < KEYRING_SLOT_START+GetMaxKeyringSize() && !(pProto->BagFamily & BAG_FAMILY_MASK_KEYS))
-                return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
-
-            // currencytoken case
-            if (slot >= CURRENCYTOKEN_SLOT_START && slot < CURRENCYTOKEN_SLOT_END && !(pProto->IsCurrencyToken()))
                 return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
 
             // prevent cheating
@@ -10909,7 +10865,7 @@ InventoryResult Player::CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec &des
         {
             if (bag == INVENTORY_SLOT_BAG_0)               // inventory
             {
-                res = CanStoreItem_InInventorySlots(KEYRING_SLOT_START, CURRENCYTOKEN_SLOT_END, dest, pProto, count, true, pItem, bag, slot);
+                res = CanStoreItem_InInventorySlots(KEYRING_SLOT_START, KEYRING_SLOT_END, dest, pProto, count, true, pItem, bag, slot);
                 if (res != EQUIP_ERR_OK)
                 {
                     if (no_space_count)
@@ -10995,44 +10951,6 @@ InventoryResult Player::CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec &des
                         *no_space_count = count + no_similar_count;
                     return EQUIP_ERR_CANT_CARRY_MORE_OF_THIS;
                 }
-
-                res = CanStoreItem_InInventorySlots(CURRENCYTOKEN_SLOT_START, CURRENCYTOKEN_SLOT_END, dest, pProto, count, false, pItem, bag, slot);
-                if (res != EQUIP_ERR_OK)
-                {
-                    if (no_space_count)
-                        *no_space_count = count + no_similar_count;
-                    return res;
-                }
-
-                if (count == 0)
-                {
-                    if (no_similar_count == 0)
-                        return EQUIP_ERR_OK;
-
-                    if (no_space_count)
-                        *no_space_count = count + no_similar_count;
-                    return EQUIP_ERR_CANT_CARRY_MORE_OF_THIS;
-                }
-            }
-            else if (pProto->IsCurrencyToken())
-            {
-                res = CanStoreItem_InInventorySlots(CURRENCYTOKEN_SLOT_START, CURRENCYTOKEN_SLOT_END, dest, pProto, count, false, pItem, bag, slot);
-                if (res != EQUIP_ERR_OK)
-                {
-                    if (no_space_count)
-                        *no_space_count = count + no_similar_count;
-                    return res;
-                }
-
-                if (count == 0)
-                {
-                    if (no_similar_count == 0)
-                        return EQUIP_ERR_OK;
-
-                    if (no_space_count)
-                        *no_space_count = count + no_similar_count;
-                    return EQUIP_ERR_CANT_CARRY_MORE_OF_THIS;
-                }
             }
 
             res = CanStoreItem_InInventorySlots(INVENTORY_SLOT_ITEM_START, INVENTORY_SLOT_ITEM_END, dest, pProto, count, false, pItem, bag, slot);
@@ -11083,7 +11001,7 @@ InventoryResult Player::CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec &des
     // search stack for merge to
     if (pProto->Stackable != 1)
     {
-        res = CanStoreItem_InInventorySlots(KEYRING_SLOT_START, CURRENCYTOKEN_SLOT_END, dest, pProto, count, true, pItem, bag, slot);
+        res = CanStoreItem_InInventorySlots(KEYRING_SLOT_START, KEYRING_SLOT_END, dest, pProto, count, true, pItem, bag, slot);
         if (res != EQUIP_ERR_OK)
         {
             if (no_space_count)
@@ -11181,26 +11099,6 @@ InventoryResult Player::CanStoreItem(uint8 bag, uint8 slot, ItemPosCountVec &des
                 return EQUIP_ERR_CANT_CARRY_MORE_OF_THIS;
             }
         }
-        else if (pProto->IsCurrencyToken())
-        {
-            res = CanStoreItem_InInventorySlots(CURRENCYTOKEN_SLOT_START, CURRENCYTOKEN_SLOT_END, dest, pProto, count, false, pItem, bag, slot);
-            if (res != EQUIP_ERR_OK)
-            {
-                if (no_space_count)
-                    *no_space_count = count + no_similar_count;
-                return res;
-            }
-
-            if (count == 0)
-            {
-                if (no_similar_count == 0)
-                    return EQUIP_ERR_OK;
-
-                if (no_space_count)
-                    *no_space_count = count + no_similar_count;
-                return EQUIP_ERR_CANT_CARRY_MORE_OF_THIS;
-            }
-        }
 
         for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
         {
@@ -11274,12 +11172,10 @@ InventoryResult Player::CanStoreItems(Item** pItems, int count) const
     int inv_slot_items[INVENTORY_SLOT_ITEM_END - INVENTORY_SLOT_ITEM_START];
     int inv_bags[INVENTORY_SLOT_BAG_END - INVENTORY_SLOT_BAG_START][MAX_BAG_SIZE];
     int inv_keys[KEYRING_SLOT_END - KEYRING_SLOT_START];
-    int inv_tokens[CURRENCYTOKEN_SLOT_END - CURRENCYTOKEN_SLOT_START];
 
     memset(inv_slot_items, 0, sizeof(int) * (INVENTORY_SLOT_ITEM_END - INVENTORY_SLOT_ITEM_START));
     memset(inv_bags, 0, sizeof(int) * (INVENTORY_SLOT_BAG_END - INVENTORY_SLOT_BAG_START) * MAX_BAG_SIZE);
     memset(inv_keys, 0, sizeof(int) * (KEYRING_SLOT_END - KEYRING_SLOT_START));
-    memset(inv_tokens, 0, sizeof(int) * (CURRENCYTOKEN_SLOT_END - CURRENCYTOKEN_SLOT_START));
 
     for (uint8 i = INVENTORY_SLOT_ITEM_START; i < INVENTORY_SLOT_ITEM_END; i++)
     {
@@ -11293,13 +11189,6 @@ InventoryResult Player::CanStoreItems(Item** pItems, int count) const
         pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
         if (pItem2 && !pItem2->IsInTrade())
             inv_keys[i - KEYRING_SLOT_START] = pItem2->GetCount();
-    }
-
-    for (uint8 i = CURRENCYTOKEN_SLOT_START; i < CURRENCYTOKEN_SLOT_END; i++)
-    {
-        pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, i);
-        if (pItem2 && !pItem2->IsInTrade())
-            inv_tokens[i - CURRENCYTOKEN_SLOT_START] = pItem2->GetCount();
     }
 
     for (uint8 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; i++)
@@ -11360,19 +11249,6 @@ InventoryResult Player::CanStoreItems(Item** pItems, int count) const
             if (b_found)
                 continue;
 
-            for (int t = CURRENCYTOKEN_SLOT_START; t < CURRENCYTOKEN_SLOT_END; ++t)
-            {
-                pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, t);
-                if (pItem2 && pItem2->CanBeMergedPartlyWith(pProto) == EQUIP_ERR_OK && inv_tokens[t-CURRENCYTOKEN_SLOT_START] + pItem->GetCount() <= pProto->GetMaxStackSize())
-                {
-                    inv_tokens[t-CURRENCYTOKEN_SLOT_START] += pItem->GetCount();
-                    b_found = true;
-                    break;
-                }
-            }
-            if (b_found)
-                continue;
-
             for (int t = INVENTORY_SLOT_ITEM_START; t < INVENTORY_SLOT_ITEM_END; ++t)
             {
                 pItem2 = GetItemByPos(INVENTORY_SLOT_BAG_0, t);
@@ -11421,22 +11297,6 @@ InventoryResult Player::CanStoreItems(Item** pItems, int count) const
                     if (inv_keys[t-KEYRING_SLOT_START] == 0)
                     {
                         inv_keys[t-KEYRING_SLOT_START] = 1;
-                        b_found = true;
-                        break;
-                    }
-                }
-            }
-
-            if (b_found)
-                continue;
-
-            if (pProto->IsCurrencyToken())
-            {
-                for (uint32 t = CURRENCYTOKEN_SLOT_START; t < CURRENCYTOKEN_SLOT_END; ++t)
-                {
-                    if (inv_tokens[t-CURRENCYTOKEN_SLOT_START] == 0)
-                    {
-                        inv_tokens[t-CURRENCYTOKEN_SLOT_START] = 1;
                         b_found = true;
                         break;
                     }
@@ -11754,15 +11614,6 @@ InventoryResult Player::CanBankItem(uint8 bag, uint8 slot, ItemPosCountVec &dest
 
     if (pItem->IsBindedNotWith(this))
         return EQUIP_ERR_DONT_OWN_THAT_ITEM;
-
-    // Currency tokens are not supposed to be swapped out of their hidden bag
-    uint8 pItemslot = pItem->GetSlot();
-    if (pItemslot >= CURRENCYTOKEN_SLOT_START && pItemslot < CURRENCYTOKEN_SLOT_END)
-    {
-        TC_LOG_ERROR("entities.player", "Possible hacking attempt: Player %s [guid: %u] tried to move token [guid: %u, entry: %u] out of the currency bag!",
-                GetName().c_str(), GetGUIDLow(), pItem->GetGUIDLow(), pProto->ItemId);
-        return EQUIP_ERR_ITEMS_CANT_BE_SWAPPED;
-    }
 
     // check count of items (skip for auto move for same player from bank)
     InventoryResult res = CanTakeMoreSimilarItems(pItem);
@@ -12180,6 +12031,7 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update
             pItem->SetItemRandomProperties(randomPropertyId);
         pItem = StoreItem(dest, pItem, update);
 
+        /* Not implemented in 2.4.3
         if (allowedLooters.size() > 1 && pItem->GetTemplate()->GetMaxStackSize() == 1 && pItem->IsSoulBound())
         {
             pItem->SetSoulboundTradeable(allowedLooters);
@@ -12198,6 +12050,7 @@ Item* Player::StoreNewItem(ItemPosCountVec const& dest, uint32 item, bool update
             stmt->setString(1, ss.str());
             CharacterDatabase.Execute(stmt);
         }
+        */
     }
     return pItem;
 }
@@ -12264,10 +12117,6 @@ Item* Player::_StoreItem(uint16 pos, Item* pItem, uint32 count, bool clone, bool
 
             pItem->SetSlot(slot);
             pItem->SetContainer(NULL);
-
-            // need update known currency
-            if (slot >= CURRENCYTOKEN_SLOT_START && slot < CURRENCYTOKEN_SLOT_END)
-                AddKnownCurrency(pItem->GetEntry());
         }
         else
             pBag->StoreItem(slot, pItem, update);
@@ -12410,16 +12259,6 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
 
         else if (slot == EQUIPMENT_SLOT_OFFHAND)
             UpdateExpertise(OFF_ATTACK);
-
-        switch (slot)
-        {
-            case EQUIPMENT_SLOT_MAINHAND:
-            case EQUIPMENT_SLOT_OFFHAND:
-            case EQUIPMENT_SLOT_RANGED:
-                RecalculateRating(CR_ARMOR_PENETRATION);
-            default:
-                break;
-        }
     }
     else
     {
@@ -12482,14 +12321,30 @@ void Player::SetVisibleItemSlot(uint8 slot, Item* pItem)
 {
     if (pItem)
     {
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0, pItem->GetEnchantmentId(PERM_ENCHANTMENT_SLOT));
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 1, pItem->GetEnchantmentId(TEMP_ENCHANTMENT_SLOT));
+        SetUInt64Value(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetUInt64Value(ITEM_FIELD_CREATOR));
+
+        int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET);
+        SetUInt32Value(VisibleBase + 0, pItem->GetEntry());
+
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+            SetUInt32Value(VisibleBase + 1 + i, pItem->GetEnchantmentId(EnchantmentSlot(i)));
+
+        // Use SetInt16Value to prevent set high part to FFFF for negative value
+        SetInt16Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + (slot * MAX_VISIBLE_ITEM_OFFSET), 0, pItem->GetItemRandomPropertyId());
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + 1 + (slot * MAX_VISIBLE_ITEM_OFFSET), pItem->GetItemSuffixFactor());
     }
     else
     {
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), 0);
-        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (slot * 2), 0);
+        SetUInt64Value(PLAYER_VISIBLE_ITEM_1_CREATOR + (slot * MAX_VISIBLE_ITEM_OFFSET), 0);
+
+        int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (slot * MAX_VISIBLE_ITEM_OFFSET);
+        SetUInt32Value(VisibleBase + 0, 0);
+
+        for (int i = 0; i < MAX_INSPECTED_ENCHANTMENT_SLOT; ++i)
+            SetUInt32Value(VisibleBase + 1 + i, 0);
+
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + 0 + (slot * MAX_VISIBLE_ITEM_OFFSET), 0);
+        SetUInt32Value(PLAYER_VISIBLE_ITEM_1_PROPERTIES + 1 + (slot * MAX_VISIBLE_ITEM_OFFSET), 0);
     }
 }
 
@@ -12573,16 +12428,6 @@ void Player::RemoveItem(uint8 bag, uint8 slot, bool update)
                     }
                     else if (slot == EQUIPMENT_SLOT_OFFHAND)
                         UpdateExpertise(OFF_ATTACK);
-                    // update armor penetration - passive auras may need it
-                    switch (slot)
-                    {
-                        case EQUIPMENT_SLOT_MAINHAND:
-                        case EQUIPMENT_SLOT_OFFHAND:
-                        case EQUIPMENT_SLOT_RANGED:
-                            RecalculateRating(CR_ARMOR_PENETRATION);
-                        default:
-                            break;
-                    }
                 }
             }
 
@@ -12703,17 +12548,7 @@ void Player::DestroyItem(uint8 bag, uint8 slot, bool update)
                 // remove item dependent auras and casts (only weapon and armor slots)
                 RemoveItemDependentAurasAndCasts(pItem);
 
-                // update expertise and armor penetration - passive auras may need it
-                switch (slot)
-                {
-                    case EQUIPMENT_SLOT_MAINHAND:
-                    case EQUIPMENT_SLOT_OFFHAND:
-                    case EQUIPMENT_SLOT_RANGED:
-                        RecalculateRating(CR_ARMOR_PENETRATION);
-                    default:
-                        break;
-                }
-
+                // update expertise - passive auras may need it
                 if (slot == EQUIPMENT_SLOT_MAINHAND)
                     UpdateExpertise(BASE_ATTACK);
                 else if (slot == EQUIPMENT_SLOT_OFFHAND)
@@ -12781,7 +12616,7 @@ void Player::DestroyItemCount(uint32 itemEntry, uint32 count, bool update, bool 
         }
     }
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
     {
         if (Item* item = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
         {
@@ -12948,7 +12783,7 @@ void Player::DestroyZoneLimitedItem(bool update, uint32 new_zone)
             if (pItem->IsLimitedToAnotherMapOrZone(GetMapId(), new_zone))
                 DestroyItem(INVENTORY_SLOT_BAG_0, i, update);
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem->IsLimitedToAnotherMapOrZone(GetMapId(), new_zone))
                 DestroyItem(INVENTORY_SLOT_BAG_0, i, update);
@@ -13003,7 +12838,7 @@ Item* Player::GetItemByEntry(uint32 entry) const
             if (pItem->GetEntry() == entry)
                 return pItem;
 
-    for (uint8 i = KEYRING_SLOT_START; i < CURRENCYTOKEN_SLOT_END; ++i)
+    for (uint8 i = KEYRING_SLOT_START; i < KEYRING_SLOT_END; ++i)
         if (Item* pItem = GetItemByPos(INVENTORY_SLOT_BAG_0, i))
             if (pItem->GetEntry() == entry)
                 return pItem;
@@ -13909,17 +13744,6 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
     if (pEnchant->requiredSkill > 0 && pEnchant->requiredSkillValue > GetSkillValue(pEnchant->requiredSkill))
         return;
 
-    // If we're dealing with a gem inside a prismatic socket we need to check the prismatic socket requirements
-    // rather than the gem requirements itself. If the socket has no color it is a prismatic socket.
-    if ((slot == SOCK_ENCHANTMENT_SLOT || slot == SOCK_ENCHANTMENT_SLOT_2 || slot == SOCK_ENCHANTMENT_SLOT_3)
-        && !item->GetTemplate()->Socket[slot-SOCK_ENCHANTMENT_SLOT].Color)
-    {
-        // Check if the requirements for the prismatic socket are met before applying the gem stats
-         SpellItemEnchantmentEntry const* pPrismaticEnchant = sSpellItemEnchantmentStore.LookupEntry(item->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT));
-         if (!pPrismaticEnchant || (pPrismaticEnchant->requiredSkill > 0 && pPrismaticEnchant->requiredSkillValue > GetSkillValue(pPrismaticEnchant->requiredSkill)))
-             return;
-    }
-
     if (!item->IsBroken())
     {
         for (int s = 0; s < MAX_ITEM_ENCHANTMENT_EFFECTS; ++s)
@@ -14174,10 +13998,6 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
                             ApplyManaRegenBonus(enchant_amount, apply);
                             TC_LOG_DEBUG("entities.player.items", "+ %u MANA_REGENERATION", enchant_amount);
                             break;
-                        case ITEM_MOD_ARMOR_PENETRATION_RATING:
-                            ApplyRatingMod(CR_ARMOR_PENETRATION, enchant_amount, apply);
-                            TC_LOG_DEBUG("entities.player.items", "+ %u ARMOR PENETRATION", enchant_amount);
-                            break;
                         case ITEM_MOD_SPELL_POWER:
                             ApplySpellPowerBonus(enchant_amount, apply);
                             TC_LOG_DEBUG("entities.player.items", "+ %u SPELL_POWER", enchant_amount);
@@ -14233,11 +14053,12 @@ void Player::ApplyEnchantment(Item* item, EnchantmentSlot slot, bool apply, bool
     }
 
     // visualize enchantment at player and equipped items
-    if (slot == PERM_ENCHANTMENT_SLOT)
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (item->GetSlot() * 2), 0, apply ? item->GetEnchantmentId(slot) : 0);
+    if (slot < MAX_INSPECTED_ENCHANTMENT_SLOT)
+    {
+        int VisibleBase = PLAYER_VISIBLE_ITEM_1_0 + (item->GetSlot() * MAX_VISIBLE_ITEM_OFFSET);
+        SetUInt32Value(VisibleBase + 1 + slot, apply ? item->GetEnchantmentId(slot) : 0);
+    }
 
-    if (slot == TEMP_ENCHANTMENT_SLOT)
-        SetUInt16Value(PLAYER_VISIBLE_ITEM_1_ENCHANTMENT + (item->GetSlot() * 2), 1, apply ? item->GetEnchantmentId(slot) : 0);
 
     if (apply_dur)
     {
@@ -14279,22 +14100,6 @@ void Player::UpdateSkillEnchantments(uint16 skill_id, uint16 curr_value, uint16 
                         ApplyEnchantment(m_items[i], EnchantmentSlot(slot), true);
                     else if (new_value < Enchant->requiredSkillValue && curr_value >= Enchant->requiredSkillValue)
                         ApplyEnchantment(m_items[i], EnchantmentSlot(slot), false);
-                }
-
-                // If we're dealing with a gem inside a prismatic socket we need to check the prismatic socket requirements
-                // rather than the gem requirements itself. If the socket has no color it is a prismatic socket.
-                if ((slot == SOCK_ENCHANTMENT_SLOT || slot == SOCK_ENCHANTMENT_SLOT_2 || slot == SOCK_ENCHANTMENT_SLOT_3)
-                    && !m_items[i]->GetTemplate()->Socket[slot-SOCK_ENCHANTMENT_SLOT].Color)
-                {
-                    SpellItemEnchantmentEntry const* pPrismaticEnchant = sSpellItemEnchantmentStore.LookupEntry(m_items[i]->GetEnchantmentId(PRISMATIC_ENCHANTMENT_SLOT));
-
-                    if (pPrismaticEnchant && pPrismaticEnchant->requiredSkill == skill_id)
-                    {
-                        if (curr_value < pPrismaticEnchant->requiredSkillValue && new_value >= pPrismaticEnchant->requiredSkillValue)
-                            ApplyEnchantment(m_items[i], EnchantmentSlot(slot), true);
-                        else if (new_value < pPrismaticEnchant->requiredSkillValue && curr_value >= pPrismaticEnchant->requiredSkillValue)
-                            ApplyEnchantment(m_items[i], EnchantmentSlot(slot), false);
-                    }
                 }
             }
         }
@@ -17239,7 +17044,9 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     _LoadIntoDataField(fields[64].GetCString(), PLAYER__FIELD_KNOWN_TITLES, KNOWN_TITLES_SIZE*2);
 
     SetObjectScale(1.0f);
+    /* Not implemented in 2.4.3
     SetFloatValue(UNIT_FIELD_HOVERHEIGHT, 1.0f);
+    */
 
     // load achievements before anything else to prevent multiple gains for the same achievement/criteria on every loading (as loading does call UpdateAchievementCriteria)
     m_achievementMgr->LoadFromDB(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACHIEVEMENTS), holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS));
@@ -17255,8 +17062,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     SetByteValue(PLAYER_BYTES_3, 1, fields[49].GetUInt8());
     SetUInt32Value(PLAYER_FLAGS, fields[11].GetUInt32());
     SetInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX, fields[48].GetUInt32());
-
-    SetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES, fields[47].GetUInt64());
 
     SetUInt32Value(PLAYER_AMMO_ID, fields[63].GetUInt32());
 
@@ -17645,9 +17450,7 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
 
     // reset stats before loading any modifiers
     InitStatsForLevel();
-    InitGlyphsForLevel();
     InitTaxiNodesForLevel();
-    InitRunes();
 
     // rest bonus can only be calculated after InitStatsForLevel()
     m_rest_bonus = fields[21].GetFloat();
@@ -19251,13 +19054,15 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 0));
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
-        stmt->setUInt64(index++, GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES));
+        stmt->setUInt64(index++, uint64(0));    //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
         stmt->setUInt8(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
             stmt->setUInt32(index++, GetPower(Powers(i)));
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNE not implemented in 2.4.3
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNIC_POWER not implemented in 2.4.3
 
         stmt->setUInt32(index++, GetSession()->GetLatency());
 
@@ -19271,8 +19076,14 @@ void Player::SaveToDB(bool create /*=false*/)
 
         ss.str("");
         // cache equipment...
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END * 2; ++i)
-            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + i) << ' ';
+        for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
+        {
+            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
+
+            uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
+            uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
+            ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
+        }
 
         // ...and bags for enum opcode
         for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
@@ -19371,13 +19182,15 @@ void Player::SaveToDB(bool create /*=false*/)
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 0));
         stmt->setUInt16(index++, GetUInt16Value(PLAYER_FIELD_KILLS, 1));
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_CHOSEN_TITLE));
-        stmt->setUInt64(index++, GetUInt64Value(PLAYER_FIELD_KNOWN_CURRENCIES));
+        stmt->setUInt64(index++, uint64(0));    //PLAYER_FIELD_KNOWN_CURRENCIES not implemented in 2.4.3
         stmt->setUInt32(index++, GetUInt32Value(PLAYER_FIELD_WATCHED_FACTION_INDEX));
         stmt->setUInt8(index++, GetDrunkValue());
         stmt->setUInt32(index++, GetHealth());
 
         for (uint32 i = 0; i < MAX_POWERS; ++i)
             stmt->setUInt32(index++, GetPower(Powers(i)));
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNE not implemented in 2.4.3
+        stmt->setUInt32(index++, uint64(0));    // POWER_RUNIC_POWER not implemented in 2.4.3
 
         stmt->setUInt32(index++, GetSession()->GetLatency());
 
@@ -19391,8 +19204,14 @@ void Player::SaveToDB(bool create /*=false*/)
 
         ss.str("");
         // cache equipment...
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END * 2; ++i)
-            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + i) << ' ';
+        for (uint32 i = 0; i < EQUIPMENT_SLOT_END ; ++i)
+        {
+            ss << GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET) << " ";
+
+            uint32 ench1 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + PERM_ENCHANTMENT_SLOT);
+            uint32 ench2 = GetUInt32Value(PLAYER_VISIBLE_ITEM_1_0 + i * MAX_VISIBLE_ITEM_OFFSET + 1 + TEMP_ENCHANTMENT_SLOT);
+            ss << uint32(MAKE_PAIR32(ench1, ench2)) << " ";
+        }
 
         // ...and bags for enum opcode
         for (uint32 i = INVENTORY_SLOT_BAG_START; i < INVENTORY_SLOT_BAG_END; ++i)
@@ -22849,6 +22668,8 @@ void Player::SendInitialPacketsBeforeAddToMap()
     data << uint32(GetMap()->GetEntry()->IsDynamicDifficultyMap() && GetMap()->IsHeroic()); // Raid dynamic difficulty
     GetSession()->SendPacket(&data);
 
+    GetSession()->SendTutorialsData();
+
     SendInitialSpells();
 
     data.Initialize(SMSG_SEND_UNLEARN_SPELLS, 4);
@@ -22859,12 +22680,13 @@ void Player::SendInitialPacketsBeforeAddToMap()
     m_reputationMgr->SendInitialReputations();
     m_achievementMgr->SendAllAchievementData();
 
+    /* Not implemented in 2.4.3
     SendEquipmentSetList();
+    */
 
-    data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4 + 4);
+    data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4);
     data.AppendPackedTime(sWorld->GetGameTime());
     data << float(0.01666667f);                             // game speed
-    data << uint32(0);                                      // added in 3.1.2
     GetSession()->SendPacket(&data);
 
     GetReputationMgr().SendForceReactions();                // SMSG_SET_FORCED_REACTIONS
@@ -23234,7 +23056,7 @@ void Player::SendAurasForTarget(Unit* target)
 
     if (target->HasAuraType(SPELL_AURA_HOVER))
         target->SetHover(true, true);
-
+    /*
     WorldPacket data(SMSG_AURA_UPDATE_ALL);
     data.append(target->GetPackGUID());
 
@@ -23246,6 +23068,7 @@ void Player::SendAurasForTarget(Unit* target)
     }
 
     GetSession()->SendPacket(&data);
+    */
 }
 
 void Player::SetDailyQuestStatus(uint32 quest_id)
@@ -23737,13 +23560,14 @@ bool Player::CanNoReagentCast(SpellInfo const* spellInfo) const
         return true;
 
     // Check no reagent use mask
+    /* Not implemented in 2.4.3
     flag96 noReagentMask;
     noReagentMask[0] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1);
     noReagentMask[1] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1+1);
     noReagentMask[2] = GetUInt32Value(PLAYER_NO_REAGENT_COST_1+2);
     if (spellInfo->SpellFamilyFlags  & noReagentMask)
         return true;
-
+    */
     return false;
 }
 
@@ -24504,13 +24328,17 @@ void Player::InitGlyphsForLevel()
     if (level >= 80)
         value |= 0x20;
 
+    /* Not implemented in 2.4.3
     SetUInt32Value(PLAYER_GLYPHS_ENABLED, value);
+    */
 }
 
 void Player::SetGlyph(uint8 slot, uint32 glyph)
 {
+    /* Not implemented in 2.4.3
     m_Glyphs[m_activeSpec][slot] = glyph;
     SetUInt32Value(PLAYER_FIELD_GLYPHS_1 + slot, glyph);
+    */
 }
 
 bool Player::isTotalImmune()
@@ -24557,10 +24385,12 @@ void Player::SetTitle(CharTitlesEntry const* title, bool lost)
         SetFlag(PLAYER__FIELD_KNOWN_TITLES + fieldIndexOffset, flag);
     }
 
+    /* 2.4.3 client crash
     WorldPacket data(SMSG_TITLE_EARNED, 4 + 4);
     data << uint32(title->bit_index);
     data << uint32(lost ? 0 : 1);                           // 1 - earned, 0 - lost
     GetSession()->SendPacket(&data);
+    */
 }
 
 bool Player::isTotalImmunity()
@@ -24617,139 +24447,6 @@ void Player::UpdateCharmedAI()
         GetMotionMaster()->MoveChase(target);
         Attack(target, true);
     }
-}
-
-uint32 Player::GetRuneBaseCooldown(uint8 index)
-{
-    uint8 rune = GetBaseRune(index);
-    uint32 cooldown = RUNE_BASE_COOLDOWN;
-
-    AuraEffectList const& regenAura = GetAuraEffectsByType(SPELL_AURA_MOD_POWER_REGEN_PERCENT);
-    for (AuraEffectList::const_iterator i = regenAura.begin();i != regenAura.end(); ++i)
-    {
-        if ((*i)->GetMiscValue() == POWER_RUNE && (*i)->GetMiscValueB() == rune)
-            cooldown = cooldown*(100-(*i)->GetAmount())/100;
-    }
-
-    return cooldown;
-}
-
-void Player::SetRuneCooldown(uint8 index, uint32 cooldown)
-{
-    m_runes->runes[index].Cooldown = cooldown;
-    m_runes->SetRuneState(index, (cooldown == 0) ? true : false);
-}
-
-void Player::SetRuneConvertAura(uint8 index, AuraEffect const* aura)
-{
-    m_runes->runes[index].ConvertAura = aura;
-}
-
-void Player::AddRuneByAuraEffect(uint8 index, RuneType newType, AuraEffect const* aura)
-{
-    SetRuneConvertAura(index, aura); ConvertRune(index, newType);
-}
-
-void Player::RemoveRunesByAuraEffect(AuraEffect const* aura)
-{
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-    {
-        if (m_runes->runes[i].ConvertAura == aura)
-        {
-            ConvertRune(i, GetBaseRune(i));
-            SetRuneConvertAura(i, NULL);
-        }
-    }
-}
-
-void Player::RestoreBaseRune(uint8 index)
-{
-    AuraEffect const* aura = m_runes->runes[index].ConvertAura;
-    // If rune was converted by a non-pasive aura that still active we should keep it converted
-    if (aura && !(aura->GetSpellInfo()->Attributes & SPELL_ATTR0_PASSIVE))
-        return;
-    ConvertRune(index, GetBaseRune(index));
-    SetRuneConvertAura(index, NULL);
-    // Don't drop passive talents providing rune convertion
-    if (!aura || aura->GetAuraType() != SPELL_AURA_CONVERT_RUNE)
-        return;
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-    {
-        if (aura == m_runes->runes[i].ConvertAura)
-            return;
-    }
-    aura->GetBase()->Remove();
-}
-
-void Player::ConvertRune(uint8 index, RuneType newType)
-{
-    SetCurrentRune(index, newType);
-
-    WorldPacket data(SMSG_CONVERT_RUNE, 2);
-    data << uint8(index);
-    data << uint8(newType);
-    GetSession()->SendPacket(&data);
-}
-
-void Player::ResyncRunes(uint8 count)
-{
-    WorldPacket data(SMSG_RESYNC_RUNES, 4 + count * 2);
-    data << uint32(count);
-    for (uint32 i = 0; i < count; ++i)
-    {
-        data << uint8(GetCurrentRune(i));                   // rune type
-        data << uint8(255 - (GetRuneCooldown(i) * 51));     // passed cooldown time (0-255)
-    }
-    GetSession()->SendPacket(&data);
-}
-
-void Player::AddRunePower(uint8 index)
-{
-    WorldPacket data(SMSG_ADD_RUNE_POWER, 4);
-    data << uint32(1 << index);                             // mask (0x00-0x3F probably)
-    GetSession()->SendPacket(&data);
-}
-
-static RuneType runeSlotTypes[MAX_RUNES] =
-{
-    /*0*/ RUNE_BLOOD,
-    /*1*/ RUNE_BLOOD,
-    /*2*/ RUNE_UNHOLY,
-    /*3*/ RUNE_UNHOLY,
-    /*4*/ RUNE_FROST,
-    /*5*/ RUNE_FROST
-};
-
-void Player::InitRunes()
-{
-    if (getClass() != CLASS_DEATH_KNIGHT)
-        return;
-
-    m_runes = new Runes;
-
-    m_runes->runeState = 0;
-    m_runes->lastUsedRune = RUNE_BLOOD;
-
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-    {
-        SetBaseRune(i, runeSlotTypes[i]);                              // init base types
-        SetCurrentRune(i, runeSlotTypes[i]);                           // init current types
-        SetRuneCooldown(i, 0);                                         // reset cooldowns
-        SetRuneConvertAura(i, NULL);
-        m_runes->SetRuneState(i);
-    }
-
-    for (uint8 i = 0; i < NUM_RUNE_TYPES; ++i)
-        SetFloatValue(PLAYER_RUNE_REGEN_1 + i, 0.1f);
-}
-
-bool Player::IsBaseRuneSlotsOnCooldown(RuneType runeType) const
-{
-    for (uint8 i = 0; i < MAX_RUNES; ++i)
-        if (GetBaseRune(i) == runeType && GetRuneCooldown(i) == 0)
-            return false;
-
-    return true;
 }
 
 void Player::AutoStoreLoot(uint8 bag, uint8 slot, uint32 loot_id, LootStore const& store, bool broadcast)
@@ -25431,8 +25128,10 @@ void Player::LearnPetTalent(uint64 petGuid, uint32 talentId, uint32 talentRank)
 
 void Player::AddKnownCurrency(uint32 itemId)
 {
+    /* Not implemented in 2.4.3
     if (CurrencyTypesEntry const* ctEntry = sCurrencyTypesStore.LookupEntry(itemId))
         SetFlag64(PLAYER_FIELD_KNOWN_CURRENCIES, (1LL << (ctEntry->BitIndex-1)));
+    */
 }
 
 void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, uint16 opcode)

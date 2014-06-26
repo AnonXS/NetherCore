@@ -210,13 +210,15 @@ void AuraApplication::BuildUpdatePacket(ByteBuffer& data, bool remove) const
 
 void AuraApplication::ClientUpdate(bool remove)
 {
+    /*
     _needClientUpdate = false;
-
+    
     WorldPacket data(SMSG_AURA_UPDATE);
     data.append(GetTarget()->GetPackGUID());
     BuildUpdatePacket(data, remove);
-
+   
     _target->SendMessageToSet(&data, true);
+    */
 }
 
 uint8 Aura::BuildEffectMaskForOwner(SpellInfo const* spellProto, uint8 avalibleEffectMask, WorldObject* owner)
@@ -1509,7 +1511,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                                 }
                                 case POWER_RAGE:   triggeredSpellId = 63653; break;
                                 case POWER_ENERGY: triggeredSpellId = 63655; break;
-                                case POWER_RUNIC_POWER: triggeredSpellId = 63652; break;
                                 default:
                                     break;
                             }
@@ -1552,23 +1553,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 // Remove the immunity shield marker on Forbearance removal if AW marker is not present
                 if (GetId() == 25771 && target->HasAura(61988) && !target->HasAura(61987))
                     target->RemoveAura(61988);
-                break;
-            case SPELLFAMILY_DEATHKNIGHT:
-                // Blood of the North
-                // Reaping
-                // Death Rune Mastery
-                if (GetSpellInfo()->SpellIconID == 3041 || GetSpellInfo()->SpellIconID == 22 || GetSpellInfo()->SpellIconID == 2622)
-                {
-                    if (!GetEffect(0) || GetEffect(0)->GetAuraType() != SPELL_AURA_PERIODIC_DUMMY)
-                        break;
-                    if (target->GetTypeId() != TYPEID_PLAYER)
-                        break;
-                    if (target->ToPlayer()->getClass() != CLASS_DEATH_KNIGHT)
-                        break;
-
-                     // aura removed - remove death runes
-                    target->ToPlayer()->RemoveRunesByAuraEffect(GetEffect(0));
-                }
                 break;
             case SPELLFAMILY_HUNTER:
                 // Glyph of Freezing Trap

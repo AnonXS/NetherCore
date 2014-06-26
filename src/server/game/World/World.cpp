@@ -287,7 +287,6 @@ void World::AddSession_(WorldSession* s)
     s->SendAuthResponse(AUTH_OK, true);
     s->SendAddonsInfo();
     s->SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
-    s->SendTutorialsData();
 
     UpdateMaxSessionCounters();
 
@@ -384,7 +383,6 @@ bool World::RemoveQueuedPlayer(WorldSession* sess)
 
         pop_sess->SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
         pop_sess->SendAccountDataTimes(GLOBAL_CACHE_MASK);
-        pop_sess->SendTutorialsData();
 
         m_QueuedPlayer.pop_front();
 
@@ -416,7 +414,7 @@ void World::LoadConfigSettings(bool reload)
 
     ///- Read the player limit and the Message of the day from the config file
     SetPlayerAmountLimit(sConfigMgr->GetIntDefault("PlayerLimit", 100));
-    SetMotd(sConfigMgr->GetStringDefault("Motd", "Welcome to a Trinity Core Server."));
+    SetMotd(sConfigMgr->GetStringDefault("Motd", "Welcome to a NetherCore Server."));
 
     ///- Read ticket system setting from the config file
     m_bool_configs[CONFIG_ALLOW_TICKETS] = sConfigMgr->GetBoolDefault("AllowTickets", true);

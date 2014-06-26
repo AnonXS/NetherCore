@@ -345,7 +345,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     else
         object = ((WorldObject*)this);
 
-    *data << uint16(flags);                                  // update flags
+    *data << uint8(flags);                                  // update flags
 
     // 0x20
     if (flags & UPDATEFLAG_LIVING)
@@ -360,8 +360,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
               << unit->GetSpeed(MOVE_SWIM_BACK)
               << unit->GetSpeed(MOVE_FLIGHT)
               << unit->GetSpeed(MOVE_FLIGHT_BACK)
-              << unit->GetSpeed(MOVE_TURN_RATE)
-              << unit->GetSpeed(MOVE_PITCH_RATE);
+              << unit->GetSpeed(MOVE_TURN_RATE);
 
         // 0x08000000
         if (unit->m_movementInfo.GetMovementFlags() & MOVEMENTFLAG_SPLINE_ENABLED)
@@ -423,13 +422,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         }
     }
 
-    // 0x8
-    if (flags & UPDATEFLAG_UNKNOWN)
-    {
-        *data << uint32(0);
-    }
-
-    // 0x10
+    // 0x08
     if (flags & UPDATEFLAG_LOWGUID)
     {
         switch (GetTypeId())
@@ -440,22 +433,39 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             case TYPEID_GAMEOBJECT:
             case TYPEID_DYNAMICOBJECT:
             case TYPEID_CORPSE:
-                *data << uint32(GetGUIDLow());              // GetGUIDLow()
+                *data << uint32(GetGUIDLow());
                 break;
-            //! Unit, Player and default here are sending wrong values.
-            /// @todo Research the proper formula
             case TYPEID_UNIT:
-                *data << uint32(0x0000000B);                // unk
+                *data << uint32(0x0000000B);                // unk, can be 0xB or 0xC
                 break;
             case TYPEID_PLAYER:
                 if (flags & UPDATEFLAG_SELF)
-                    *data << uint32(0x0000002F);            // unk
+                    *data << uint32(0x00000015);            // unk, can be 0x15 or 0x22
                 else
-                    *data << uint32(0x00000008);            // unk
+                    *data << uint32(0x00000008);            // unk, can be 0x7 or 0x8
                 break;
             default:
                 *data << uint32(0x00000000);                // unk
                 break;
+        }
+    }
+
+    // 0x10
+    if (flags & UPDATEFLAG_HIGHGUID)
+    {
+        switch (GetTypeId())
+        {
+        case TYPEID_OBJECT:
+        case TYPEID_ITEM:
+        case TYPEID_CONTAINER:
+        case TYPEID_GAMEOBJECT:
+        case TYPEID_DYNAMICOBJECT:
+        case TYPEID_CORPSE:
+            *data << uint32(GetGUIDHigh());
+            break;
+        default:
+            *data << uint32(0x00000000);                // unk
+            break;
         }
     }
 
@@ -484,6 +494,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
             *data << uint32(getMSTime());
     }
 
+    /* Not used in 2.4.3
     // 0x80
     if (flags & UPDATEFLAG_VEHICLE)
     {
@@ -497,10 +508,13 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         else
             *data << float(unit->GetOrientation());
     }
+    */
 
+    /* Not used in 2.4.3
     // 0x200
     if (flags & UPDATEFLAG_ROTATION)
         *data << int64(ToGameObject()->GetRotation());
+    */
 }
 
 void Object::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const
@@ -1081,10 +1095,7 @@ void MovementInfo::OutDebug()
         TC_LOG_INFO("misc", "TRANSPORT:");
         TC_LOG_INFO("misc", "guid: " UI64FMTD, transport.guid);
         TC_LOG_INFO("misc", "position: `%s`", transport.pos.ToString().c_str());
-        TC_LOG_INFO("misc", "seat: %i", transport.seat);
         TC_LOG_INFO("misc", "time: %u", transport.time);
-        if (flags2 & MOVEMENTFLAG2_INTERPOLATED_MOVEMENT)
-            TC_LOG_INFO("misc", "time2: %u", transport.time2);
     }
 
     if ((flags & (MOVEMENTFLAG_SWIMMING | MOVEMENTFLAG_FLYING)) || (flags2 & MOVEMENTFLAG2_ALWAYS_ALLOW_PITCHING))
