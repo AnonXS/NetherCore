@@ -3886,42 +3886,38 @@ void Spell::WriteAmmoToPacket(WorldPacket* data)
             }
         }
     }
-    /* Not implemented in 2.4.3
     else
     {
-        for (uint8 i = 0; i < 3; ++i)
+        for (uint8 i = 0; i < MAX_VIRTUAL_ITEM_SLOT; ++i)
         {
-            if (uint32 item_id = m_caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i))
+            // see Creature::SetVirtualItem for structure data
+            if (uint32 item_class = m_caster->GetByteValue(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_CLASS))
             {
-                if (ItemEntry const* itemEntry = sItemStore.LookupEntry(item_id))
+                if (item_class == ITEM_CLASS_WEAPON)
                 {
-                    if (itemEntry->Class == ITEM_CLASS_WEAPON)
+                    switch (m_caster->GetByteValue(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS))
                     {
-                        switch (itemEntry->SubClass)
-                        {
-                            case ITEM_SUBCLASS_WEAPON_THROWN:
-                                ammoDisplayID = itemEntry->DisplayId;
-                                ammoInventoryType = itemEntry->InventoryType;
-                                break;
-                            case ITEM_SUBCLASS_WEAPON_BOW:
-                            case ITEM_SUBCLASS_WEAPON_CROSSBOW:
-                                ammoDisplayID = 5996;       // is this need fixing?
-                                ammoInventoryType = INVTYPE_AMMO;
-                                break;
-                            case ITEM_SUBCLASS_WEAPON_GUN:
-                                ammoDisplayID = 5998;       // is this need fixing?
-                                ammoInventoryType = INVTYPE_AMMO;
-                                break;
-                        }
-
-                        if (ammoDisplayID)
-                            break;
+                    case ITEM_SUBCLASS_WEAPON_THROWN:
+                        ammoDisplayID = m_caster->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i);
+                        ammoInventoryType = m_caster->GetByteValue(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, VIRTUAL_ITEM_INFO_1_OFFSET_INVENTORYTYPE);
+                        break;
+                    case ITEM_SUBCLASS_WEAPON_BOW:
+                    case ITEM_SUBCLASS_WEAPON_CROSSBOW:
+                        ammoDisplayID = 5996;           // is this need fixing?
+                        ammoInventoryType = INVTYPE_AMMO;
+                        break;
+                    case ITEM_SUBCLASS_WEAPON_GUN:
+                        ammoDisplayID = 5998;           // is this need fixing?
+                        ammoInventoryType = INVTYPE_AMMO;
+                        break;
                     }
+
+                    if (ammoDisplayID)
+                        break;
                 }
             }
         }
     }
-    */
 
     *data << uint32(ammoDisplayID);
     *data << uint32(ammoInventoryType);

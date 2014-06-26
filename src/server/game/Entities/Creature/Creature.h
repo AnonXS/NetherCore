@@ -421,6 +421,26 @@ typedef std::map<uint32, time_t> CreatureSpellCooldowns;
 
 #define MAX_VENDOR_ITEMS 150                                // Limitation in 3.x.x item count in SMSG_LIST_INVENTORY
 
+enum VirtualItemSlot
+{
+    VIRTUAL_ITEM_SLOT_0 = 0,
+    VIRTUAL_ITEM_SLOT_1 = 1,
+    VIRTUAL_ITEM_SLOT_2 = 2,
+};
+
+#define MAX_VIRTUAL_ITEM_SLOT 3
+
+enum VirtualItemInfoByteOffset
+{
+    VIRTUAL_ITEM_INFO_0_OFFSET_CLASS = 0,
+    VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS = 1,
+    VIRTUAL_ITEM_INFO_0_OFFSET_UNK0 = 2,
+    VIRTUAL_ITEM_INFO_0_OFFSET_MATERIAL = 3,
+
+    VIRTUAL_ITEM_INFO_1_OFFSET_INVENTORYTYPE = 0,
+    VIRTUAL_ITEM_INFO_1_OFFSET_SHEATH = 1,
+};
+
 class Creature : public Unit, public GridObject<Creature>, public MapObject
 {
     public:
