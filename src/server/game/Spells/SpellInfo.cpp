@@ -1638,10 +1638,6 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
     if (ExcludeTargetAuraSpell && unitTarget->HasAura(sSpellMgr->GetSpellIdForDifficulty(ExcludeTargetAuraSpell, caster)))
         return SPELL_FAILED_TARGET_AURASTATE;
 
-    if (unitTarget->HasAuraType(SPELL_AURA_PREVENT_RESURRECTION))
-        if (HasEffect(SPELL_EFFECT_SELF_RESURRECT) || HasEffect(SPELL_EFFECT_RESURRECT) || HasEffect(SPELL_EFFECT_RESURRECT_NEW))
-            return SPELL_FAILED_TARGET_CANNOT_BE_RESURRECTED;
-
     return SPELL_CAST_OK;
 }
 
