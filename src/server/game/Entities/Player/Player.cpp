@@ -6596,8 +6596,8 @@ int16 Player::GetSkillTempBonusValue(uint32 skill) const
 
 void Player::SendActionButtons(uint32 state) const
 {
-    WorldPacket data(SMSG_ACTION_BUTTONS, 1+(MAX_ACTION_BUTTONS*4));
-    data << uint8(state);
+    WorldPacket data(SMSG_ACTION_BUTTONS, (MAX_ACTION_BUTTONS*4));
+    //data << uint8(state);
     /*
         state can be 0, 1, 2
         0 - Looks to be sent when initial action buttons get sent, however on Trinity we use 1 since 0 had some difficulties
