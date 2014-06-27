@@ -330,15 +330,6 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
         return;
     }
 
-    // prevent character creating Expansion class without Expansion account
-    if (classEntry->expansion > Expansion())
-    {
-        data << uint8(CHAR_CREATE_EXPANSION_CLASS);
-        TC_LOG_ERROR("network", "Expansion %u account:[%d] tried to Create character with expansion %u class (%u)", Expansion(), GetAccountId(), classEntry->expansion, class_);
-        SendPacket(&data);
-        return;
-    }
-
     if (!HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_RACEMASK))
     {
         uint32 raceMaskDisabled = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_DISABLED_RACEMASK);
@@ -384,27 +375,6 @@ void WorldSession::HandleCharCreateOpcode(WorldPacket& recvData)
         data << uint8(CHAR_NAME_RESERVED);
         SendPacket(&data);
         return;
-    }
-
-    if (class_ == CLASS_DEATH_KNIGHT && !HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_HEROIC_CHARACTER))
-    {
-        // speedup check for heroic class disabled case
-        uint32 heroic_free_slots = sWorld->getIntConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM);
-        if (heroic_free_slots == 0)
-        {
-            data << uint8(CHAR_CREATE_UNIQUE_CLASS_LIMIT);
-            SendPacket(&data);
-            return;
-        }
-
-        // speedup check for heroic class disabled case
-        uint32 req_level_for_heroic = sWorld->getIntConfig(CONFIG_CHARACTER_CREATING_MIN_LEVEL_FOR_HEROIC_CHARACTER);
-        if (req_level_for_heroic > sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
-        {
-            data << uint8(CHAR_CREATE_LEVEL_REQUIREMENT);
-            SendPacket(&data);
-            return;
-        }
     }
 
     delete _charCreateCallback.GetParam();  // Delete existing if any, to make the callback chain reset to stage 0
@@ -531,33 +501,6 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
                 Field* field = result->Fetch();
                 uint8 accRace  = field[1].GetUInt8();
 
-                if (checkHeroicReqs)
-                {
-                    uint8 accClass = field[2].GetUInt8();
-                    if (accClass == CLASS_DEATH_KNIGHT)
-                    {
-                        if (freeHeroicSlots > 0)
-                            --freeHeroicSlots;
-
-                        if (freeHeroicSlots == 0)
-                        {
-                            WorldPacket data(SMSG_CHAR_CREATE, 1);
-                            data << uint8(CHAR_CREATE_UNIQUE_CLASS_LIMIT);
-                            SendPacket(&data);
-                            delete createInfo;
-                            _charCreateCallback.Reset();
-                            return;
-                        }
-                    }
-
-                    if (!hasHeroicReqLevel)
-                    {
-                        uint8 accLevel = field[0].GetUInt8();
-                        if (accLevel >= heroicReqLevel)
-                            hasHeroicReqLevel = true;
-                    }
-                }
-
                 // need to check team only for first character
                 /// @todo what to if account already has characters of both races?
                 if (!allowTwoSideAccounts)
@@ -589,44 +532,7 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
 
                     if (!haveSameRace)
                         haveSameRace = createInfo->Race == accRace;
-
-                    if (checkHeroicReqs)
-                    {
-                        uint8 acc_class = field[2].GetUInt8();
-                        if (acc_class == CLASS_DEATH_KNIGHT)
-                        {
-                            if (freeHeroicSlots > 0)
-                                --freeHeroicSlots;
-
-                            if (freeHeroicSlots == 0)
-                            {
-                                WorldPacket data(SMSG_CHAR_CREATE, 1);
-                                data << uint8(CHAR_CREATE_UNIQUE_CLASS_LIMIT);
-                                SendPacket(&data);
-                                delete createInfo;
-                                _charCreateCallback.Reset();
-                                return;
-                            }
-                        }
-
-                        if (!hasHeroicReqLevel)
-                        {
-                            uint8 acc_level = field[0].GetUInt8();
-                            if (acc_level >= heroicReqLevel)
-                                hasHeroicReqLevel = true;
-                        }
-                    }
                 }
-            }
-
-            if (checkHeroicReqs && !hasHeroicReqLevel)
-            {
-                WorldPacket data(SMSG_CHAR_CREATE, 1);
-                data << uint8(CHAR_CREATE_LEVEL_REQUIREMENT);
-                SendPacket(&data);
-                delete createInfo;
-                _charCreateCallback.Reset();
-                return;
             }
 
             if (createInfo->Data.rpos() < createInfo->Data.wpos())
