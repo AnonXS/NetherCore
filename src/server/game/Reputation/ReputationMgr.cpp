@@ -169,7 +169,7 @@ void ReputationMgr::SendState(FactionState const* faction)
 
     WorldPacket data(SMSG_SET_FACTION_STANDING, 17);
     data << float(0);
-    data << uint8(_sendFactionIncreased);
+    //data << uint8(_sendFactionIncreased);
     _sendFactionIncreased = false; // Reset
 
     size_t p_count = data.wpos();
