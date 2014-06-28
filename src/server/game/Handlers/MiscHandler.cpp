@@ -942,8 +942,9 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recvData)
 
 void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
 {
-    TC_LOG_DEBUG("network", "WORLD: Received CMSG_UPDATE_ACCOUNT_DATA");
+    TC_LOG_DEBUG("network", "WORLD: Received CMSG_UPDATE_ACCOUNT_DATA, NOT YET IMPLEMENTED");
 
+    /*
     uint32 type, timestamp, decompressedSize;
     recvData >> type >> timestamp >> decompressedSize;
 
@@ -993,12 +994,14 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
     data << uint32(type);
     data << uint32(0);
     SendPacket(&data);
+    */
 }
 
 void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
 {
-    TC_LOG_DEBUG("network", "WORLD: Received CMSG_REQUEST_ACCOUNT_DATA");
+    TC_LOG_DEBUG("network", "WORLD: Received CMSG_REQUEST_ACCOUNT_DATA, NOT YET IMPLEMENTED");
 
+    /*
     uint32 type;
     recvData >> type;
 
@@ -1031,6 +1034,7 @@ void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
     data << uint32(size);                                   // decompressed length
     data.append(dest);                                      // compressed data
     SendPacket(&data);
+    */
 }
 
 void WorldSession::HandleSetActionButtonOpcode(WorldPacket& recvData)
