@@ -200,12 +200,11 @@ void WorldSession::HandleMoveWorldportAckOpcode()
 void WorldSession::HandleMoveTeleportAck(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "MSG_MOVE_TELEPORT_ACK");
+
     uint64 guid;
-
-    recvData.readPackGUID(guid);
-
     uint32 flags, time;
-    recvData >> flags >> time;
+    recvData >> guid >> flags >> time;
+
     TC_LOG_DEBUG("network", "Guid " UI64FMTD, guid);
     TC_LOG_DEBUG("network", "Flags %u, time %u", flags, time/IN_MILLISECONDS);
 
