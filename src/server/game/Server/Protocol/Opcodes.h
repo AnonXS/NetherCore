@@ -1110,8 +1110,8 @@ enum Opcodes
     SMSG_SPELLBREAKLOG                              = 0x717,
     SMSG_BREAK_TARGET                               = 0x718,
     SMSG_REMOVED_FROM_PVP_QUEUE                     = 0x719,
-    CMSG_QUEST_POI_QUERY                            = 0x720,
-    SMSG_QUEST_POI_QUERY_RESPONSE                   = 0x721,
+    //CMSG_QUEST_POI_QUERY                            = 0x720,
+    //SMSG_QUEST_POI_QUERY_RESPONSE                   = 0x721,
     CMSG_CHANGEPLAYER_DIFFICULTY                    = 0x722,
     SMSG_LFG_PLAYER_REWARD                          = 0x723, // uint32, uint8, uint32, uint32, uint32, uint32, uint32, uint8, for (uint8) {uint32, uint32, uint32}
     SMSG_LFG_TELEPORT_DENIED                        = 0x724, // uint32 (1, 2, 4, 6;0, 5, 7)
@@ -1307,8 +1307,8 @@ enum Opcodes
     CMSG_ITEM_REFUND_INFO                           = 0x914,
     CMSG_ITEM_REFUND                                = 0x915, // lua: ContainerRefundItemPurchase
     SMSG_ITEM_REFUND_RESULT                         = 0x916,
-    CMSG_CORPSE_MAP_POSITION_QUERY                  = 0x917, // uint32
-    SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE         = 0x918, // 3*float+float
+    //CMSG_CORPSE_MAP_POSITION_QUERY                  = 0x917, // uint32
+    //SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE         = 0x918, // 3*float+float
     CMSG_UNUSED5                                    = 0x919,
     CMSG_UNUSED6                                    = 0x920,
     CMSG_CALENDAR_EVENT_SIGNUP                      = 0x921, // uint64

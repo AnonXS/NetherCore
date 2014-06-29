@@ -16748,6 +16748,7 @@ void Player::SendQuestUpdateAddCreatureOrGo(Quest const* quest, uint64 guid, uin
 
 void Player::SendQuestUpdateAddPlayer(Quest const* quest, uint16 old_count, uint16 add_count)
 {
+    /* Not implemented in 2.4.3, maybe usefull later
     ASSERT(old_count + add_count < 65536 && "player count store in 16 bits");
 
     WorldPacket data(SMSG_QUESTUPDATE_ADD_PVP_KILL, (3*4));
@@ -16760,6 +16761,7 @@ void Player::SendQuestUpdateAddPlayer(Quest const* quest, uint16 old_count, uint
     uint16 log_slot = FindQuestSlot(quest->GetQuestId());
     if (log_slot < MAX_QUEST_LOG_SIZE)
         SetQuestSlotCounter(log_slot, QUEST_PVP_KILL_SLOT, GetQuestSlotCounter(log_slot, QUEST_PVP_KILL_SLOT) + add_count);
+    */
 }
 
 bool Player::HasPvPForcingQuest() const
@@ -18280,9 +18282,10 @@ void Player::_LoadQuestStatus(PreparedQueryResult result)
                         if (questStatusData.CreatureOrGOCount[idx])
                             SetQuestSlotCounter(slot, idx, questStatusData.CreatureOrGOCount[idx]);
 
+                    /* Not implemented in 2.4.3, maybe usefull later
                     if (questStatusData.PlayerCount)
                         SetQuestSlotCounter(slot, QUEST_PVP_KILL_SLOT, questStatusData.PlayerCount);
-
+                    */
                     ++slot;
                 }
 

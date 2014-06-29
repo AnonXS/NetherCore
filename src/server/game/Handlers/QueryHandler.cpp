@@ -384,23 +384,9 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recvData)
     }
 }
 
-void WorldSession::HandleCorpseMapPositionQuery(WorldPacket& recvData)
-{
-    TC_LOG_DEBUG("network", "WORLD: Recv CMSG_CORPSE_MAP_POSITION_QUERY");
-
-    uint32 unk;
-    recvData >> unk;
-
-    WorldPacket data(SMSG_CORPSE_MAP_POSITION_QUERY_RESPONSE, 4+4+4+4);
-    data << float(0);
-    data << float(0);
-    data << float(0);
-    data << float(0);
-    SendPacket(&data);
-}
-
 void WorldSession::HandleQuestPOIQuery(WorldPacket& recvData)
 {
+    /* Not implemented in 2.4.3, maybe usefull later
     uint32 count;
     recvData >> count; // quest count, max=25
 
@@ -470,4 +456,5 @@ void WorldSession::HandleQuestPOIQuery(WorldPacket& recvData)
     }
 
     SendPacket(&data);
+    */
 }

@@ -1302,7 +1302,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_ATTACKSTOP:                           //   0               1
         case CMSG_QUERY_QUESTS_COMPLETED:               //   0               1
         case CMSG_QUERY_TIME:                           //   0               1
-        case CMSG_CORPSE_MAP_POSITION_QUERY:            //   0               1
         case CMSG_MOVE_TIME_SKIPPED:                    //   0               1
         case MSG_QUERY_NEXT_MAIL_TIME:                  //   0               1
         case CMSG_SETSHEATHED:                          //   0               1
@@ -1401,12 +1400,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_QUERY_INSPECT_ACHIEVEMENTS:           //   0              13         high upload bandwidth usage
         {
             maxPacketCounterAllowed = 50;
-            break;
-        }
-
-        case CMSG_QUEST_POI_QUERY:                      //   0              25         very high upload bandwidth usage
-        {
-            maxPacketCounterAllowed = MAX_QUEST_LOG_SIZE;
             break;
         }
 
