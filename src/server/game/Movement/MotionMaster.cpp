@@ -312,7 +312,8 @@ void MotionMaster::MoveLand(uint32 id, Position const& pos)
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToGround);
+    //Not implemented in 2.4.3
+    //init.SetAnimation(Movement::ToGround);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -326,7 +327,8 @@ void MotionMaster::MoveTakeoff(uint32 id, Position const& pos)
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetAnimation(Movement::ToFly);
+    //Not implemented in 2.4.3
+    //init.SetAnimation(Movement::ToFly);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_ACTIVE);
 }
@@ -349,8 +351,9 @@ void MotionMaster::MoveKnockbackFrom(float srcX, float srcY, float speedXY, floa
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z);
-    init.SetParabolic(max_height, 0);
-    init.SetOrientationFixed(true);
+    //Not implemented in 2.4.3
+    //init.SetParabolic(max_height, 0);
+    //init.SetOrientationFixed(true);
     init.SetVelocity(speedXY);
     init.Launch();
     Mutate(new EffectMovementGenerator(0), MOTION_SLOT_CONTROLLED);
@@ -381,7 +384,8 @@ void MotionMaster::MoveJump(float x, float y, float z, float speedXY, float spee
 
     Movement::MoveSplineInit init(_owner);
     init.MoveTo(x, y, z, false);
-    init.SetParabolic(max_height, 0);
+    //Not implemented in 2.4.3
+    //init.SetParabolic(max_height, 0);
     init.SetVelocity(speedXY);
     init.Launch();
     Mutate(new EffectMovementGenerator(id), MOTION_SLOT_CONTROLLED);

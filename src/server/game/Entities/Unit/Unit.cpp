@@ -16831,7 +16831,7 @@ void Unit::_ExitVehicle(Position const* exitPosition)
 
     init.MoveTo(pos.GetPositionX(), pos.GetPositionY(), height, false);
     init.SetFacing(GetOrientation());
-    init.SetTransportExit();
+    //init.SetTransportExit();
     init.Launch();
 
     if (player)

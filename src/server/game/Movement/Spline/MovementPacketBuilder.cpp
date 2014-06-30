@@ -46,7 +46,6 @@ namespace Movement
     {
         MoveSplineFlag splineflags = move_spline.splineflags;
 
-        data << uint8(0);                                       // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
         data << move_spline.spline.getPoint(move_spline.spline.first());
         data << move_spline.GetId();
 
@@ -73,24 +72,11 @@ namespace Movement
         splineflags.enter_cycle = move_spline.isCyclic();
         data << uint32(splineflags & uint32(~MoveSplineFlag::Mask_No_Monster_Move));
 
-        if (splineflags.animation)
-        {
-            data << splineflags.getAnimationId();
-            data << move_spline.effect_start_time;
-        }
-
         data << move_spline.Duration();
-
-        if (splineflags.parabolic)
-        {
-            data << move_spline.vertical_acceleration;
-            data << move_spline.effect_start_time;
-        }
     }
 
     void PacketBuilder::WriteStopMovement(Vector3 const& pos, uint32 splineId, ByteBuffer& data)
     {
-        data << uint8(0);                                       // sets/unsets MOVEMENTFLAG2_UNK7 (0x40)
         data << pos;
         data << splineId;
         data << uint8(MonsterMoveStop);
@@ -175,16 +161,9 @@ namespace Movement
             data << move_spline.Duration();
             data << move_spline.GetId();
 
-            data << float(1.f);                             // splineInfo.duration_mod; added in 3.1
-            data << float(1.f);                             // splineInfo.duration_mod_next; added in 3.1
-
-            data << move_spline.vertical_acceleration;      // added in 3.1
-            data << move_spline.effect_start_time;          // added in 3.1
-
             uint32 nodes = move_spline.getPath().size();
             data << nodes;
             data.append<Vector3>(&move_spline.getPath()[0], nodes);
-            data << uint8(move_spline.spline.mode());       // added in 3.1
             data << (move_spline.isCyclic() ? Vector3::zero() : move_spline.FinalDestination());
         }
     }

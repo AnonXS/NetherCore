@@ -816,7 +816,7 @@ bool VehicleJoinEvent::Execute(uint64, uint32)
     init.DisableTransportPathTransformations();
     init.MoveTo(veSeat->m_attachmentOffsetX, veSeat->m_attachmentOffsetY, veSeat->m_attachmentOffsetZ, false, true);
     init.SetFacing(0.0f);
-    init.SetTransportEnter();
+    //init.SetTransportEnter();
     init.Launch();
 
     if (Creature* creature = Target->GetBase()->ToCreature())

@@ -58,11 +58,10 @@ namespace Movement
 
     int32 MoveSplineInit::Launch()
     {
-        MoveSpline& move_spline = *unit->movespline;
-
-        // Elevators also use MOVEMENTFLAG_ONTRANSPORT but we do not keep track of their position changes (movementInfo.transport.guid is 0 in that case)
-        bool transport = unit->HasUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT) && unit->GetTransGUID();
         Location real_position;
+        MoveSpline& move_spline = *unit->movespline;
+        bool transport = unit->HasUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT) && unit->GetTransGUID();
+
         // there is a big chance that current position is unknown if current state is not finalized, need compute it
         // this also allows CalculatePath spline position and update map position in much greater intervals
         // Don't compute for transport movement if the unit is in a motion between two transports
@@ -122,7 +121,6 @@ namespace Movement
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data.appendPackGUID(unit->GetTransGUID());
-            //data << int8(unit->GetTransSeat());
         }
 
         PacketBuilder::WriteMonsterMove(move_spline, data);
@@ -133,14 +131,14 @@ namespace Movement
 
     void MoveSplineInit::Stop()
     {
+        Location loc;
         MoveSpline& move_spline = *unit->movespline;
+        bool transport = unit->HasUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT) && unit->GetTransGUID();
 
         // No need to stop if we are not moving
         if (move_spline.Finalized())
             return;
 
-        bool transport = unit->HasUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT) && unit->GetTransGUID();
-        Location loc;
         if (move_spline.onTransport == transport)
             loc = move_spline.ComputePosition();
         else
@@ -168,7 +166,6 @@ namespace Movement
         {
             data.SetOpcode(SMSG_MONSTER_MOVE_TRANSPORT);
             data.appendPackGUID(unit->GetTransGUID());
-            //data << int8(unit->GetTransSeat());
         }
 
         PacketBuilder::WriteStopMovement(loc, args.splineId, data);

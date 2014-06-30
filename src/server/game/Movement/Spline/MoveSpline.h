@@ -60,12 +60,7 @@ namespace Movement
         MoveSplineFlag  splineflags;
 
         int32           time_passed;
-        // currently duration mods are unused, but its _currently_
-        //float           duration_mod;
-        //float           duration_mod_next;
-        float           vertical_acceleration;
         float           initialOrientation;
-        int32           effect_start_time;
         int32           point_Idx;
         int32           point_Idx_offset;
 
@@ -73,7 +68,6 @@ namespace Movement
 
     protected:
         MySpline::ControlArray const& getPath() const { return spline.getPoints(); }
-        void computeParabolicElevation(float& el) const;
         void computeFallElevation(float& el) const;
 
         UpdateResult _updateState(int32& ms_time_diff);
