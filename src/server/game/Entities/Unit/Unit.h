@@ -303,6 +303,24 @@ enum HitInfo
     HITINFO_UNK2                = 0x00000008,
     HITINFO_MISS                = 0x00000010,
     HITINFO_FULL_ABSORB         = 0x00000020,
+    HITINFO_PARTIAL_ABSORB      = 0x00000020,
+    HITINFO_FULL_RESIST         = 0x00000040,
+    HITINFO_PARTIAL_RESIST      = 0x00000040,
+    HITINFO_CRITICALHIT         = 0x00000080,
+    HITINFO_UNK8                = 0x00000100,               // HITINFO_PARTIAL_RESIST ?
+    HITINFO_BLOCK               = 0x00002000,               // blocked damage ?
+    HITINFO_GLANCING            = 0x00004000,
+    HITINFO_CRUSHING            = 0x00008000,
+    HITINFO_NOACTION            = 0x00010000,
+    HITINFO_SWINGNOHITSOUND     = 0x00080000
+    /*
+    HITINFO_NORMALSWING         = 0x00000000,
+    HITINFO_UNK1                = 0x00000001,               // req correct packet structure
+    HITINFO_AFFECTS_VICTIM      = 0x00000002,
+    HITINFO_OFFHAND             = 0x00000004,
+    HITINFO_UNK2                = 0x00000008,
+    HITINFO_MISS                = 0x00000010,
+    HITINFO_FULL_ABSORB         = 0x00000020,
     HITINFO_PARTIAL_ABSORB      = 0x00000040,
     HITINFO_FULL_RESIST         = 0x00000080,
     HITINFO_PARTIAL_RESIST      = 0x00000100,
@@ -321,6 +339,7 @@ enum HitInfo
     HITINFO_SWINGNOHITSOUND     = 0x00200000,               // unused?
     // 0x00400000
     HITINFO_RAGE_GAIN           = 0x00800000
+    */
 };
 
 //i would like to remove this: (it is defined in item.h

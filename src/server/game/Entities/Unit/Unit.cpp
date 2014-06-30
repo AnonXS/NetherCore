@@ -4947,13 +4947,11 @@ void Unit::RemoveAllGameObjects()
 
 void Unit::SendSpellNonMeleeDamageLog(SpellNonMeleeDamage* log)
 {
-    WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, (16+4+4+4+1+4+4+1+1+4+4+1)); // we guess size
+    WorldPacket data(SMSG_SPELLNONMELEEDAMAGELOG, (16+4+4+1+4+4+1+1+4+4+1)); // we guess size
     data.append(log->target->GetPackGUID());
     data.append(log->attacker->GetPackGUID());
     data << uint32(log->SpellID);
     data << uint32(log->damage);                            // damage amount
-    int32 overkill = log->damage - log->target->GetHealth();
-    data << uint32(overkill > 0 ? overkill : 0);            // overkill
     data << uint8 (log->schoolMask);                        // damage school
     data << uint32(log->absorb);                            // AbsorbedDamage
     data << uint32(log->resist);                            // resist
@@ -5005,18 +5003,15 @@ void Unit::SendPeriodicAuraLog(SpellPeriodicAuraLogInfo* pInfo)
         case SPELL_AURA_PERIODIC_DAMAGE:
         case SPELL_AURA_PERIODIC_DAMAGE_PERCENT:
             data << uint32(pInfo->damage);                  // damage
-            data << uint32(pInfo->overDamage);              // overkill?
             data << uint32(aura->GetSpellInfo()->GetSchoolMask());
             data << uint32(pInfo->absorb);                  // absorb
             data << uint32(pInfo->resist);                  // resist
-            data << uint8(pInfo->critical);                 // new 3.1.2 critical tick
             break;
         case SPELL_AURA_PERIODIC_HEAL:
         case SPELL_AURA_OBS_MOD_HEALTH:
             data << uint32(pInfo->damage);                  // damage
-            data << uint32(pInfo->overDamage);              // overheal
-            data << uint32(pInfo->absorb);                  // absorb
-            data << uint8(pInfo->critical);                 // new 3.1.2 critical tick
+            /*data << uint32(pInfo->overDamage);              // overheal
+            data << uint32(pInfo->absorb);                  // absorb*/
             break;
         case SPELL_AURA_OBS_MOD_POWER:
         case SPELL_AURA_PERIODIC_ENERGIZE:
@@ -5043,94 +5038,57 @@ void Unit::SendSpellMiss(Unit* target, uint32 spellID, SpellMissInfo missInfo)
     data << uint64(GetGUID());
     data << uint8(0);                                       // can be 0 or 1
     data << uint32(1);                                      // target count
-    // for (i = 0; i < target count; ++i)
     data << uint64(target->GetGUID());                      // target GUID
     data << uint8(missInfo);
-    // end loop
     SendMessageToSet(&data, true);
 }
 
 void Unit::SendSpellDamageResist(Unit* target, uint32 spellId)
 {
+    /*
     WorldPacket data(SMSG_PROCRESIST, 8+8+4+1);
     data << uint64(GetGUID());
     data << uint64(target->GetGUID());
     data << uint32(spellId);
     data << uint8(0); // bool - log format: 0-default, 1-debug
     SendMessageToSet(&data, true);
+    */
 }
 
 void Unit::SendSpellDamageImmune(Unit* target, uint32 spellId)
 {
+    /*
     WorldPacket data(SMSG_SPELLORDAMAGE_IMMUNE, 8+8+4+1);
     data << uint64(GetGUID());
     data << uint64(target->GetGUID());
     data << uint32(spellId);
     data << uint8(0); // bool - log format: 0-default, 1-debug
     SendMessageToSet(&data, true);
+    */
 }
 
 void Unit::SendAttackStateUpdate(CalcDamageInfo* damageInfo)
 {
     TC_LOG_DEBUG("entities.unit", "WORLD: Sending SMSG_ATTACKERSTATEUPDATE");
 
-    uint32 count = 1;
-    size_t maxsize = 4+5+5+4+4+1+4+4+4+4+4+1+4+4+4+4+4*12;
-    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, maxsize);    // we guess size
+    WorldPacket data(SMSG_ATTACKERSTATEUPDATE, (4+8+8+4+1+4+4+4+4+4+4+4+4+4+4));
     data << uint32(damageInfo->HitInfo);
     data.append(damageInfo->attacker->GetPackGUID());
     data.append(damageInfo->target->GetPackGUID());
     data << uint32(damageInfo->damage);                     // Full damage
-    int32 overkill = damageInfo->damage - damageInfo->target->GetHealth();
-    data << uint32(overkill < 0 ? 0 : overkill);            // Overkill
-    data << uint8(count);                                   // Sub damage count
 
-    for (uint32 i = 0; i < count; ++i)
-    {
-        data << uint32(damageInfo->damageSchoolMask);       // School of sub damage
-        data << float(damageInfo->damage);                  // sub damage
-        data << uint32(damageInfo->damage);                 // Sub Damage
-    }
+    data << uint8(1);                                       // Sub damage
+    data << uint32(damageInfo->damageSchoolMask);           // School of sub damage
+    data << float(damageInfo->damage);                      // sub damage
+    data << uint32(damageInfo->damage);                     // Sub Damage
+    data << uint32(damageInfo->absorb);                     // Absorb
+    data << uint32(damageInfo->resist);                     // Resist
 
-    if (damageInfo->HitInfo & (HITINFO_FULL_ABSORB | HITINFO_PARTIAL_ABSORB))
-    {
-        for (uint32 i = 0; i < count; ++i)
-            data << uint32(damageInfo->absorb);             // Absorb
-    }
+    data << uint32(damageInfo->TargetState);
+    data << uint32(0);                                      // Unknown attackerstate
+    data << uint32(0);                                      // Melee spellid
 
-    if (damageInfo->HitInfo & (HITINFO_FULL_RESIST | HITINFO_PARTIAL_RESIST))
-    {
-        for (uint32 i = 0; i < count; ++i)
-            data << uint32(damageInfo->resist);             // Resist
-    }
-
-    data << uint8(damageInfo->TargetState);
-    data << uint32(0);  // Unknown attackerstate
-    data << uint32(0);  // Melee spellid
-
-    if (damageInfo->HitInfo & HITINFO_BLOCK)
-        data << uint32(damageInfo->blocked_amount);
-
-    if (damageInfo->HitInfo & HITINFO_RAGE_GAIN)
-        data << uint32(0);
-
-    //! Probably used for debugging purposes, as it is not known to appear on retail servers
-    if (damageInfo->HitInfo & HITINFO_UNK1)
-    {
-        data << uint32(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);
-        data << float(0);       // Found in a loop with 1 iteration
-        data << float(0);       // ditto ^
-        data << uint32(0);
-    }
-
+    data << uint32(damageInfo->blocked_amount);
     SendMessageToSet(&data, true);
 }
 
@@ -9692,13 +9650,11 @@ void Unit::UnsummonAllTotems()
 void Unit::SendHealSpellLog(Unit* victim, uint32 SpellID, uint32 Damage, uint32 OverHeal, uint32 Absorb, bool critical)
 {
     // we guess size
-    WorldPacket data(SMSG_SPELLHEALLOG, 8 + 8 + 4 + 4 + 4 + 4 + 1 + 1);
+    WorldPacket data(SMSG_SPELLHEALLOG, 8 + 8 + 4 + 4 + 1 + 1);
     data.append(victim->GetPackGUID());
     data.append(GetPackGUID());
     data << uint32(SpellID);
     data << uint32(Damage);
-    data << uint32(OverHeal);
-    data << uint32(Absorb); // Absorb amount
     data << uint8(critical ? 1 : 0);
     data << uint8(0); // unused
     SendMessageToSet(&data, true);
