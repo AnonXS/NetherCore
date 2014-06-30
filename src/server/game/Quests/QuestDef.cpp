@@ -266,3 +266,12 @@ uint32 Quest::CalculateHonorGain(uint8 level) const
 
     return honor;
 }
+
+uint32 Quest::GetCharTitleBitIndex() const
+{
+    if (!RewardTitleId)
+        return 0;
+    CharTitlesEntry const* titleEntry = sCharTitlesStore.LookupEntry(RewardTitleId);
+    return titleEntry ? titleEntry->bit_index : 0;
+}
+

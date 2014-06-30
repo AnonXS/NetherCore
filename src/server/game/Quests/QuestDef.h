@@ -224,6 +224,7 @@ class Quest
         int32  GetExclusiveGroup() const { return ExclusiveGroup; }
         uint32 GetNextQuestInChain() const { return NextQuestIdChain; }
         uint32 GetCharTitleId() const { return RewardTitleId; }
+        uint32 GetCharTitleBitIndex() const; // in 2.x in different from 3.x in some quest packets used bit index insed id
         uint32 GetPlayersSlain() const { return RequiredPlayerKills; }
         uint32 GetBonusTalents() const { return RewardTalents; }
         int32  GetRewArenaPoints() const {return RewardArenaPoints; }
