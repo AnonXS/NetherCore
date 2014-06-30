@@ -446,7 +446,10 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, uint64 npcGUID, 
                 data << uint32(0);
         }
 
-        data << uint32(quest->GetRewOrReqMoney());
+        if (_session->GetPlayer()->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+            data << uint32(quest->GetRewOrReqMoney());
+        else
+            data << uint32(quest->GetRewOrReqMoney() + quest->GetRewMoneyMaxLevel());
     }
 
     // rewarded honor points. Multiply with 10 to satisfy client
@@ -514,12 +517,12 @@ void PlayerMenu::SendQuestQueryResponse(Quest const* quest) const
     else
         data << uint32(quest->GetRewOrReqMoney());          // reward money (below max lvl)
 
-    data << uint32(quest->GetRewMoneyMaxLevel());           // used in XP calculation at client
+    data << uint32(quest->GetRewMoneyMaxLevel());           // reward money (at max lvl)
     data << uint32(quest->GetRewSpell());                   // reward spell, this spell will display (icon) (cast if RewSpellCast == 0)
     data << int32(quest->GetRewSpellCast());                // cast spell
 
     // rewarded honor points
-    data << uint32(quest->GetRewHonorAddition());
+    data << uint32(quest->CalculateHonorGain(_session->GetPlayer()->GetQuestLevel(quest)));
     data << uint32(quest->GetSrcItemId());                  // source item id
     data << uint32(quest->GetFlags() & 0xFFFF);             // quest flags
     data << uint32(quest->GetCharTitleId());                // CharTitleId, new 2.4.0, player gets this title (id from CharTitles)
@@ -643,8 +646,10 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, uint64 npcGUID, b
             data << uint32(0);
     }
 
-    data << uint32(quest->GetRewOrReqMoney());
-    data << uint32(quest->XPValue(_session->GetPlayer()) * sWorld->getRate(RATE_XP_QUEST));
+    if (_session->GetPlayer()->getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
+        data << uint32(quest->GetRewOrReqMoney());
+    else
+        data << uint32(quest->GetRewOrReqMoney() + quest->GetRewMoneyMaxLevel());
 
     // rewarded honor points. Multiply with 10 to satisfy client
     data << uint32(10 * quest->CalculateHonorGain(_session->GetPlayer()->GetQuestLevel(quest)));

@@ -15146,7 +15146,7 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     if (getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
         GiveXP(XP, NULL);
     else
-        moneyRew = int32(quest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY));
+        moneyRew = quest->GetRewMoneyMaxLevel();
 
     // Give player extra money if GetRewOrReqMoney > 0 and get ReqMoney if negative
     if (quest->GetRewOrReqMoney())
@@ -16641,7 +16641,7 @@ void Player::SendQuestReward(Quest const* quest, uint32 XP)
     else
     {
         data << uint32(0);
-        data << uint32(quest->GetRewOrReqMoney() + int32(quest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY)));
+        data << uint32(quest->GetRewOrReqMoney() + quest->GetRewMoneyMaxLevel());
     }
     data << uint32(0);                                      // honor, client already gets notified in RewardHonor()
     data << uint32(quest->GetRewItemsCount());              // max is 5
