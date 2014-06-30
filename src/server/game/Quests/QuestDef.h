@@ -34,14 +34,13 @@ class ObjectMgr;
 #define MAX_QUEST_LOG_SIZE 25
 
 #define QUEST_OBJECTIVES_COUNT 4
-#define QUEST_ITEM_OBJECTIVES_COUNT 6
+#define QUEST_ITEM_OBJECTIVES_COUNT QUEST_OBJECTIVES_COUNT
 #define QUEST_SOURCE_ITEM_IDS_COUNT 4
 #define QUEST_REWARD_CHOICES_COUNT 6
 #define QUEST_REWARDS_COUNT 4
 #define QUEST_DEPLINK_COUNT 10
 #define QUEST_REPUTATIONS_COUNT 5
 #define QUEST_EMOTE_COUNT 4
-#define QUEST_PVP_KILL_SLOT 0
 
 enum QuestFailedReason
 {
@@ -57,7 +56,6 @@ enum QuestFailedReason
     INVALIDREASON_QUEST_FAILED_NOT_ENOUGH_MONEY = 23,       // You don't have enough money for that quest.
     INVALIDREASON_DAILY_QUESTS_REMAINING        = 26,       // You have already completed 25 daily quests today.
     INVALIDREASON_QUEST_FAILED_CAIS             = 27,       // You cannot complete quests once you have reached tired time.
-    INVALIDREASON_DAILY_QUEST_COMPLETED_TODAY   = 29        // You have completed that daily quest today.
 };
 
 enum QuestShareMessages
@@ -66,13 +64,11 @@ enum QuestShareMessages
     QUEST_PARTY_MSG_CANT_TAKE_QUEST         = 1,
     QUEST_PARTY_MSG_ACCEPT_QUEST            = 2,
     QUEST_PARTY_MSG_DECLINE_QUEST           = 3,
-    QUEST_PARTY_MSG_BUSY                    = 4,
-    QUEST_PARTY_MSG_LOG_FULL                = 5,
-    QUEST_PARTY_MSG_HAVE_QUEST              = 6,
-    QUEST_PARTY_MSG_FINISH_QUEST            = 7,
-    QUEST_PARTY_MSG_CANT_BE_SHARED_TODAY    = 8,
-    QUEST_PARTY_MSG_SHARING_TIMER_EXPIRED   = 9,
-    QUEST_PARTY_MSG_NOT_IN_PARTY            = 10
+    QUEST_PARTY_MSG_TOO_FAR                 = 4,
+    QUEST_PARTY_MSG_BUSY                    = 5,
+    QUEST_PARTY_MSG_LOG_FULL                = 6,
+    QUEST_PARTY_MSG_HAVE_QUEST              = 7,
+    QUEST_PARTY_MSG_FINISH_QUEST            = 8,
 };
 
 enum QuestTradeSkill
@@ -98,9 +94,9 @@ enum QuestStatus
 {
     QUEST_STATUS_NONE           = 0,
     QUEST_STATUS_COMPLETE       = 1,
-    //QUEST_STATUS_UNAVAILABLE    = 2,
+    QUEST_STATUS_UNAVAILABLE    = 2,
     QUEST_STATUS_INCOMPLETE     = 3,
-    //QUEST_STATUS_AVAILABLE      = 4,
+    QUEST_STATUS_AVAILABLE      = 4,
     QUEST_STATUS_FAILED         = 5,
     QUEST_STATUS_REWARDED       = 6,        // Not used in DB
     MAX_QUEST_STATUS
@@ -110,15 +106,13 @@ enum QuestGiverStatus
 {
     DIALOG_STATUS_NONE                     = 0,
     DIALOG_STATUS_UNAVAILABLE              = 1,
-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE      = 2,
-    DIALOG_STATUS_LOW_LEVEL_REWARD_REP     = 3,
-    DIALOG_STATUS_LOW_LEVEL_AVAILABLE_REP  = 4,
-    DIALOG_STATUS_INCOMPLETE               = 5,
-    DIALOG_STATUS_REWARD_REP               = 6,
-    DIALOG_STATUS_AVAILABLE_REP            = 7,
-    DIALOG_STATUS_AVAILABLE                = 8,
-    DIALOG_STATUS_REWARD2                  = 9,             // no yellow dot on minimap
-    DIALOG_STATUS_REWARD                   = 10,            // yellow dot on minimap
+    DIALOG_STATUS_CHAT                     = 2,
+    DIALOG_STATUS_INCOMPLETE               = 3,
+    DIALOG_STATUS_REWARD_REP               = 4,
+    DIALOG_STATUS_AVAILABLE_REP            = 5,
+    DIALOG_STATUS_AVAILABLE                = 6,
+    DIALOG_STATUS_REWARD2                  = 7,            // no yellow dot on minimap
+    DIALOG_STATUS_REWARD                   = 8,            // yellow dot on minimap
 
     // Custom value meaning that script call did not return any valid quest status
     DIALOG_STATUS_SCRIPTED_NO_STATUS       = 0x1000,
@@ -141,6 +135,8 @@ enum QuestFlags
     QUEST_FLAGS_TRACKING                = 0x00000400,   // These quests are automatically rewarded on quest complete and they will never appear in quest log client side.
     QUEST_FLAGS_DEPRECATE_REPUTATION    = 0x00000800,   // Not used currently
     QUEST_FLAGS_DAILY                   = 0x00001000,   // Used to know quest is Daily one
+
+    // 2.4.3 client does not support this, used only at server.
     QUEST_FLAGS_FLAGS_PVP               = 0x00002000,   // Having this quest in log forces PvP flag
     QUEST_FLAGS_UNAVAILABLE             = 0x00004000,   // Used on quests that are not generically available
     QUEST_FLAGS_WEEKLY                  = 0x00008000,
@@ -148,8 +144,6 @@ enum QuestFlags
     QUEST_FLAGS_DISPLAY_ITEM_IN_TRACKER = 0x00020000,   // Displays usable item in quest tracker
     QUEST_FLAGS_OBJ_TEXT                = 0x00040000,   // use Objective text as Complete text
     QUEST_FLAGS_AUTO_ACCEPT             = 0x00080000,   // The client recognizes this flag as auto-accept. However, NONE of the current quests (3.3.5a) have this flag. Maybe blizz used to use it, or will use it in the future.
-
-    // ... 4.x added flags up to 0x80000000 - all unknown for now
 };
 
 enum QuestSpecialFlags

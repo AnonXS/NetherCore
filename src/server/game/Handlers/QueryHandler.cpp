@@ -124,8 +124,8 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
         data << uint32(ci->type);                           // CreatureType.dbc
         data << uint32(ci->family);                         // CreatureFamily.dbc
         data << uint32(ci->rank);                           // Creature Rank (elite, boss, etc)
-        data << uint32(ci->KillCredit[0]);                  // new in 3.1, kill credit
-        data << uint32(ci->KillCredit[1]);                  // new in 3.1, kill credit
+        data << uint32(0);                                  // unknown                          wdbFeild11
+        data << uint32(ci->PetSpellDataId);                 // Id from CreatureSpellData.dbc    wdbField12
         data << uint32(ci->Modelid1);                       // Modelid1
         data << uint32(ci->Modelid2);                       // Modelid2
         data << uint32(ci->Modelid3);                       // Modelid3
@@ -133,9 +133,6 @@ void WorldSession::HandleCreatureQueryOpcode(WorldPacket& recvData)
         data << float(ci->ModHealth);                       // dmg/hp modifier
         data << float(ci->ModMana);                         // dmg/mana modifier
         data << uint8(ci->RacialLeader);
-        for (uint32 i = 0; i < MAX_CREATURE_QUEST_ITEMS; ++i)
-            data << uint32(ci->questItems[i]);              // itemId[6], quest drop
-        data << uint32(ci->movementId);                     // CreatureMovementInfo.dbc
         SendPacket(&data);
         TC_LOG_DEBUG("network", "WORLD: Sent SMSG_CREATURE_QUERY_RESPONSE");
     }
@@ -190,8 +187,6 @@ void WorldSession::HandleGameObjectQueryOpcode(WorldPacket& recvData)
         data << info->unk1;                                 // 2.0.3, string
         data.append(info->raw.data, MAX_GAMEOBJECT_DATA);
         data << float(info->size);                          // go size
-        for (uint32 i = 0; i < MAX_GAMEOBJECT_QUEST_ITEMS; ++i)
-            data << uint32(info->questItems[i]);              // itemId[6], quest drop
         SendPacket(&data);
         TC_LOG_DEBUG("network", "WORLD: Sent SMSG_GAMEOBJECT_QUERY_RESPONSE");
     }
@@ -253,7 +248,6 @@ void WorldSession::HandleCorpseQueryOpcode(WorldPacket & /*recvData*/)
     data << float(y);
     data << float(z);
     data << int32(corpsemapid);
-    data << uint32(0);                                      // unknown
     SendPacket(&data);
 }
 
@@ -350,7 +344,6 @@ void WorldSession::HandlePageTextQueryOpcode(WorldPacket& recvData)
 
     uint32 pageID;
     recvData >> pageID;
-    recvData.read_skip<uint64>();                          // guid
 
     while (pageID)
     {

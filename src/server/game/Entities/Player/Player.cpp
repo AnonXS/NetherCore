@@ -16007,7 +16007,7 @@ QuestGiverStatus Player::GetQuestDialogStatus(Object* questgiver)
                             result2 = DIALOG_STATUS_AVAILABLE;
                     }
                     else
-                        result2 = DIALOG_STATUS_LOW_LEVEL_AVAILABLE;
+                        result2 = DIALOG_STATUS_CHAT;
                 }
                 else
                     result2 = DIALOG_STATUS_UNAVAILABLE;
@@ -16087,7 +16087,6 @@ void Player::SetQuestSlot(uint16 slot, uint32 quest_id, uint32 timer /*= 0*/)
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_ID_OFFSET, quest_id);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_STATE_OFFSET, 0);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET, 0);
-    SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_COUNTS_OFFSET + 1, 0);
     SetUInt32Value(PLAYER_QUEST_LOG_1_1 + slot * MAX_QUEST_OFFSET + QUEST_TIME_OFFSET, timer);
 }
 
@@ -16630,8 +16629,9 @@ void Player::SendQuestReward(Quest const* quest, uint32 XP)
     uint32 questid = quest->GetQuestId();
     TC_LOG_DEBUG("network", "WORLD: Sent SMSG_QUESTGIVER_QUEST_COMPLETE quest = %u", questid);
     sGameEventMgr->HandleQuestComplete(questid);
-    WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4+4+4+4+4));
+    WorldPacket data(SMSG_QUESTGIVER_QUEST_COMPLETE, (4+4+4+4+4+4+quest->GetRewItemsCount()*8));
     data << uint32(questid);
+    data << uint32(0x03);
 
     if (getLevel() < sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL))
     {
@@ -16643,10 +16643,17 @@ void Player::SendQuestReward(Quest const* quest, uint32 XP)
         data << uint32(0);
         data << uint32(quest->GetRewOrReqMoney() + int32(quest->GetRewMoneyMaxLevel() * sWorld->getRate(RATE_DROP_MONEY)));
     }
+    data << uint32(0);                                      // honor, client already gets notified in RewardHonor()
+    data << uint32(quest->GetRewItemsCount());              // max is 5
 
-    data << uint32(10 * quest->CalculateHonorGain(GetQuestLevel(quest)));
-    data << uint32(quest->GetBonusTalents());              // bonus talents
-    data << uint32(quest->GetRewArenaPoints());
+    for (uint32 i = 0; i < quest->GetRewItemsCount(); ++i)
+    {
+        if (quest->RewardItemId[i] > 0)
+            data << quest->RewardItemId[i] << quest->RewardItemIdCount[i];
+        else
+            data << uint32(0) << uint32(0);
+    }
+
     GetSession()->SendPacket(&data);
 }
 

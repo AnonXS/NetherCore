@@ -523,10 +523,10 @@ enum QuestSlotOffsets
     QUEST_ID_OFFSET     = 0,
     QUEST_STATE_OFFSET  = 1,
     QUEST_COUNTS_OFFSET = 2,
-    QUEST_TIME_OFFSET   = 4
+    QUEST_TIME_OFFSET   = 3
 };
 
-#define MAX_QUEST_OFFSET 5
+#define MAX_QUEST_OFFSET 4
 
 enum QuestSlotStateMask
 {
