@@ -681,7 +681,7 @@ void PlayerMenu::SendQuestGiverRequestItems(Quest const* quest, uint64 npcGUID, 
         }
     }
 
-    if (!quest->GetReqItemsCount() && canComplete)
+    if (!quest->GetReqItemsCount() && quest->GetRewOrReqMoney() >= 0 && canComplete)
     {
         SendQuestGiverOfferReward(quest, npcGUID, true);
         return;
