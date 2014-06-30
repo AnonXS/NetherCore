@@ -17036,6 +17036,7 @@ void Unit::UpdateHeight(float newZ)
 
 void Unit::SendThreatListUpdate()
 {
+    /*
     if (!getThreatManager().isThreatListEmpty())
     {
         uint32 count = getThreatManager().getThreatList().size();
@@ -17052,10 +17053,12 @@ void Unit::SendThreatListUpdate()
         }
         SendMessageToSet(&data, false);
     }
+    */
 }
 
 void Unit::SendChangeCurrentVictimOpcode(HostileReference* pHostileReference)
 {
+    /*
     if (!getThreatManager().isThreatListEmpty())
     {
         uint32 count = getThreatManager().getThreatList().size();
@@ -17072,24 +17075,28 @@ void Unit::SendChangeCurrentVictimOpcode(HostileReference* pHostileReference)
             data << uint32((*itr)->getThreat());
         }
         SendMessageToSet(&data, false);
-    }
+    }*/
 }
 
 void Unit::SendClearThreatListOpcode()
 {
+    /*
     TC_LOG_DEBUG("entities.unit", "WORLD: Send SMSG_THREAT_CLEAR Message");
     WorldPacket data(SMSG_THREAT_CLEAR, 8);
     data.append(GetPackGUID());
     SendMessageToSet(&data, false);
+    */
 }
 
 void Unit::SendRemoveFromThreatListOpcode(HostileReference* pHostileReference)
 {
+    /*
     TC_LOG_DEBUG("entities.unit", "WORLD: Send SMSG_THREAT_REMOVE Message");
     WorldPacket data(SMSG_THREAT_REMOVE, 8 + 8);
     data.append(GetPackGUID());
     data.appendPackGUID(pHostileReference->getUnitGuid());
     SendMessageToSet(&data, false);
+    */
 }
 
 void Unit::RewardRage(uint32 damage, uint32 weaponSpeedHitFactor, bool attacker)
