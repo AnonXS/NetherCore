@@ -60,7 +60,7 @@ enum SpellCastFlags
     CAST_FLAG_NO_GCD             = 0x00040000,              // no GCD for spell casts from charm/summon (vehicle spells is an example)
     CAST_FLAG_VISUAL_CHAIN       = 0x00080000,
     CAST_FLAG_UNKNOWN_21         = 0x00100000,
-    CAST_FLAG_RUNE_LIST          = 0x00200000,
+    //CAST_FLAG_RUNE_LIST          = 0x00200000,
     CAST_FLAG_UNKNOWN_23         = 0x00400000,
     CAST_FLAG_UNKNOWN_24         = 0x00800000,
     CAST_FLAG_UNKNOWN_25         = 0x01000000,
@@ -513,7 +513,6 @@ class Spell
         int32 m_casttime;                                   // Calculated spell cast time initialized only in Spell::prepare
         bool m_canReflect;                                  // can reflect this spell?
         bool m_autoRepeat;
-        uint8 m_runesState;
 
         uint8 m_delayAtDamageCount;
         bool isDelayableNoMore()

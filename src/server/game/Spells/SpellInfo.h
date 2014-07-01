@@ -340,7 +340,7 @@ public:
     uint32 ManaPerSecond;
     uint32 ManaPerSecondPerLevel;
     uint32 ManaCostPercentage;
-    uint32 RuneCostID;
+    //uint32 RuneCostID;
     SpellRangeEntry const* RangeEntry;
     float  Speed;
     uint32 StackAmount;
