@@ -132,8 +132,7 @@ enum Classes
 #define CLASSMASK_ALL_PLAYABLE \
     ((1<<(CLASS_WARRIOR-1))|(1<<(CLASS_PALADIN-1))|(1<<(CLASS_HUNTER-1))| \
     (1<<(CLASS_ROGUE-1))  |(1<<(CLASS_PRIEST-1)) |(1<<(CLASS_SHAMAN-1))| \
-    (1<<(CLASS_MAGE-1))   |(1<<(CLASS_WARLOCK-1))|(1<<(CLASS_DRUID-1)) | \
-    (1<<(CLASS_DEATH_KNIGHT-1)))
+    (1<<(CLASS_MAGE-1))   |(1<<(CLASS_WARLOCK-1))|(1<<(CLASS_DRUID-1))  )
 
 // valid classes for creature_template.unit_class
 enum UnitClass
@@ -2614,7 +2613,6 @@ inline uint8 ClassByQuestSort(int32 QuestSort)
         case QUEST_SORT_HUNTER:         return CLASS_HUNTER;
         case QUEST_SORT_PRIEST:         return CLASS_PRIEST;
         case QUEST_SORT_DRUID:          return CLASS_DRUID;
-        case QUEST_SORT_DEATH_KNIGHT:   return CLASS_DEATH_KNIGHT;
     }
     return 0;
 }
@@ -2756,9 +2754,9 @@ enum SkillType
     SKILL_PET_RAVAGER              = 767,
     SKILL_PET_SERPENT              = 768,
     SKILL_INTERNAL                 = 769,
-    SKILL_DK_BLOOD                 = 770,
-    SKILL_DK_FROST                 = 771,
-    SKILL_DK_UNHOLY                = 772,
+    //SKILL_DK_BLOOD                 = 770,
+    //SKILL_DK_FROST                 = 771,
+    //SKILL_DK_UNHOLY                = 772,
     SKILL_INSCRIPTION              = 773,
     SKILL_PET_MOTH                 = 775,
     //SKILL_RUNEFORGING              = 776,
@@ -3248,7 +3246,7 @@ enum SpellFamilyNames
     SPELLFAMILY_UNK2        = 12,                           // 2 spells (silence resistance)
     SPELLFAMILY_POTION      = 13,
     // 14 - unused
-    SPELLFAMILY_DEATHKNIGHT = 15,
+    // 15 - unused
     // 16 - unused
     SPELLFAMILY_PET         = 17
 };

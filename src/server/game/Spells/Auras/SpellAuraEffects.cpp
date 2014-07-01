@@ -867,21 +867,6 @@ void AuraEffect::UpdatePeriodic(Unit* caster)
                     if (GetId() == 55342)// Mirror Image
                         m_isPeriodic = false;
                     break;
-                case SPELLFAMILY_DEATHKNIGHT:
-                    // Chains of Ice
-                    if (GetSpellInfo()->SpellFamilyFlags[1] & 0x00004000)
-                    {
-                        // Get 0 effect aura
-                        if (AuraEffect* slow = GetBase()->GetEffect(0))
-                        {
-                            int32 newAmount = slow->GetAmount() + GetAmount();
-                            if (newAmount > 0)
-                                newAmount = 0;
-                            slow->ChangeAmount(newAmount);
-                        }
-                        return;
-                    }
-                    break;
                 default:
                     break;
            }
@@ -4796,11 +4781,6 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
                             break;
                     }
                     break;
-                case SPELLFAMILY_DEATHKNIGHT:
-                    // Summon Gargoyle (Dismiss Gargoyle at remove)
-                    if (GetId() == 61777)
-                        target->CastSpell(target, GetAmount(), true);
-                    break;
                 default:
                     break;
             }
@@ -4956,12 +4936,8 @@ void AuraEffect::HandleAuraDummy(AuraApplication const* aurApp, uint8 mode, bool
             break;
         }
         case SPELLFAMILY_PALADIN:
-            // if (!(mode & AURA_EFFECT_HANDLE_REAL))
-            //    break;
-            break;
-        case SPELLFAMILY_DEATHKNIGHT:
         {
-            //if (!(mode & AURA_EFFECT_HANDLE_REAL))
+            // if (!(mode & AURA_EFFECT_HANDLE_REAL))
             //    break;
             break;
         }

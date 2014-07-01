@@ -589,7 +589,7 @@ void Pet::Update(uint32 diff)
                 }
             }
 
-            //regenerate focus for hunter pets or energy for deathknight's ghoul
+            //regenerate focus for hunter pets
             if (m_regenTimer)
             {
                 if (m_regenTimer > diff)
@@ -608,13 +608,6 @@ void Pet::Update(uint32 diff)
                                 m_regenTimer = PET_FOCUS_REGEN_INTERVAL;
 
                             break;
-
-                        // in creature::update
-                        //case POWER_ENERGY:
-                        //    Regenerate(POWER_ENERGY);
-                        //    m_regenTimer += CREATURE_REGEN_INTERVAL - diff;
-                        //    if (!m_regenTimer) ++m_regenTimer;
-                        //    break;
                         default:
                             m_regenTimer = 0;
                             break;
@@ -657,12 +650,6 @@ void Creature::Regenerate(Powers power)
         {
             // For hunter pets.
             addvalue = 24 * sWorld->getRate(RATE_POWER_FOCUS);
-            break;
-        }
-        case POWER_ENERGY:
-        {
-            // For deathknight's ghoul.
-            addvalue = 20;
             break;
         }
         default:
@@ -843,9 +830,7 @@ bool Guardian::InitStatsForLevel(uint8 petlevel)
     PetType petType = MAX_PET_TYPE;
     if (IsPet() && GetOwner()->GetTypeId() == TYPEID_PLAYER)
     {
-        if (GetOwner()->getClass() == CLASS_WARLOCK
-            || GetOwner()->getClass() == CLASS_SHAMAN        // Fire Elemental
-            || GetOwner()->getClass() == CLASS_DEATH_KNIGHT) // Risen Ghoul
+        if (GetOwner()->getClass() == CLASS_WARLOCK || GetOwner()->getClass() == CLASS_SHAMAN)
         {
             petType = SUMMON_PET;
         }
@@ -1890,8 +1875,6 @@ bool Pet::IsPermanentPetFor(Player* owner) const
             {
                 case CLASS_WARLOCK:
                     return GetCreatureTemplate()->type == CREATURE_TYPE_DEMON;
-                case CLASS_DEATH_KNIGHT:
-                    return GetCreatureTemplate()->type == CREATURE_TYPE_UNDEAD;
                 default:
                     return false;
             }

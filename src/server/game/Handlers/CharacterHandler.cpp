@@ -470,11 +470,11 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
 
             _charCreateCallback.FreeResult();
 
-            if (!allowTwoSideAccounts || skipCinematics == 1 || createInfo->Class == CLASS_DEATH_KNIGHT)
+            if (!allowTwoSideAccounts || skipCinematics == 1)
             {
                 PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_CREATE_INFO);
                 stmt->setUInt32(0, GetAccountId());
-                stmt->setUInt32(1, (skipCinematics == 1 || createInfo->Class == CLASS_DEATH_KNIGHT) ? 10 : 1);
+                stmt->setUInt32(1, skipCinematics == 1 ? 10 : 1);
                 _charCreateCallback.SetFutureResult(CharacterDatabase.AsyncQuery(stmt));
                 _charCreateCallback.NextStage();
                 return;
@@ -491,13 +491,10 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
             bool hasHeroicReqLevel = (heroicReqLevel == 0);
             bool allowTwoSideAccounts = !sWorld->IsPvPRealm() || HasPermission(rbac::RBAC_PERM_TWO_SIDE_CHARACTER_CREATION);
             uint32 skipCinematics = sWorld->getIntConfig(CONFIG_SKIP_CINEMATICS);
-            bool checkHeroicReqs = createInfo->Class == CLASS_DEATH_KNIGHT && !HasPermission(rbac::RBAC_PERM_SKIP_CHECK_CHARACTER_CREATION_HEROIC_CHARACTER);
 
             if (result)
             {
                 uint32 team = Player::TeamForRace(createInfo->Race);
-                uint32 freeHeroicSlots = sWorld->getIntConfig(CONFIG_HEROIC_CHARACTERS_PER_REALM);
-
                 Field* field = result->Fetch();
                 uint8 accRace  = field[1].GetUInt8();
 
@@ -522,7 +519,7 @@ void WorldSession::HandleCharCreateCallback(PreparedQueryResult result, Characte
 
                 // search same race for cinematic or same class if need
                 /// @todo check if cinematic already shown? (already logged in?; cinematic field)
-                while ((skipCinematics == 1 && !haveSameRace) || createInfo->Class == CLASS_DEATH_KNIGHT)
+                while (skipCinematics == 1 && !haveSameRace)
                 {
                     if (!result->NextRow())
                         break;
@@ -1795,29 +1792,13 @@ void WorldSession::HandleCharFactionOrRaceChange(WorldPacket& recvData)
                     numFullTaximasks = 11;
                 if (team == TEAM_ALLIANCE)
                 {
-                    if (playerClass != CLASS_DEATH_KNIGHT)
-                    {
-                        for (uint8 i = 0; i < numFullTaximasks; ++i)
-                            taximaskstream << uint32(sAllianceTaxiNodesMask[i]) << ' ';
-                    }
-                    else
-                    {
-                        for (uint8 i = 0; i < numFullTaximasks; ++i)
-                            taximaskstream << uint32(sAllianceTaxiNodesMask[i] | sDeathKnightTaxiNodesMask[i]) << ' ';
-                    }
+                    for (uint8 i = 0; i < numFullTaximasks; ++i)
+                        taximaskstream << uint32(sAllianceTaxiNodesMask[i]) << ' ';
                 }
                 else
                 {
-                    if (playerClass != CLASS_DEATH_KNIGHT)
-                    {
-                        for (uint8 i = 0; i < numFullTaximasks; ++i)
-                            taximaskstream << uint32(sHordeTaxiNodesMask[i]) << ' ';
-                    }
-                    else
-                    {
-                        for (uint8 i = 0; i < numFullTaximasks; ++i)
-                            taximaskstream << uint32(sHordeTaxiNodesMask[i] | sDeathKnightTaxiNodesMask[i]) << ' ';
-                    }
+                    for (uint8 i = 0; i < numFullTaximasks; ++i)
+                        taximaskstream << uint32(sHordeTaxiNodesMask[i]) << ' ';
                 }
 
                 uint32 numEmptyTaximasks = 11 - numFullTaximasks;
