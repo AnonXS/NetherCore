@@ -236,8 +236,7 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
 
     ByteBuffer buf(500);
     buf << uint8(updateType);
-    //buf.append(GetPackGUID());        //client crashes when using this. dosnt seem to happen in debug mode
-    buf << uint8(0xFF) << GetGUID();
+    buf.append(GetPackGUID());
     buf << uint8(m_objectTypeId);
 
     BuildMovementUpdate(&buf, flags);
@@ -261,8 +260,7 @@ void Object::BuildValuesUpdateBlockForPlayer(UpdateData* data, Player* target) c
     ByteBuffer buf(500);
 
     buf << uint8(UPDATETYPE_VALUES);
-    //buf.append(GetPackGUID());        //client crashes when using this. dosnt seem to happen in debug mode
-    buf << uint8(0xFF) << GetGUID();
+    buf.append(GetPackGUID());
 
     BuildValuesUpdate(UPDATETYPE_VALUES, &buf, target);
 
