@@ -322,7 +322,7 @@ bool Creature::InitEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
 
     // Load creature equipment
     if (!data || data->equipmentId == 0)
-        LoadEquipment(); // use default equipment (if available)
+        LoadEquipment();                                    // use default equipment (if available)
     else if (data && data->equipmentId != 0)                // override, 0 means no equipment
     {
         m_originalEquipmentId = data->equipmentId;
@@ -1293,37 +1293,53 @@ void Creature::LoadEquipment(int8 id, bool force /*= true*/)
     {
         if (force)
         {
-            /* Not implemented in 2.4.3
-            for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; ++i)
-                SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, 0);
-            m_equipmentId = 0;
-            */
             for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; i++)
-            {
-                SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i, 0);
-                SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2), 0);
-                SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, 0);
-            }
+                SetVirtualItem(VirtualItemSlot(i), 0);
             m_equipmentId = 0;
         }
         return;
     }
 
-    EquipmentInfo const* einfo = sObjectMgr->GetEquipmentInfo(GetEntry(), id);
+    EquipmentInfo const* einfo = sObjectMgr->GetEquipmentInfo(GetEntry(), id);;
     if (!einfo)
         return;
 
     m_equipmentId = id;
-    /* Not implemented in 2.4.3
-    for (uint8 i = 0; i < 3; ++i)
-        SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + i, einfo->ItemEntry[i]);
-    */
     for (uint8 i = 0; i < MAX_EQUIPMENT_ITEMS; i++)
+        SetVirtualItem(VirtualItemSlot(i), einfo->ItemEntry[i]);
+}
+
+void Creature::SetVirtualItem(VirtualItemSlot slot, uint32 item_id)
+{
+    if (item_id == 0)
     {
-        SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + i, einfo->ItemEntry[i]);
-        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2), einfo->ItemEntry[i]);
-        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (i * 2) + 1, einfo->ItemEntry[i]);
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + slot, 0);
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, 0);
+        SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, 0);
+        return;
     }
+
+    ItemEntry const* proto = sItemStore.LookupEntry(item_id);
+    if (!proto)
+    {
+        TC_LOG_ERROR("sql.sql", "Not listed in 'item_template' item (ID:%u) used as virtual item for %i", item_id, GetEntry());
+        return;
+    }
+
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + slot, proto->DisplayId);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_CLASS, proto->Class);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS, proto->SubClass);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_UNK0, proto->SoundOverrideSubclass);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, VIRTUAL_ITEM_INFO_0_OFFSET_MATERIAL, proto->Material);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, VIRTUAL_ITEM_INFO_1_OFFSET_INVENTORYTYPE, proto->InventoryType);
+    SetByteValue(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, VIRTUAL_ITEM_INFO_1_OFFSET_SHEATH, proto->Sheath);
+}
+
+void Creature::SetVirtualItemRaw(VirtualItemSlot slot, uint32 display_id, uint32 info0, uint32 info1)
+{
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + slot, display_id);
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 0, info0);
+    SetUInt32Value(UNIT_VIRTUAL_ITEM_INFO + (slot * 2) + 1, info1);
 }
 
 bool Creature::hasQuest(uint32 quest_id) const

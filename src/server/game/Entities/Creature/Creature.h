@@ -432,13 +432,13 @@ enum VirtualItemSlot
 
 enum VirtualItemInfoByteOffset
 {
-    VIRTUAL_ITEM_INFO_0_OFFSET_CLASS = 0,
-    VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS = 1,
-    VIRTUAL_ITEM_INFO_0_OFFSET_UNK0 = 2,
-    VIRTUAL_ITEM_INFO_0_OFFSET_MATERIAL = 3,
+    VIRTUAL_ITEM_INFO_0_OFFSET_CLASS         = 0,
+    VIRTUAL_ITEM_INFO_0_OFFSET_SUBCLASS      = 1,
+    VIRTUAL_ITEM_INFO_0_OFFSET_UNK0          = 2,
+    VIRTUAL_ITEM_INFO_0_OFFSET_MATERIAL      = 3,
 
     VIRTUAL_ITEM_INFO_1_OFFSET_INVENTORYTYPE = 0,
-    VIRTUAL_ITEM_INFO_1_OFFSET_SHEATH = 1,
+    VIRTUAL_ITEM_INFO_1_OFFSET_SHEATH        = 1,
 };
 
 class Creature : public Unit, public GridObject<Creature>, public MapObject
@@ -460,6 +460,9 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool LoadCreaturesAddon(bool reload = false);
         void SelectLevel();
         void LoadEquipment(int8 id = 1, bool force = false);
+
+        void SetVirtualItem(VirtualItemSlot slot, uint32 item_id);
+        void SetVirtualItemRaw(VirtualItemSlot slot, uint32 display_id, uint32 info0, uint32 info1);
 
         uint32 GetDBTableGUIDLow() const { return m_DBTableGuid; }
 
