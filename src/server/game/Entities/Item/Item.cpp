@@ -466,9 +466,6 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, Field* fields, uint32 entr
         need_save = true;
     }
 
-    /* Not implemented in 2.4.3
-    SetUInt32Value(ITEM_FIELD_CREATE_PLAYED_TIME, fields[9].GetUInt32());
-    */
     SetText(fields[10].GetString());
 
     if (need_save)                                           // normal item changed state set not work at loading
