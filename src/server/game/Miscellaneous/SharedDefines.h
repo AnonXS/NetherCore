@@ -3229,6 +3229,12 @@ enum MailResponseResult
     MAIL_ERR_ITEM_HAS_EXPIRED          = 21
 };
 
+enum ItemTextStates
+{
+    TEXT_MAIL               = 0x1FB00000,
+    TEXT_ITEM               = 0x40000000
+};
+
 enum SpellFamilyNames
 {
     SPELLFAMILY_GENERIC     = 0,

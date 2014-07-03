@@ -1442,32 +1442,63 @@ void WorldSession::HandleItemRefund(WorldPacket &recvData)
 }
 
 /**
- * Handles the packet sent by the client when requesting information about item text.
+ * Handles the packet sent by the client when requesting information about item/mail text.
  *
- * This function is called when player clicks on item which has some flag set
+ * This function is called when player clicks on item which has some flag set or opens a mail
  */
 void WorldSession::HandleItemTextQuery(WorldPacket& recvData )
 {
-    uint64 itemGuid;
-    recvData >> itemGuid;
+    std::string body;
 
-    TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY item guid: %u", GUID_LOPART(itemGuid));
+    uint32 textId;                                          // id of the text, in case of a item its the same as entry, in case of mail its the inverted entry (to avoid client cache issues)
+    uint32 entry;                                           // this value can be item id in bag, but it is also mail id
+    uint32 state;                                           // maybe something like state - 0x70000000
+
+    recvData >> textId >> entry >> state;
+
+    switch (state)
+    {
+        case TEXT_MAIL:
+        {
+            Mail* m = _player->GetMail(entry);
+
+            if (!m)
+            {
+                TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY mail text not found! textId: %u, entry: %u", textId, entry);
+                return;
+            }
+            
+            body = m->body;
+
+        } break;
+        case TEXT_ITEM:
+        {
+            Item* i = _player->GetItemByGuid(MAKE_NEW_GUID(entry, 0, HIGHGUID_ITEM));
+
+            if (!i)
+            {
+                TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY item text not found! textId: %u, entry: %u", textId, entry);
+                return;
+            }
+
+            body = i->GetText();
+
+        } break;
+        default:
+        {
+            
+            TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY no action for this state defined! state: %u", state);
+            return;
+        }
+    }
+
+    TC_LOG_DEBUG("network", "CMSG_ITEM_TEXT_QUERY textId: %u, itemId: %u", textId, entry);
 
     WorldPacket data(SMSG_ITEM_TEXT_QUERY_RESPONSE, (4+10));    // guess size
-
-    if (Item* item = _player->GetItemByGuid(itemGuid))
-    {
-        data << uint8(0);                                       // has text
-        data << uint64(itemGuid);                               // item guid
-        data << item->GetText();
-    }
-    else
-    {
-        data << uint8(1);                                       // no text
-    }
-
+    data << textId;
+    data << body;
     SendPacket(&data);
-}
+} 
 
 bool WorldSession::CanUseBank(uint64 bankerGUID) const
 {

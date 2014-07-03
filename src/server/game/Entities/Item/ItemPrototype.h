@@ -177,8 +177,6 @@ enum ItemFieldFlags
     ITEM_FLAG_UNK24         = 0x20000000, // ?
     ITEM_FLAG_UNK25         = 0x40000000, // ?
     ITEM_FLAG_UNK26         = 0x80000000, // ?
-
-    ITEM_FLAG_MAIL_TEXT_MASK = ITEM_FLAG_READABLE | ITEM_FLAG_UNK13 | ITEM_FLAG_UNK14
 };
 
 enum ItemFlagsExtra
