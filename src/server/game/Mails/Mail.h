@@ -86,7 +86,6 @@ class MailSender
         {
         }
         MailSender(Object* sender, MailStationery stationery = MAIL_STATIONERY_DEFAULT);
-        MailSender(CalendarEvent* sender);
         MailSender(AuctionEntry* sender);
         MailSender(Player* sender);
     public:                                                 // Accessors
