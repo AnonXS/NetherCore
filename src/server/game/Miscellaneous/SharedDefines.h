@@ -715,8 +715,8 @@ enum SpellEffects
     SPELL_EFFECT_DISPEL                             = 38,
     SPELL_EFFECT_LANGUAGE                           = 39,
     SPELL_EFFECT_DUAL_WIELD                         = 40,
-    SPELL_EFFECT_JUMP                               = 41,
-    SPELL_EFFECT_JUMP_DEST                          = 42,
+    SPELL_EFFECT_JUMP                               = 41,   // Trinity 3.3.5
+    SPELL_EFFECT_JUMP_DEST                          = 42,   // Trinity 3.3.5
     SPELL_EFFECT_TELEPORT_UNITS_FACE_CASTER         = 43,
     SPELL_EFFECT_SKILL_STEP                         = 44,
     SPELL_EFFECT_ADD_HONOR                          = 45,
@@ -733,22 +733,22 @@ enum SpellEffects
     SPELL_EFFECT_SUMMON_PET                         = 56,
     SPELL_EFFECT_LEARN_PET_SPELL                    = 57,
     SPELL_EFFECT_WEAPON_DAMAGE                      = 58,
-    SPELL_EFFECT_CREATE_RANDOM_ITEM                 = 59,
+    SPELL_EFFECT_OPEN_LOCK_ITEM                     = 59,
     SPELL_EFFECT_PROFICIENCY                        = 60,
     SPELL_EFFECT_SEND_EVENT                         = 61,
     SPELL_EFFECT_POWER_BURN                         = 62,
     SPELL_EFFECT_THREAT                             = 63,
     SPELL_EFFECT_TRIGGER_SPELL                      = 64,
-    SPELL_EFFECT_APPLY_AREA_AURA_RAID               = 65,
-    SPELL_EFFECT_CREATE_MANA_GEM                    = 66,
+    SPELL_EFFECT_HEALTH_FUNNEL                      = 65,
+    SPELL_EFFECT_POWER_FUNNEL                       = 66,
     SPELL_EFFECT_HEAL_MAX_HEALTH                    = 67,
     SPELL_EFFECT_INTERRUPT_CAST                     = 68,
     SPELL_EFFECT_DISTRACT                           = 69,
     SPELL_EFFECT_PULL                               = 70,
     SPELL_EFFECT_PICKPOCKET                         = 71,
     SPELL_EFFECT_ADD_FARSIGHT                       = 72,
-    SPELL_EFFECT_UNTRAIN_TALENTS                    = 73,
-    SPELL_EFFECT_APPLY_GLYPH                        = 74,
+    SPELL_EFFECT_UNTRAIN_TALENTS                    = 73,   // Trinity 3.3.5
+    SPELL_EFFECT_74                                 = 74,
     SPELL_EFFECT_HEAL_MECHANICAL                    = 75,
     SPELL_EFFECT_SUMMON_OBJECT_WILD                 = 76,
     SPELL_EFFECT_SCRIPT_EFFECT                      = 77,
@@ -761,17 +761,17 @@ enum SpellEffects
     SPELL_EFFECT_STUCK                              = 84,
     SPELL_EFFECT_SUMMON_PLAYER                      = 85,
     SPELL_EFFECT_ACTIVATE_OBJECT                    = 86,
-    SPELL_EFFECT_GAMEOBJECT_DAMAGE                  = 87,
-    SPELL_EFFECT_GAMEOBJECT_REPAIR                  = 88,
-    SPELL_EFFECT_GAMEOBJECT_SET_DESTRUCTION_STATE   = 89,
-    SPELL_EFFECT_KILL_CREDIT                        = 90,
+    SPELL_EFFECT_87                                 = 87,
+    SPELL_EFFECT_88                                 = 88,
+    SPELL_EFFECT_89                                 = 89,
+    SPELL_EFFECT_KILL_CREDIT                        = 90,   // Trinity 3.3.5
     SPELL_EFFECT_THREAT_ALL                         = 91,
     SPELL_EFFECT_ENCHANT_HELD_ITEM                  = 92,
-    SPELL_EFFECT_FORCE_DESELECT                     = 93,
+    SPELL_EFFECT_FORCE_DESELECT                     = 93,   // Trinity 3.3.5
     SPELL_EFFECT_SELF_RESURRECT                     = 94,
     SPELL_EFFECT_SKINNING                           = 95,
     SPELL_EFFECT_CHARGE                             = 96,
-    SPELL_EFFECT_CAST_BUTTON                        = 97,
+    SPELL_EFFECT_CAST_BUTTON                        = 97,   // Trinity 3.3.5
     SPELL_EFFECT_KNOCK_BACK                         = 98,
     SPELL_EFFECT_DISENCHANT                         = 99,
     SPELL_EFFECT_INEBRIATE                          = 100,
@@ -819,29 +819,29 @@ enum SpellEffects
     SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE           = 142,
     SPELL_EFFECT_APPLY_AREA_AURA_OWNER              = 143,
     SPELL_EFFECT_KNOCK_BACK_DEST                    = 144,
-    SPELL_EFFECT_PULL_TOWARDS_DEST                  = 145,
-    //SPELL_EFFECT_ACTIVATE_RUNE                      = 146,
+    SPELL_EFFECT_SUSPEND_GRAVITY                    = 145,
+    SPELL_EFFECT_146                                = 146,
     SPELL_EFFECT_QUEST_FAIL                         = 147,
-    SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE   = 148,
+    SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE   = 148,  // Trinity 3.3.5
     SPELL_EFFECT_CHARGE_DEST                        = 149,
-    SPELL_EFFECT_QUEST_START                        = 150,
+    SPELL_EFFECT_QUEST_START                        = 150,  // Trinity 3.3.5
     SPELL_EFFECT_TRIGGER_SPELL_2                    = 151,
     SPELL_EFFECT_SUMMON_RAF_FRIEND                  = 152,
-    SPELL_EFFECT_CREATE_TAMED_PET                   = 153,
-    SPELL_EFFECT_DISCOVER_TAXI                      = 154,
+    SPELL_EFFECT_CREATE_TAMED_PET                   = 153,  // Trinity 3.3.5
 
-    //WOTLK
-    SPELL_EFFECT_TITAN_GRIP                         = 155,
-    //SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC             = 156,
-    SPELL_EFFECT_CREATE_ITEM_2                      = 157,
-    SPELL_EFFECT_MILLING                            = 158,
-    SPELL_EFFECT_ALLOW_RENAME_PET                   = 159,
-    SPELL_EFFECT_160                                = 160,
-    SPELL_EFFECT_TALENT_SPEC_COUNT                  = 161,
-    SPELL_EFFECT_TALENT_SPEC_SELECT                 = 162,
-    SPELL_EFFECT_163                                = 163,
-    SPELL_EFFECT_REMOVE_AURA                        = 164,
-    TOTAL_SPELL_EFFECTS                             = 165
+    // Trinity 3.3.5 (not used yet, id conflict)
+    SPELL_EFFECT_DISCOVER_TAXI                      = 200,
+    SPELL_EFFECT_TITAN_GRIP                         = 201,
+    SPELL_EFFECT_ALLOW_RENAME_PET                   = 202,
+    SPELL_EFFECT_TALENT_SPEC_COUNT                  = 203,
+    SPELL_EFFECT_TALENT_SPEC_SELECT                 = 204,
+    SPELL_EFFECT_REMOVE_AURA                        = 205,
+    SPELL_EFFECT_PULL_TOWARDS_DEST                  = 206,
+    SPELL_EFFECT_CREATE_RANDOM_ITEM                 = 207,
+    SPELL_EFFECT_APPLY_AREA_AURA_RAID               = 208,
+    SPELL_EFFECT_CREATE_MANA_GEM                    = 209,
+
+    TOTAL_SPELL_EFFECTS                             = 164
 };
 
 enum SpellCastResult

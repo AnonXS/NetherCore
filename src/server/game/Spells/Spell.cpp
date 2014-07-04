@@ -2087,20 +2087,6 @@ void Spell::AddGOTarget(GameObject* go, uint32 effectMask)
     {
         if (!m_spellInfo->Effects[effIndex].IsEffect())
             effectMask &= ~(1 << effIndex);
-        else
-        {
-            switch (m_spellInfo->Effects[effIndex].Effect)
-            {
-            case SPELL_EFFECT_GAMEOBJECT_DAMAGE:
-            case SPELL_EFFECT_GAMEOBJECT_REPAIR:
-            case SPELL_EFFECT_GAMEOBJECT_SET_DESTRUCTION_STATE:
-                if (go->GetGoType() != GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING)
-                    effectMask &= ~(1 << effIndex);
-                break;
-            default:
-                break;
-            }
-        }
     }
 
     if (!effectMask)
@@ -4753,14 +4739,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
                 break;
             }
-            case SPELL_EFFECT_APPLY_GLYPH:
-            {
-                uint32 glyphId = m_spellInfo->Effects[i].MiscValue;
-                if (GlyphPropertiesEntry const* gp = sGlyphPropertiesStore.LookupEntry(glyphId))
-                    if (m_caster->HasAura(gp->SpellId))
-                        return SPELL_FAILED_UNKNOWN;
-                break;
-            }
             case SPELL_EFFECT_FEED_PET:
             {
                 if (m_caster->GetTypeId() != TYPEID_PLAYER)
@@ -5054,13 +5032,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
                 break;
             }
-            case SPELL_EFFECT_TALENT_SPEC_SELECT:
-                // can't change during already started arena/battleground
-                if (m_caster->GetTypeId() == TYPEID_PLAYER)
-                    if (Battleground const* bg = m_caster->ToPlayer()->GetBattleground())
-                        if (bg->GetStatus() == STATUS_IN_PROGRESS)
-                            return SPELL_FAILED_NOT_IN_BATTLEGROUND;
-                break;
             default:
                 break;
         }
@@ -5689,7 +5660,6 @@ SpellCastResult Spell::CheckItems()
         switch (m_spellInfo->Effects[i].Effect)
         {
             case SPELL_EFFECT_CREATE_ITEM:
-            case SPELL_EFFECT_CREATE_ITEM_2:
             {
                 if (!IsTriggered() && m_spellInfo->Effects[i].ItemType)
                 {
@@ -5805,29 +5775,6 @@ SpellCastResult Spell::CheckItems()
 
                 if (!LootTemplates_Prospecting.HaveLootFor(m_targets.GetItemTargetEntry()))
                     return SPELL_FAILED_CANT_BE_PROSPECTED;
-
-                break;
-            }
-            case SPELL_EFFECT_MILLING:
-            {
-                if (!m_targets.GetItemTarget())
-                    return SPELL_FAILED_UNKNOWN;
-                //ensure item is a millable herb
-                if (!(m_targets.GetItemTarget()->GetTemplate()->Flags & ITEM_PROTO_FLAG_MILLABLE))
-                    return SPELL_FAILED_UNKNOWN;
-                //prevent milling in trade slot
-                if (m_targets.GetItemTarget()->GetOwnerGUID() != m_caster->GetGUID())
-                    return SPELL_FAILED_UNKNOWN;
-                //Check for enough skill in inscription
-                uint32 item_millingskilllevel = m_targets.GetItemTarget()->GetTemplate()->RequiredSkillRank;
-                if (item_millingskilllevel > player->GetSkillValue(SKILL_INSCRIPTION))
-                    return SPELL_FAILED_LOW_CASTLEVEL;
-                //make sure the player has the required herbs in inventory
-                if (m_targets.GetItemTarget()->GetCount() < 5)
-                    return SPELL_FAILED_UNKNOWN;
-
-                if (!LootTemplates_Milling.HaveLootFor(m_targets.GetItemTargetEntry()))
-                    return SPELL_FAILED_UNKNOWN;
 
                 break;
             }

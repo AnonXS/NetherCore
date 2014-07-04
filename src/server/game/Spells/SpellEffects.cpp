@@ -125,14 +125,14 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectSummonPet,                                // 56 SPELL_EFFECT_SUMMON_PET
     &Spell::EffectLearnPetSpell,                            // 57 SPELL_EFFECT_LEARN_PET_SPELL
     &Spell::EffectWeaponDmg,                                // 58 SPELL_EFFECT_WEAPON_DAMAGE
-    &Spell::EffectCreateRandomItem,                         // 59 SPELL_EFFECT_CREATE_RANDOM_ITEM       create item base at spell specific loot
+    &Spell::EffectNULL,//nyi                                // 59 SPELL_EFFECT_OPEN_LOCK_ITEM
     &Spell::EffectProficiency,                              // 60 SPELL_EFFECT_PROFICIENCY
     &Spell::EffectSendEvent,                                // 61 SPELL_EFFECT_SEND_EVENT
     &Spell::EffectPowerBurn,                                // 62 SPELL_EFFECT_POWER_BURN
     &Spell::EffectThreat,                                   // 63 SPELL_EFFECT_THREAT
     &Spell::EffectTriggerSpell,                             // 64 SPELL_EFFECT_TRIGGER_SPELL
-    &Spell::EffectApplyAreaAura,                            // 65 SPELL_EFFECT_APPLY_AREA_AURA_RAID
-    &Spell::EffectRechargeManaGem,                          // 66 SPELL_EFFECT_CREATE_MANA_GEM          (possibly recharge it, misc - is item ID)
+    &Spell::EffectNULL,//nyi                                // 65 SPELL_EFFECT_HEALTH_FUNNEL
+    &Spell::EffectNULL,//nyi                                // 66 SPELL_EFFECT_POWER_FUNNEL
     &Spell::EffectHealMaxHealth,                            // 67 SPELL_EFFECT_HEAL_MAX_HEALTH
     &Spell::EffectInterruptCast,                            // 68 SPELL_EFFECT_INTERRUPT_CAST
     &Spell::EffectDistract,                                 // 69 SPELL_EFFECT_DISTRACT
@@ -140,7 +140,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectPickPocket,                               // 71 SPELL_EFFECT_PICKPOCKET
     &Spell::EffectAddFarsight,                              // 72 SPELL_EFFECT_ADD_FARSIGHT
     &Spell::EffectUntrainTalents,                           // 73 SPELL_EFFECT_UNTRAIN_TALENTS
-    &Spell::EffectApplyGlyph,                               // 74 SPELL_EFFECT_APPLY_GLYPH
+    &Spell::EffectUnused,                                   // 74 SPELL_EFFECT_74
     &Spell::EffectHealMechanical,                           // 75 SPELL_EFFECT_HEAL_MECHANICAL          one spell: Mechanical Patch Kit
     &Spell::EffectSummonObjectWild,                         // 76 SPELL_EFFECT_SUMMON_OBJECT_WILD
     &Spell::EffectScriptEffect,                             // 77 SPELL_EFFECT_SCRIPT_EFFECT
@@ -153,9 +153,9 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectStuck,                                    // 84 SPELL_EFFECT_STUCK
     &Spell::EffectSummonPlayer,                             // 85 SPELL_EFFECT_SUMMON_PLAYER
     &Spell::EffectActivateObject,                           // 86 SPELL_EFFECT_ACTIVATE_OBJECT
-    &Spell::EffectGameObjectDamage,                         // 87 SPELL_EFFECT_GAMEOBJECT_DAMAGE
-    &Spell::EffectGameObjectRepair,                         // 88 SPELL_EFFECT_GAMEOBJECT_REPAIR
-    &Spell::EffectGameObjectSetDestructionState,            // 89 SPELL_EFFECT_GAMEOBJECT_SET_DESTRUCTION_STATE
+    &Spell::EffectUnused,                                   // 87 SPELL_EFFECT_87
+    &Spell::EffectUnused,                                   // 88 SPELL_EFFECT_88
+    &Spell::EffectUnused,                                   // 89 SPELL_EFFECT_89
     &Spell::EffectKillCreditPersonal,                       // 90 SPELL_EFFECT_KILL_CREDIT              Kill credit but only for single person
     &Spell::EffectUnused,                                   // 91 SPELL_EFFECT_THREAT_ALL               one spell: zzOLDBrainwash
     &Spell::EffectEnchantHeldItem,                          // 92 SPELL_EFFECT_ENCHANT_HELD_ITEM
@@ -188,7 +188,7 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectApplyAreaAura,                            //119 SPELL_EFFECT_APPLY_AREA_AURA_PET
     &Spell::EffectUnused,                                   //120 SPELL_EFFECT_TELEPORT_GRAVEYARD       one spell: Graveyard Teleport Test
     &Spell::EffectWeaponDmg,                                //121 SPELL_EFFECT_NORMALIZED_WEAPON_DMG
-    &Spell::EffectUnused,                                   //122 SPELL_EFFECT_122                      unused
+    &Spell::EffectUnused,                                   //122 SPELL_EFFECT_122
     &Spell::EffectSendTaxi,                                 //123 SPELL_EFFECT_SEND_TAXI                taxi/flight related (misc value is taxi path id)
     &Spell::EffectPullTowards,                              //124 SPELL_EFFECT_PULL_TOWARDS
     &Spell::EffectModifyThreatPercent,                      //125 SPELL_EFFECT_MODIFY_THREAT_PERCENT
@@ -211,8 +211,8 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectTriggerSpell,                             //142 SPELL_EFFECT_TRIGGER_SPELL_WITH_VALUE
     &Spell::EffectApplyAreaAura,                            //143 SPELL_EFFECT_APPLY_AREA_AURA_OWNER
     &Spell::EffectKnockBack,                                //144 SPELL_EFFECT_KNOCK_BACK_DEST
-    &Spell::EffectPullTowards,                              //145 SPELL_EFFECT_PULL_TOWARDS_DEST                      Black Hole Effect
-    //&Spell::EffectActivateRune,                             //146 SPELL_EFFECT_ACTIVATE_RUNE
+    &Spell::EffectNULL,//nyi                                //145 SPELL_EFFECT_SUSPEND_GRAVITY
+    &Spell::EffectUnused,                                   //146 SPELL_EFFECT_146
     &Spell::EffectQuestFail,                                //147 SPELL_EFFECT_QUEST_FAIL               quest fail
     &Spell::EffectTriggerMissileSpell,                      //148 SPELL_EFFECT_TRIGGER_MISSILE_SPELL_WITH_VALUE
     &Spell::EffectChargeDest,                               //149 SPELL_EFFECT_CHARGE_DEST
@@ -220,17 +220,16 @@ pEffect SpellEffects[TOTAL_SPELL_EFFECTS]=
     &Spell::EffectTriggerRitualOfSummoning,                 //151 SPELL_EFFECT_TRIGGER_SPELL_2
     &Spell::EffectSummonRaFFriend,                          //152 SPELL_EFFECT_SUMMON_RAF_FRIEND        summon Refer-a-Friend
     &Spell::EffectCreateTamedPet,                           //153 SPELL_EFFECT_CREATE_TAMED_PET         misc value is creature entry
-    &Spell::EffectDiscoverTaxi,                             //154 SPELL_EFFECT_DISCOVER_TAXI
-    &Spell::EffectTitanGrip,                                //155 SPELL_EFFECT_TITAN_GRIP Allows you to equip two-handed axes, maces and swords in one hand, but you attack $49152s1% slower than normal.
-    //&Spell::EffectEnchantItemPrismatic,                     //156 SPELL_EFFECT_ENCHANT_ITEM_PRISMATIC
-    &Spell::EffectCreateItem2,                              //157 SPELL_EFFECT_CREATE_ITEM_2            create item or create item template and replace by some randon spell loot item
-    &Spell::EffectMilling,                                  //158 SPELL_EFFECT_MILLING                  milling
-    &Spell::EffectRenamePet,                                //159 SPELL_EFFECT_ALLOW_RENAME_PET         allow rename pet once again
-    &Spell::EffectNULL,                                     //160 SPELL_EFFECT_160                      1 spell - 45534
-    &Spell::EffectSpecCount,                                //161 SPELL_EFFECT_TALENT_SPEC_COUNT        second talent spec (learn/revert)
-    &Spell::EffectActivateSpec,                             //162 SPELL_EFFECT_TALENT_SPEC_SELECT       activate primary/secondary spec
-    &Spell::EffectNULL,                                     //163 unused
-    &Spell::EffectRemoveAura,                               //164 SPELL_EFFECT_REMOVE_AURA
+    &Spell::EffectDiscoverTaxi,                             //200 SPELL_EFFECT_DISCOVER_TAXI
+    &Spell::EffectTitanGrip,                                //201 SPELL_EFFECT_TITAN_GRIP               Allows you to equip two-handed axes, maces and swords in one hand, but you attack $49152s1% slower than normal.
+    &Spell::EffectRenamePet,                                //202 SPELL_EFFECT_ALLOW_RENAME_PET         allow rename pet once again
+    &Spell::EffectSpecCount,                                //203 SPELL_EFFECT_TALENT_SPEC_COUNT        second talent spec (learn/revert)
+    &Spell::EffectActivateSpec,                             //204 SPELL_EFFECT_TALENT_SPEC_SELECT       activate primary/secondary spec
+    &Spell::EffectRemoveAura,                               //205 SPELL_EFFECT_REMOVE_AURA
+    &Spell::EffectPullTowards,                              //206 SPELL_EFFECT_PULL_TOWARDS_DEST        Black Hole Effect
+    &Spell::EffectCreateRandomItem,                         //207 SPELL_EFFECT_CREATE_RANDOM_ITEM       create item base at spell specific loot
+    &Spell::EffectApplyAreaAura,                            //208 SPELL_EFFECT_APPLY_AREA_AURA_RAID
+    &Spell::EffectRechargeManaGem,                          //209 SPELL_EFFECT_CREATE_MANA_GEM          (possibly recharge it, misc - is item ID)
 };
 
 void Spell::EffectNULL(SpellEffIndex /*effIndex*/)
@@ -1637,43 +1636,7 @@ void Spell::EffectCreateItem(SpellEffIndex effIndex)
     ExecuteLogEffectCreateItem(effIndex, m_spellInfo->Effects[effIndex].ItemType);
 }
 
-void Spell::EffectCreateItem2(SpellEffIndex effIndex)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
-        return;
-
-    Player* player = unitTarget->ToPlayer();
-
-    uint32 item_id = m_spellInfo->Effects[effIndex].ItemType;
-
-    if (item_id)
-        DoCreateItem(effIndex, item_id);
-
-    // special case: fake item replaced by generate using spell_loot_template
-    if (m_spellInfo->IsLootCrafting())
-    {
-        if (item_id)
-        {
-            if (!player->HasItemCount(item_id))
-                return;
-
-            // remove reagent
-            uint32 count = 1;
-            player->DestroyItemCount(item_id, count, true);
-
-            // create some random items
-            player->AutoStoreLoot(m_spellInfo->Id, LootTemplates_Spell);
-        }
-        else
-            player->AutoStoreLoot(m_spellInfo->Id, LootTemplates_Spell);    // create some random items
-    }
-    /// @todo ExecuteLogEffectCreateItem(i, m_spellInfo->Effects[i].ItemType);
-}
-
-void Spell::EffectCreateRandomItem(SpellEffIndex /*effIndex*/)
+void Spell::EffectCreateRandomItem(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
         return;
@@ -4093,66 +4056,6 @@ void Spell::EffectActivateObject(SpellEffIndex /*effIndex*/)
     gameObjTarget->GetMap()->ScriptCommandStart(activateCommand, 0, m_caster, gameObjTarget);
 }
 
-void Spell::EffectApplyGlyph(SpellEffIndex effIndex)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
-        return;
-
-    if (m_glyphIndex >= MAX_GLYPH_SLOT_INDEX)
-        return;
-
-    Player* player = m_caster->ToPlayer();
-    if (!player)
-        return;
-
-    // glyph sockets level requirement
-    uint8 minLevel = 0;
-    switch (m_glyphIndex)
-    {
-        case 0:
-        case 1: minLevel = 15; break;
-        case 2: minLevel = 50; break;
-        case 3: minLevel = 30; break;
-        case 4: minLevel = 70; break;
-        case 5: minLevel = 80; break;
-    }
-    if (minLevel && m_caster->getLevel() < minLevel)
-    {
-        SendCastResult(SPELL_FAILED_UNKNOWN);
-        return;
-    }
-
-    // apply new one
-    if (uint32 glyph = m_spellInfo->Effects[effIndex].MiscValue)
-    {
-        if (GlyphPropertiesEntry const* gp = sGlyphPropertiesStore.LookupEntry(glyph))
-        {
-            if (GlyphSlotEntry const* gs = sGlyphSlotStore.LookupEntry(player->GetGlyphSlot(m_glyphIndex)))
-            {
-                if (gp->TypeFlags != gs->TypeFlags)
-                {
-                    SendCastResult(SPELL_FAILED_UNKNOWN);
-                    return;                                 // glyph slot mismatch
-                }
-            }
-
-            // remove old glyph
-            if (uint32 oldglyph = player->GetGlyph(m_glyphIndex))
-            {
-                if (GlyphPropertiesEntry const* old_gp = sGlyphPropertiesStore.LookupEntry(oldglyph))
-                {
-                    player->RemoveAurasDueToSpell(old_gp->SpellId);
-                    player->SetGlyph(m_glyphIndex, 0);
-                }
-            }
-
-            player->CastSpell(m_caster, gp->SpellId, true);
-            player->SetGlyph(m_glyphIndex, glyph);
-            player->SendTalentsInfoData(false);
-        }
-    }
-}
-
 void Spell::EffectEnchantHeldItem(SpellEffIndex effIndex)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
@@ -5069,31 +4972,6 @@ void Spell::EffectProspecting(SpellEffIndex /*effIndex*/)
     player->SendLoot(itemTarget->GetGUID(), LOOT_PROSPECTING);
 }
 
-void Spell::EffectMilling(SpellEffIndex /*effIndex*/)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    Player* player = m_caster->ToPlayer();
-    if (!player)
-        return;
-
-    if (!itemTarget || !(itemTarget->GetTemplate()->Flags & ITEM_PROTO_FLAG_MILLABLE))
-        return;
-
-    if (itemTarget->GetCount() < 5)
-        return;
-
-    if (sWorld->getBoolConfig(CONFIG_SKILL_MILLING))
-    {
-        uint32 SkillValue = player->GetPureSkillValue(SKILL_INSCRIPTION);
-        uint32 reqSkillValue = itemTarget->GetTemplate()->RequiredSkillRank;
-        player->UpdateGatherSkill(SKILL_INSCRIPTION, SkillValue, reqSkillValue);
-    }
-
-    player->SendLoot(itemTarget->GetGUID(), LOOT_MILLING);
-}
-
 void Spell::EffectSkill(SpellEffIndex /*effIndex*/)
 {
     if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT)
@@ -5366,48 +5244,6 @@ void Spell::EffectRedirectThreat(SpellEffIndex /*effIndex*/)
 
     if (unitTarget)
         m_caster->SetRedirectThreat(unitTarget->GetGUID(), uint32(damage));
-}
-
-void Spell::EffectGameObjectDamage(SpellEffIndex /*effIndex*/)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    if (!gameObjTarget)
-        return;
-
-    Unit* caster = m_originalCaster;
-    if (!caster)
-        return;
-
-    FactionTemplateEntry const* casterFaction = caster->GetFactionTemplateEntry();
-    FactionTemplateEntry const* targetFaction = sFactionTemplateStore.LookupEntry(gameObjTarget->GetUInt32Value(GAMEOBJECT_FACTION));
-    // Do not allow to damage GO's of friendly factions (ie: Wintergrasp Walls/Ulduar Storm Beacons)
-    if ((casterFaction && targetFaction && !casterFaction->IsFriendlyTo(*targetFaction)) || !targetFaction)
-        gameObjTarget->ModifyHealth(-damage, caster, GetSpellInfo()->Id);
-}
-
-void Spell::EffectGameObjectRepair(SpellEffIndex /*effIndex*/)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    if (!gameObjTarget)
-        return;
-
-    gameObjTarget->ModifyHealth(damage, m_caster);
-}
-
-void Spell::EffectGameObjectSetDestructionState(SpellEffIndex effIndex)
-{
-    if (effectHandleMode != SPELL_EFFECT_HANDLE_HIT_TARGET)
-        return;
-
-    if (!gameObjTarget || !m_originalCaster)
-        return;
-
-    Player* player = m_originalCaster->GetCharmerOrOwnerPlayerOrPlayerItself();
-    gameObjTarget->SetDestructibleState(GameObjectDestructibleState(m_spellInfo->Effects[effIndex].MiscValue), player, true);
 }
 
 void Spell::SummonGuardian(uint32 i, uint32 entry, SummonPropertiesEntry const* properties, uint32 numGuardians)
