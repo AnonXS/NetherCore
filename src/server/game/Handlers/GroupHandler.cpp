@@ -63,7 +63,6 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
     std::string membername;
     recvData >> membername;
-    recvData.read_skip<uint32>();
 
     // attempt add selected player
 
@@ -125,19 +124,6 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
     if (group2 || player->GetGroupInvite())
     {
         SendPartyResult(PARTY_OP_INVITE, membername, ERR_ALREADY_IN_GROUP_S);
-
-        if (group2)
-        {
-            // tell the player that they were invited but it failed as they were already in a group
-            WorldPacket data(SMSG_GROUP_INVITE, 10);                // guess size
-            data << uint8(0);                                       // invited/already in group flag
-            data << GetPlayer()->GetName();                         // max len 48
-            data << uint32(0);                                      // unk
-            data << uint8(0);                                       // count
-            data << uint32(0);                                      // unk
-            player->GetSession()->SendPacket(&data);
-        }
-
         return;
     }
 
@@ -186,11 +172,7 @@ void WorldSession::HandleGroupInviteOpcode(WorldPacket& recvData)
 
     // ok, we do it
     WorldPacket data(SMSG_GROUP_INVITE, 10);                // guess size
-    data << uint8(1);                                       // invited/already in group flag
     data << GetPlayer()->GetName();                         // max len 48
-    data << uint32(0);                                      // unk
-    data << uint8(0);                                       // count
-    data << uint32(0);                                      // unk
     player->GetSession()->SendPacket(&data);
 
     SendPartyResult(PARTY_OP_INVITE, membername, ERR_PARTY_RESULT_OK);
@@ -200,7 +182,6 @@ void WorldSession::HandleGroupAcceptOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_GROUP_ACCEPT");
 
-    recvData.read_skip<uint32>();
     Group* group = GetPlayer()->GetGroupInvite();
 
     if (!group)
@@ -770,10 +751,10 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
     }
 
     if (mask & GROUP_UPDATE_FLAG_CUR_HP)
-        *data << uint32(player->GetHealth());
+        *data << uint16(player->GetHealth());
 
     if (mask & GROUP_UPDATE_FLAG_MAX_HP)
-        *data << uint32(player->GetMaxHealth());
+        *data << uint16(player->GetMaxHealth());
 
     Powers powerType = player->getPowerType();
     if (mask & GROUP_UPDATE_FLAG_POWER_TYPE)
@@ -806,7 +787,7 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
             if (auramask & (uint64(1) << i))
             {
                 AuraApplication const* aurApp = player->GetVisibleAura(i);
-                *data << uint32(aurApp ? aurApp->GetBase()->GetId() : 0);
+                *data << uint16(aurApp ? aurApp->GetBase()->GetId() : 0);
                 *data << uint8(1);
             }
         }
@@ -840,17 +821,17 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
     if (mask & GROUP_UPDATE_FLAG_PET_CUR_HP)
     {
         if (pet)
-            *data << uint32(pet->GetHealth());
+            *data << uint16(pet->GetHealth());
         else
-            *data << uint32(0);
+            *data << uint16(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_MAX_HP)
     {
         if (pet)
-            *data << uint32(pet->GetMaxHealth());
+            *data << uint16(pet->GetMaxHealth());
         else
-            *data << uint32(0);
+            *data << uint16(0);
     }
 
     if (mask & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
@@ -888,23 +869,13 @@ void WorldSession::BuildPartyMemberStatsChangedPacket(Player* player, WorldPacke
                 if (auramask & (uint64(1) << i))
                 {
                     AuraApplication const* aurApp = pet->GetVisibleAura(i);
-                    *data << uint32(aurApp ? aurApp->GetBase()->GetId() : 0);
+                    *data << uint16(aurApp ? aurApp->GetBase()->GetId() : 0);
                     *data << uint8(aurApp ? aurApp->GetFlags() : 0);
                 }
             }
         }
         else
             *data << uint64(0);
-    }
-
-    if (mask & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
-    {
-        /*
-        if (Vehicle* veh = player->GetVehicle())
-            *data << uint32(veh->GetVehicleInfo()->m_seatID[player->m_movementInfo.transport.seat]);
-        else
-            *data << uint32(0);
-        */
     }
 }
 
@@ -919,7 +890,6 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
     if (!player)
     {
         WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 3+4+2);
-        data << uint8(0);                                   // only for SMSG_PARTY_MEMBER_STATS_FULL, probably arena/bg related
         data.appendPackGUID(Guid);
         data << uint32(GROUP_UPDATE_FLAG_STATUS);
         data << uint16(MEMBER_STATUS_OFFLINE);
@@ -931,7 +901,6 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
     Powers powerType = player->getPowerType();
 
     WorldPacket data(SMSG_PARTY_MEMBER_STATS_FULL, 4+2+2+2+1+2*6+8+1+8);
-    data << uint8(0);                                       // only for SMSG_PARTY_MEMBER_STATS_FULL, probably arena/bg related
     data.append(player->GetPackGUID());
 
     uint32 updateFlags = GROUP_UPDATE_FLAG_STATUS | GROUP_UPDATE_FLAG_CUR_HP | GROUP_UPDATE_FLAG_MAX_HP
@@ -972,11 +941,9 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
 
     data << uint32(updateFlags);
     data << uint16(playerStatus);                           // GROUP_UPDATE_FLAG_STATUS
-    data << uint32(player->GetHealth());                    // GROUP_UPDATE_FLAG_CUR_HP
-    data << uint32(player->GetMaxHealth());                 // GROUP_UPDATE_FLAG_MAX_HP
-    if (updateFlags & GROUP_UPDATE_FLAG_POWER_TYPE)
-        data << uint8(powerType);
-
+    data << uint16(player->GetHealth());                    // GROUP_UPDATE_FLAG_CUR_HP
+    data << uint16(player->GetMaxHealth());                 // GROUP_UPDATE_FLAG_MAX_HP
+    data << uint8(powerType);                               // GROUP_UPDATE_FLAG_POWER_TYPE
     data << uint16(player->GetPower(powerType));            // GROUP_UPDATE_FLAG_CUR_POWER
     data << uint16(player->GetMaxPower(powerType));         // GROUP_UPDATE_FLAG_MAX_POWER
     data << uint16(player->getLevel());                     // GROUP_UPDATE_FLAG_LEVEL
@@ -992,7 +959,7 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
         if (AuraApplication const* aurApp = player->GetVisibleAura(i))
         {
             auraMask |= uint64(1) << i;
-            data << uint32(aurApp->GetBase()->GetId());
+            data << uint16(aurApp->GetBase()->GetId());
             data << uint8(aurApp->GetFlags());
         }
     }
@@ -1006,10 +973,10 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
     data << uint16(pet ? pet->GetDisplayId() : 0);          // GROUP_UPDATE_FLAG_PET_MODEL_ID
 
     if (updateFlags & GROUP_UPDATE_FLAG_PET_CUR_HP)
-        data << uint32(pet->GetHealth());
+        data << uint16(pet->GetHealth());
 
     if (updateFlags & GROUP_UPDATE_FLAG_PET_MAX_HP)
-        data << uint32(pet->GetMaxHealth());
+        data << uint16(pet->GetMaxHealth());
 
     if (updateFlags & GROUP_UPDATE_FLAG_PET_POWER_TYPE)
         data << (uint8)pet->getPowerType();
@@ -1030,18 +997,13 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
             if (AuraApplication const* aurApp = pet->GetVisibleAura(i))
             {
                 petAuraMask |= uint64(1) << i;
-                data << uint32(aurApp->GetBase()->GetId());
+                data << uint16(aurApp->GetBase()->GetId());
                 data << uint8(aurApp->GetFlags());
             }
         }
     }
 
     data.put<uint64>(maskPos, petAuraMask);                 // GROUP_UPDATE_FLAG_PET_AURAS
-
-    /*
-    if (updateFlags & GROUP_UPDATE_FLAG_VEHICLE_SEAT)
-        data << uint32(player->GetVehicle()->GetVehicleInfo()->m_seatID[player->m_movementInfo.transport.seat]);
-    */
 
     SendPacket(&data);
 }

@@ -1508,19 +1508,12 @@ void Group::SendUpdateToPlayer(uint64 playerGUID, MemberSlot* slot)
         slot = &(*witr);
     }
 
-    WorldPacket data(SMSG_GROUP_LIST, (1+1+1+1+1+4+8+4+4+(GetMembersCount()-1)*(13+8+1+1+1+1)+8+1+8+1+1+1+1));
-    data << uint8(m_groupType);                         // group type (flags in 3.3)
+    WorldPacket data(SMSG_GROUP_LIST, (1+1+1+1+8+4+(GetMembersCount()-1)*(13+8+1+1+1)+8+1+8+1+1));
+    data << uint8(m_groupType);                         // group type
+    data << uint8(isBGGroup() ? 1 : 0);                 // 2.0.x, isBattleGroundGroup?
     data << uint8(slot->group);
     data << uint8(slot->flags);
-    data << uint8(slot->roles);
-    if (isLFGGroup())
-    {
-        data << uint8(sLFGMgr->GetState(m_guid) == lfg::LFG_STATE_FINISHED_DUNGEON ? 2 : 0); // FIXME - Dungeon save status? 2 = done
-        data << uint32(sLFGMgr->GetDungeon(m_guid));
-    }
-
     data << uint64(m_guid);
-    data << uint32(m_counter++);                        // 3.3, value increases every time this packet gets sent
     data << uint32(GetMembersCount()-1);
     for (member_citerator citr = m_memberSlots.begin(); citr != m_memberSlots.end(); ++citr)
     {
@@ -1537,7 +1530,6 @@ void Group::SendUpdateToPlayer(uint64 playerGUID, MemberSlot* slot)
         data << uint8(onlineState);                     // online-state
         data << uint8(citr->group);                     // groupid
         data << uint8(citr->flags);                     // See enum GroupMemberFlags
-        data << uint8(citr->roles);                     // Lfg Roles
     }
 
     data << uint64(m_leaderGuid);                       // leader guid
@@ -1553,8 +1545,9 @@ void Group::SendUpdateToPlayer(uint64 playerGUID, MemberSlot* slot)
 
         data << uint8(m_lootThreshold);                 // loot threshold
         data << uint8(m_dungeonDifficulty);             // Dungeon Difficulty
-        data << uint8(m_raidDifficulty);                // Raid Difficulty
-        data << uint8(m_raidDifficulty >= RAID_DIFFICULTY_10MAN_HEROIC);    // 3.3 Dynamic Raid Difficulty - 0 normal/1 heroic
+        // Not implemented in 2.4.3 (maybe still usefull)
+        //data << uint8(m_raidDifficulty);                // Raid Difficulty
+        //data << uint8(m_raidDifficulty >= RAID_DIFFICULTY_10MAN_HEROIC);    // 3.3 Dynamic Raid Difficulty - 0 normal/1 heroic
     }
 
     player->GetSession()->SendPacket(&data);
