@@ -1450,9 +1450,10 @@ void WorldSession::HandleItemTextQuery(WorldPacket& recvData )
 {
     std::string body;
 
-    uint32 textId;                                          // id of the text, in case of a item its the same as entry, in case of mail its the inverted entry (to avoid client cache issues)
+    // textId is used for clientside caching
+    uint32 textId;                                          // id of the text, in case of a item/mail its the same as entry, max 0x7FFFFFFF
     uint32 entry;                                           // this value can be item id in bag, but it is also mail id
-    uint32 state;                                           // maybe something like state - 0x70000000
+    uint32 state;                                           
 
     recvData >> textId >> entry >> state;
 

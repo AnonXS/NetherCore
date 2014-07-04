@@ -593,11 +593,10 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
     // client can't work with packets > max int16 value
     const uint32 maxPacketSize = 32767;
 
-    uint32 mailsCount = 0;                                 // real send to client mails amount
+    uint32 mailsCount = 0;                                 // send to client mails amount
     uint32 realCount  = 0;                                 // real mails amount
 
     WorldPacket data(SMSG_MAIL_LIST_RESULT, (200));         // guess size
-    data << uint32(0);                                      // real mail's count
     data << uint8(0);                                       // mail's count
     time_t cur_time = time(NULL);
 
@@ -616,7 +615,7 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
 
         uint8 item_count = (*itr)->items.size();            // max count is MAX_MAIL_ITEMS (12)
 
-        size_t next_mail_size = 2+4+1+((*itr)->messageType == MAIL_NORMAL ? 8 : 4)+4*8+((*itr)->subject.size()+1)+((*itr)->body.size()+1)+1+item_count*(1+4+4+MAX_INSPECTED_ENCHANTMENT_SLOT*3*4+4+4+4+4+4+4+1);
+        size_t next_mail_size = 2+4+1+((*itr)->messageType == MAIL_NORMAL ? 8 : 4)+4*8+((*itr)->subject.size()+1)+1+item_count*(1+4+4+MAX_INSPECTED_ENCHANTMENT_SLOT*3*4+4+4+1+4+4+4)+((*itr)->body.size()+1);
 
         if (data.wpos()+next_mail_size > maxPacketSize)
         {
@@ -636,12 +635,12 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
             case MAIL_CREATURE:
             case MAIL_GAMEOBJECT:
             case MAIL_AUCTION:
-            case MAIL_CALENDAR:
-                data << uint32((*itr)->sender);            // creature/gameobject entry, auction id, calendar event id?
+                data << uint32((*itr)->sender);             // creature/gameobject entry, auction id?
                 break;
         }
 
         data << uint32((*itr)->COD);                         // COD
+        data << uint32((*itr)->messageID);                   // item text (in our case messageId since we dont use item text id)
         data << uint32(0);                                   // package (Package.dbc)
         data << uint32((*itr)->stationery);                  // stationery (Stationery.dbc)
         data << uint32((*itr)->money);                       // Gold
@@ -649,7 +648,6 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
         data << float(float((*itr)->expire_time-time(NULL))/DAY); // Time
         data << uint32((*itr)->mailTemplateId);              // mail template (MailTemplate.dbc)
         data << (*itr)->subject;                             // Subject string - once 00, when mail type = 3, max 256
-        data << (*itr)->body;                                // message? max 8000
         data << uint8(item_count);                           // client limit is 0x10
 
         for (uint8 i = 0; i < item_count; ++i)
@@ -672,23 +670,20 @@ void WorldSession::HandleGetMailList(WorldPacket& recvData)
             // unk
             data << uint32((item ? item->GetItemSuffixFactor() : 0));
             // stack count
-            data << uint32((item ? item->GetCount() : 0));
+            data << uint8((item ? item->GetCount() : 0));
             // charges
             data << uint32((item ? item->GetSpellCharges() : 0));
             // durability
             data << uint32((item ? item->GetUInt32Value(ITEM_FIELD_MAXDURABILITY) : 0));
             // durability
             data << uint32((item ? item->GetUInt32Value(ITEM_FIELD_DURABILITY) : 0));
-            // unknown wotlk
-            data << uint8(0);
         }
 
         ++realCount;
         ++mailsCount;
     }
 
-    data.put<uint32>(0, realCount);                         // this will display warning about undelivered mail to player if realCount > mailsCount
-    data.put<uint8>(4, mailsCount);                        // set real send mails to client
+    data.put<uint8>(0, mailsCount);                         // send mail amount to client
     SendPacket(&data);
 
     // recalculate m_nextMailDelivereTime and unReadMails
@@ -703,6 +698,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
 
     recvData >> mailbox;
     recvData >> mailId;
+    recvData.read_skip<uint32>();       // mailTemplateId, not needed, Mail store own 100% correct value anyway
 
     if (!CanOpenMailBox(mailbox))
         return;
