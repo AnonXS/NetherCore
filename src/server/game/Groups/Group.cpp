@@ -554,7 +554,7 @@ bool Group::RemoveMember(uint64 guid, const RemoveMethod& method /*= GROUP_REMOV
             if (itr2 == roll->playerVote.end())
                 continue;
 
-            if (itr2->second == GREED || itr2->second == DISENCHANT)
+            if (itr2->second == GREED)
                 --roll->totalGreed;
             else if (itr2->second == NEED)
                 --roll->totalNeed;
@@ -1276,11 +1276,6 @@ void Group::CountRollVote(uint64 playerGUID, uint64 Guid, uint8 Choice)
             ++roll->totalGreed;
             itr->second = GREED;
             break;
-        case ROLL_DISENCHANT:                               // player choose Disenchant
-            SendLootRoll(0, playerGUID, 128, ROLL_DISENCHANT, *roll);
-            ++roll->totalGreed;
-            itr->second = DISENCHANT;
-            break;
     }
 
     if (roll->totalPass + roll->totalNeed + roll->totalGreed >= roll->totalPlayersRolling)
@@ -1370,7 +1365,7 @@ void Group::CountTheRoll(Rolls::iterator rollI)
             Roll::PlayerVote::iterator itr;
             for (itr = roll->playerVote.begin(); itr != roll->playerVote.end(); ++itr)
             {
-                if (itr->second != GREED && itr->second != DISENCHANT)
+                if (itr->second != GREED)
                     continue;
 
                 uint8 randomN = urand(1, 100);
@@ -1407,15 +1402,6 @@ void Group::CountTheRoll(Rolls::iterator rollI)
                         item->is_blocked = false;
                         player->SendEquipError(msg, NULL, NULL, roll->itemid);
                     }
-                }
-                else if (rollvote == DISENCHANT)
-                {
-                    item->is_looted = true;
-                    roll->getLoot()->NotifyItemRemoved(roll->itemSlot);
-                    roll->getLoot()->unlootedCount--;
-                    ItemTemplate const* pProto = sObjectMgr->GetItemTemplate(roll->itemid);
-                    player->AutoStoreLoot(pProto->DisenchantID, LootTemplates_Disenchant, true);
-                    player->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL, 13262); // Disenchant
                 }
             }
         }

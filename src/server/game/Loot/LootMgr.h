@@ -34,10 +34,10 @@ enum RollType
     ROLL_PASS         = 0,
     ROLL_NEED         = 1,
     ROLL_GREED        = 2,
-    ROLL_DISENCHANT   = 3,
-    MAX_ROLL_TYPE     = 4
+    MAX_ROLL_TYPE     = 3
 };
 
+// Just used at server side (2.4.3)
 enum RollMask
 {
     ROLL_FLAG_TYPE_PASS         = 0x01,
