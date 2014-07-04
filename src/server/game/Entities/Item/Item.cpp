@@ -467,6 +467,8 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, Field* fields, uint32 entr
     }
 
     SetText(fields[10].GetString());
+    if (!fields[10].GetString().empty() && HasFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_READABLE))
+        SetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID, GetGUIDLow());  // max 0x7FFFFFFF
 
     if (need_save)                                           // normal item changed state set not work at loading
     {

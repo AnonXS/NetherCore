@@ -734,7 +734,7 @@ void WorldSession::HandleMailCreateTextItem(WorldPacket& recvData)
     else
         bodyItem->SetText(m->body);
 
-    bodyItem->SetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID, bodyItem->GetGUIDLow());
+    bodyItem->SetUInt32Value(ITEM_FIELD_ITEM_TEXT_ID, bodyItem->GetGUIDLow());  // max 0x7FFFFFFF
     bodyItem->SetUInt32Value(ITEM_FIELD_CREATOR, m->sender);
     bodyItem->SetFlag(ITEM_FIELD_FLAGS, ITEM_FLAG_READABLE);
 
