@@ -495,7 +495,7 @@ void WorldSession::HandleSellItemOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_SELL_ITEM");
     uint64 vendorguid, itemguid;
-    uint32 count;
+    uint8 count;
 
     recvData >> vendorguid >> itemguid >> count;
 
