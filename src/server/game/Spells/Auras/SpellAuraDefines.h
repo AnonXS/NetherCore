@@ -18,7 +18,8 @@
 #ifndef TRINITY_SPELLAURADEFINES_H
 #define TRINITY_SPELLAURADEFINES_H
 
-#define MAX_AURAS 64                                        // client support up to 255, but it will cause problems with group auras updating
+#define MAX_AURAS 56
+#define MAX_POSITIVE_AURAS 40
 
 enum AURA_FLAGS
 {
@@ -30,7 +31,8 @@ enum AURA_FLAGS
     AFLAG_POSITIVE               = 0x10,
     AFLAG_DURATION               = 0x20,
     AFLAG_ANY_EFFECT_AMOUNT_SENT = 0x40, // used with AFLAG_EFF_INDEX_0/1/2
-    AFLAG_NEGATIVE               = 0x80
+    AFLAG_NEGATIVE               = 0x80,
+    AFLAG_MASK                   = 0xFF
 };
 
 // these are modes, in which aura effect handler may be called

@@ -42,6 +42,8 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
 {
     ASSERT(GetTarget() && GetBase());
 
+    _InitFlags(caster, effMask);
+
     if (GetBase()->CanBeSentToClient())
     {
         // Try find slot for aura
@@ -55,11 +57,19 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
         else
         {
             Unit::VisibleAuraMap const* visibleAuras = GetTarget()->GetVisibleAuras();
-            // lookup for free slots in units visibleAuras
-            Unit::VisibleAuraMap::const_iterator itr = visibleAuras->find(0);
-            for (uint32 freeSlot = 0; freeSlot < MAX_AURAS; ++itr, ++freeSlot)
+
+            uint8 freeSlot = 0;
+            uint8 maxSlot = MAX_POSITIVE_AURAS;
+
+            if (!IsPositive())
             {
-                if (itr == visibleAuras->end() || itr->first != freeSlot)
+                freeSlot = MAX_POSITIVE_AURAS;
+                maxSlot = MAX_AURAS;
+            }
+
+            for (freeSlot; freeSlot < maxSlot; ++freeSlot)
+            {
+                if (visibleAuras->find(freeSlot) == visibleAuras->end())
                 {
                     slot = freeSlot;
                     break;
@@ -79,7 +89,6 @@ _flags(AFLAG_NONE), _effectsToApply(effMask), _needClientUpdate(false)
             TC_LOG_DEBUG("spells", "Aura: %u Effect: %d could not find empty unit visible slot", GetBase()->GetId(), GetEffectMask());
     }
 
-    _InitFlags(caster, effMask);
 }
 
 void AuraApplication::_Remove()
@@ -175,50 +184,155 @@ void AuraApplication::_HandleEffect(uint8 effIndex, bool apply)
     SetNeedClientUpdate();
 }
 
-void AuraApplication::BuildUpdatePacket(ByteBuffer& data, bool remove) const
-{
-    data << uint8(_slot);
-
-    if (remove)
-    {
-        ASSERT(!_target->GetVisibleAura(_slot));
-        data << uint32(0);
-        return;
-    }
-    ASSERT(_target->GetVisibleAura(_slot));
-
-    Aura const* aura = GetBase();
-    data << uint32(aura->GetId());
-    uint32 flags = _flags;
-    if (aura->GetMaxDuration() > 0 && !(aura->GetSpellInfo()->AttributesEx5 & SPELL_ATTR5_HIDE_DURATION))
-        flags |= AFLAG_DURATION;
-    data << uint8(flags);
-    data << uint8(aura->GetCasterLevel());
-    // send stack amount for aura which could be stacked (never 0 - causes incorrect display) or charges
-    // stack amount has priority over charges (checked on retail with spell 50262)
-    data << uint8(aura->GetSpellInfo()->StackAmount ? aura->GetStackAmount() : aura->GetCharges());
-
-    if (!(flags & AFLAG_CASTER))
-        data.appendPackGUID(aura->GetCasterGUID());
-
-    if (flags & AFLAG_DURATION)
-    {
-        data << uint32(aura->GetMaxDuration());
-        data << uint32(aura->GetDuration());
-    }
-}
-
 void AuraApplication::ClientUpdate(bool remove)
 {
-    /*
-    _needClientUpdate = false;
+        _needClientUpdate = false;
+
+        Aura const* aura = GetBase();
+        uint32 flags = GetFlags();
+        uint32 slot = GetSlot();
+
+        if (remove)
+        {
+            ASSERT(!_target->GetVisibleAura(_slot));
+            SendAura(slot, true);
+            SendAuraFlag(slot, false);
+            SendAuraLevel(slot, aura->GetCaster() ? aura->GetCaster()->getLevel() : sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
+
+            return;
+        }
+        else
+        {
+            ASSERT(_target->GetVisibleAura(_slot));
+            SendAura(slot, false);
+            SendAuraFlag(slot, true);
+            SendAuraLevel(slot, aura->GetCaster() ? aura->GetCaster()->getLevel() : sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL));
+            SendAuraApplication();
+            SendAuraDuration();
+        }
+
+
+        // only aura in slot with charges and without stack limitation
+        /*if (GetSlot() < MAX_AURAS && aura->GetCharges() >= 1 && aura->GetSpellInfo()->StackAmount == 0)
+            SendAuraApplication();*/
+
+        //if (!(flags & AFLAG_CASTER))
+        //if (flags & AFLAG_DURATION)
+
+            //SendAuraDuration();
     
-    WorldPacket data(SMSG_AURA_UPDATE);
+}
+
+
+void AuraApplication::SendAura(uint32 slot, bool remove)
+{
+    GetTarget()->SetUInt32Value(UNIT_FIELD_AURA + slot, remove ? 0 : GetBase()->GetId());
+}
+
+
+void AuraApplication::SendAuraFlag(uint32 slot, bool add)
+{
+    uint32 index        = slot / 4;
+    uint32 byte         = (slot % 4) * 8;
+    uint32 val          = GetTarget()->GetUInt32Value(UNIT_FIELD_AURAFLAGS + index);
+    /*
+    val &= ~((uint32)AFLAG_MASK << byte);
+    if (add)
+    {
+        if (IsPositive())
+            val |= ((uint32)0x1F << byte);
+        else
+            val |= ((uint32)0x09 << byte);
+    }*/
+    
+    uint32 flags = GetFlags();
+    if (add)
+    {
+        flags |= AFLAG_EFF_INDEX_1;
+        
+        if (GetBase()->GetMaxDuration() > 0 && !(GetBase()->GetSpellInfo()->AttributesEx5 & SPELL_ATTR5_HIDE_DURATION))
+            flags |= AFLAG_DURATION;
+        
+        val |= flags << byte;
+    }
+
+    GetTarget()->SetUInt32Value(UNIT_FIELD_AURAFLAGS + index, val);
+}
+
+void AuraApplication::SendAuraLevel(uint32 slot, uint32 level)
+{
+    uint32 index        = slot / 4;
+    uint32 byte         = (slot % 4) * 8;
+    uint32 val          = GetTarget()->GetUInt32Value(UNIT_FIELD_AURALEVELS + index);
+
+    val &= ~(0xFF << byte);
+    val |= (level << byte);
+
+    GetTarget()->SetUInt32Value(UNIT_FIELD_AURALEVELS + index, val);
+}
+
+void AuraApplication::SendAuraApplication()
+{
+    if (GetSlot() >= MAX_AURAS)
+        return;
+    
+    Aura const* aura    = GetBase();
+    // send stack amount for aura which could be stacked (never 0 - causes incorrect display) or charges
+    // stack amount has priority over charges (checked on retail with spell 50262)
+    uint32 stackAmount  = aura->GetSpellInfo()->StackAmount ? aura->GetStackAmount() : aura->GetCharges();
+    uint32 index        = GetSlot() / 4;
+    uint32 byte         = (GetSlot() % 4) * 8;
+    uint32 val          = GetTarget()->GetUInt32Value(UNIT_FIELD_AURAAPPLICATIONS + index);
+
+    val &= ~(0xFF << byte);
+    // field expect count-1 for proper amount show, also prevent overflow at client side
+    val |= ((uint8(stackAmount <= 255 ? stackAmount - 1 : 255 - 1)) << byte);
+
+    GetTarget()->SetUInt32Value(UNIT_FIELD_AURAAPPLICATIONS + index, val);
+}
+
+void AuraApplication::SendAuraDuration()
+{
+    Aura const* aura = GetBase();
+    
+    if (GetSlot() >= MAX_AURAS || aura->IsPassive())
+        return;
+
+    if (GetTarget()->GetTypeId() == TYPEID_PLAYER)
+    {
+        WorldPacket data(SMSG_UPDATE_AURA_DURATION, 5);
+        data << uint8(GetSlot());
+        data << uint32(aura->GetDuration());
+        GetTarget()->ToPlayer()->GetSession()->SendPacket(&data);
+
+        data.Initialize(SMSG_SET_EXTRA_AURA_INFO, (8 + 1 + 4 + 4 + 4));
+        data.append(GetTarget()->GetPackGUID());
+        data << uint8(GetSlot());
+        data << uint32(aura->GetId());
+        data << uint32(aura->GetMaxDuration());
+        data << uint32(aura->GetDuration());
+        GetTarget()->ToPlayer()->GetSession()->SendPacket(&data);
+    }
+
+    // not send in case player loading (will not work anyway until player not added to map), sent in visibility change code
+    if (GetTarget()->GetTypeId() == TYPEID_PLAYER && GetTarget()->ToPlayer()->GetSession()->PlayerLoading())
+        return;
+
+    if (aura->GetCaster() && aura->GetCaster()->GetTypeId() == TYPEID_PLAYER && aura->GetCaster() != GetTarget())
+        SendAuraDurationForCaster(aura->GetCaster()->ToPlayer());
+}
+
+void AuraApplication::SendAuraDurationForCaster(Player* caster)
+{
+    Aura const* aura = GetBase();
+
+    WorldPacket data(SMSG_SET_EXTRA_AURA_INFO_NEED_UPDATE, (8 + 1 + 4 + 4 + 4));
     data.append(GetTarget()->GetPackGUID());
-    BuildUpdatePacket(data, remove);
-   
-    _target->SendMessageToSet(&data, true);
-    */
+    data << uint8(GetSlot());
+    data << uint32(aura->GetId());
+    data << uint32(aura->GetMaxDuration());
+    data << uint32(aura->GetDuration());
+    caster->GetSession()->SendPacket(&data);
 }
 
 uint8 Aura::BuildEffectMaskForOwner(SpellInfo const* spellProto, uint8 avalibleEffectMask, WorldObject* owner)

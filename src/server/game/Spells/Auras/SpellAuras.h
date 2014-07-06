@@ -77,8 +77,15 @@ class AuraApplication
 
         void SetNeedClientUpdate() { _needClientUpdate = true;}
         bool IsNeedClientUpdate() const { return _needClientUpdate;}
-        void BuildUpdatePacket(ByteBuffer& data, bool remove) const;
         void ClientUpdate(bool remove = false);
+
+        // Needed for 2.4.3 implemention
+        void SendAura(uint32 slot, bool remove);
+        void SendAuraFlag(uint32 slot, bool add);
+        void SendAuraLevel(uint32 slot, uint32 level);
+        void SendAuraApplication();
+        void SendAuraDuration();
+        void SendAuraDurationForCaster(Player* caster);      
 };
 
 class Aura

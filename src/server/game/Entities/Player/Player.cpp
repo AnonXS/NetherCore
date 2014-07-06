@@ -22392,7 +22392,7 @@ void Player::UpdateTriggerVisibility()
 
 void Player::SendInitialVisiblePackets(Unit* target)
 {
-    SendAurasForTarget(target);
+    //SendAurasForTarget(target);
     if (target->IsAlive())
     {
         if (target->HasUnitState(UNIT_STATE_MELEE_ATTACKING) && target->GetVictim())
@@ -22719,7 +22719,7 @@ void Player::SendInitialPacketsAfterAddToMap()
         SendMessageToSet(&data2, true);
     }
 
-    SendAurasForTarget(this);
+    //SendAurasForTarget(this);
     SendEnchantmentDurations();                             // must be after add to map
     SendItemDurations();                                    // must be after add to map
 
