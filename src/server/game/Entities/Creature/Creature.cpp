@@ -369,6 +369,7 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
     if (!GetCreatureAddon())
         SetSheath(SHEATH_STATE_MELEE);
 
+    SetByteValue(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_AURAS);
     setFaction(cInfo->faction);
 
     uint32 npcflag, unit_flags, dynamicflags;

@@ -194,12 +194,42 @@ enum UnitStandFlags
 enum UnitBytes1_Flags
 {
     UNIT_BYTE1_FLAG_ALWAYS_STAND    = 0x01,
-    UNIT_BYTE1_FLAG_HOVER           = 0x02,
-    UNIT_BYTE1_FLAG_UNK_3           = 0x04,
+    UNIT_BYTE1_FLAG_HOVER           = 0x02,                 // not implemented in 2.4.3
+    UNIT_BYTE1_FLAG_UNK_3           = 0x04,                 // untrackable ?
     UNIT_BYTE1_FLAG_ALL             = 0xFF
 };
 
-// high byte (3 from 0..3) of UNIT_FIELD_BYTES_2
+// byte value (UNIT_FIELD_BYTES_2,0)
+enum SheathState
+{
+    SHEATH_STATE_UNARMED  = 0,                              // non prepared weapon
+    SHEATH_STATE_MELEE    = 1,                              // prepared melee weapon
+    SHEATH_STATE_RANGED   = 2                               // prepared ranged weapon
+};
+
+#define MAX_SHEATH_STATE    3
+
+// byte flags value (UNIT_FIELD_BYTES_2,1)
+enum UnitPVPStateFlags
+{
+    UNIT_BYTE2_FLAG_UNK0        = 0x01,                     // not used
+    UNIT_BYTE2_FLAG_UNK1        = 0x02,                     // not used
+    UNIT_BYTE2_FLAG_UNK2        = 0x04,                     // not used
+    UNIT_BYTE2_FLAG_SANCTUARY   = 0x08,                     // uable to attack targets with this flag
+    UNIT_BYTE2_FLAG_AURAS       = 0x00,                     // show possitive auras as positive, and allow its dispel
+    UNIT_BYTE2_FLAG_UNK5        = 0x20,                     // always show negative auras as positive, disallowing dispel
+    UNIT_BYTE2_FLAG_UNK6        = 0x40,                     // not used
+    UNIT_BYTE2_FLAG_UNK7        = 0x80                      // not used
+};
+
+// byte flags value (UNIT_FIELD_BYTES_2,2)
+enum UnitRename
+{
+    UNIT_CAN_BE_RENAMED     = 0x01,
+    UNIT_CAN_BE_ABANDONED   = 0x02
+};
+
+// byte flags value (UNIT_FIELD_BYTES_2,3)
 enum ShapeshiftForm
 {
     FORM_NONE               = 0x00,
@@ -233,36 +263,6 @@ enum ShapeshiftForm
     FORM_STEALTH            = 0x1E,
     FORM_MOONKIN            = 0x1F,
     FORM_SPIRITOFREDEMPTION = 0x20
-};
-
-// low byte (0 from 0..3) of UNIT_FIELD_BYTES_2
-enum SheathState
-{
-    SHEATH_STATE_UNARMED  = 0,                              // non prepared weapon
-    SHEATH_STATE_MELEE    = 1,                              // prepared melee weapon
-    SHEATH_STATE_RANGED   = 2                               // prepared ranged weapon
-};
-
-#define MAX_SHEATH_STATE    3
-
-// byte (1 from 0..3) of UNIT_FIELD_BYTES_2
-enum UnitPVPStateFlags
-{
-    UNIT_BYTE2_FLAG_PVP         = 0x01,
-    UNIT_BYTE2_FLAG_UNK1        = 0x02,
-    UNIT_BYTE2_FLAG_FFA_PVP     = 0x04,
-    UNIT_BYTE2_FLAG_SANCTUARY   = 0x08,
-    UNIT_BYTE2_FLAG_UNK4        = 0x10,
-    UNIT_BYTE2_FLAG_UNK5        = 0x20,
-    UNIT_BYTE2_FLAG_UNK6        = 0x40,
-    UNIT_BYTE2_FLAG_UNK7        = 0x80
-};
-
-// byte (2 from 0..3) of UNIT_FIELD_BYTES_2
-enum UnitRename
-{
-    UNIT_CAN_BE_RENAMED     = 0x01,
-    UNIT_CAN_BE_ABANDONED   = 0x02
 };
 
 #define CREATURE_MAX_SPELLS     8
