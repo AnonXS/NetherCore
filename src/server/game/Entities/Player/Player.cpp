@@ -21706,6 +21706,9 @@ void Player::UpdatePvPState(bool onlyFFA)
     {
         if (IsPvP() && !HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP) && !pvpInfo.EndTimer)
             pvpInfo.EndTimer = time(NULL);                  // start toggle-off
+        else if (!IsPvP() && HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_IN_PVP))
+            UpdatePvP(true, true);                          // preserve pvp state after login in non hostile zone
+
     }
 }
 
