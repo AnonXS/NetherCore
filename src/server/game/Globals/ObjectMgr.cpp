@@ -7891,9 +7891,6 @@ SkillRangeType GetSkillRangeType(SkillRaceClassInfoEntry const* rcEntry)
     if (sSkillTiersStore.LookupEntry(rcEntry->SkillTier))
         return SKILL_RANGE_RANK;
 
-    if (rcEntry->SkillId == SKILL_RUNEFORGING)
-        return SKILL_RANGE_MONO;
-
     switch (skill->categoryId)
     {
         case SKILL_CATEGORY_ARMOR:
