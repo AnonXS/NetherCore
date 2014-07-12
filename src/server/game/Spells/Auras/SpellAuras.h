@@ -53,6 +53,7 @@ class AuraApplication
         uint8 _flags;                                  // Aura info flag
         uint8 _effectsToApply;                         // Used only at spell hit to determine which effect should be applied
         bool _needClientUpdate:1;
+        bool _forceClientUpdate:1;                     // Needed in 2.4.3 to resend the updateflag to the client even if there was no value change
 
         explicit AuraApplication(Unit* target, Unit* caster, Aura* base, uint8 effMask);
         void _Remove();
@@ -75,17 +76,19 @@ class AuraApplication
         void SetRemoveMode(AuraRemoveMode mode) { _removeMode = mode; }
         AuraRemoveMode GetRemoveMode() const {return _removeMode;}
 
-        void SetNeedClientUpdate() { _needClientUpdate = true;}
+        void SetNeedClientUpdate(bool force = false);
         bool IsNeedClientUpdate() const { return _needClientUpdate;}
+        bool IsForceClientUpdate() const { return _forceClientUpdate;}
         void ClientUpdate(bool remove = false);
 
         // Needed for 2.4.3 implemention
-        void SendAura(uint32 slot, bool remove);
-        void SendAuraFlag(uint32 slot, bool add);
-        void SendAuraLevel(uint32 slot, uint32 level);
-        void SendAuraApplication();
+        void SetAura(uint32 slot, bool remove);
+        void SetAuraFlag(uint32 slot, bool add);
+        void SetAuraLevel(uint32 slot, uint32 level);
+        void UpdateAuraApplication();
         void SendAuraDuration();
-        void SendAuraDurationForCaster(Player* caster);      
+        void SendAuraDurationForCaster(Player* caster); 
+        void SendClearAuraDurationForCaster(Player* caster);
 };
 
 class Aura
@@ -196,7 +199,7 @@ class Aura
         AuraApplication * GetApplicationOfTarget (uint64 guid) { ApplicationMap::iterator itr = m_applications.find(guid); if (itr != m_applications.end()) return itr->second; return NULL; }
         bool IsAppliedOnTarget(uint64 guid) const { return m_applications.find(guid) != m_applications.end(); }
 
-        void SetNeedClientUpdateForTargets() const;
+        void SetNeedClientUpdateForTargets(bool force = false) const;
         void HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, bool apply, bool onReapply);
         void HandleAuraSpecificPeriodics(AuraApplication const* aurApp, Unit* caster);
         bool CanBeAppliedOn(Unit* target);
