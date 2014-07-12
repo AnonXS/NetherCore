@@ -27,7 +27,6 @@ struct ArenaScore : public BattlegroundScore
     friend class BattlegroundDS;
     friend class BattlegroundNA;
     friend class BattlegroundRL;
-    friend class BattlegroundRV;
 
     protected:
         ArenaScore(uint64 playerGuid, uint32 team) : BattlegroundScore(playerGuid), TeamId(team == ALLIANCE ? 1 : 0) { }
