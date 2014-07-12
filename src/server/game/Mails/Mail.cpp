@@ -26,7 +26,6 @@
 #include "BattlegroundMgr.h"
 #include "Item.h"
 #include "AuctionHouseMgr.h"
-#include "CalendarMgr.h"
 
 MailSender::MailSender(Object* sender, MailStationery stationery) : m_stationery(stationery)
 {

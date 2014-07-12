@@ -23,7 +23,6 @@
 #include <map>
 
 struct AuctionEntry;
-struct CalendarEvent;
 class Item;
 class Object;
 class Player;

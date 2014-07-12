@@ -1317,7 +1317,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_OPT_OUT_OF_LOOT:                      //   0               1
         case CMSG_DUEL_ACCEPTED:                        //   0               1
         case CMSG_DUEL_CANCELLED:                       //   0               1
-        case CMSG_CALENDAR_COMPLAIN:                    //   0               1
         case CMSG_QUEST_QUERY:                          //   0               1.5
         case CMSG_ITEM_QUERY_SINGLE:                    //   0               1.5
         case CMSG_ITEM_NAME_QUERY:                      //   0               1.5
@@ -1395,7 +1394,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_GUILD_SET_PUBLIC_NOTE:                //   1               2         1 async db query
         case CMSG_GUILD_SET_OFFICER_NOTE:               //   1               2         1 async db query
         case CMSG_SET_CONTACT_NOTES:                    //   1               2.5       1 async db query
-        case CMSG_CALENDAR_GET_CALENDAR:                //   0               1.5       medium upload bandwidth usage
         case CMSG_GUILD_BANK_QUERY_TAB:                 //   0               3.5       medium upload bandwidth usage
         case CMSG_QUERY_INSPECT_ACHIEVEMENTS:           //   0              13         high upload bandwidth usage
         {
@@ -1429,7 +1427,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_GROUP_SET_LEADER:                     //   1               2         1 async db query
         case CMSG_GROUP_RAID_CONVERT:                   //   1               5         1 async db query
         case CMSG_GROUP_ASSISTANT_LEADER:               //   1               2         1 async db query
-        case CMSG_CALENDAR_ADD_EVENT:                   //  21              10         2 async db query
         case CMSG_PETITION_BUY:                         // not profiled                1 sync 1 async db queries
         case CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE:   // not profiled
         case CMSG_REQUEST_VEHICLE_PREV_SEAT:            // not profiled
@@ -1453,14 +1450,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_GMTICKET_UPDATETEXT:                  //   0              15         1 async db query
         case CMSG_GMTICKET_DELETETICKET:                //   1              25         1 async db query
         case CMSG_GMRESPONSE_RESOLVE:                   //   1              25         1 async db query
-        case CMSG_CALENDAR_UPDATE_EVENT:                // not profiled
-        case CMSG_CALENDAR_REMOVE_EVENT:                // not profiled
-        case CMSG_CALENDAR_COPY_EVENT:                  // not profiled
-        case CMSG_CALENDAR_EVENT_INVITE:                // not profiled
-        case CMSG_CALENDAR_EVENT_SIGNUP:                // not profiled
-        case CMSG_CALENDAR_EVENT_RSVP:                  // not profiled
-        case CMSG_CALENDAR_EVENT_REMOVE_INVITE:         // not profiled
-        case CMSG_CALENDAR_EVENT_MODERATOR_STATUS:      // not profiled
         case CMSG_ARENA_TEAM_INVITE:                    // not profiled
         case CMSG_ARENA_TEAM_ACCEPT:                    // not profiled
         case CMSG_ARENA_TEAM_DECLINE:                   // not profiled

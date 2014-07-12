@@ -17,7 +17,6 @@
  */
 
 #include "AccountMgr.h"
-#include "CalendarMgr.h"
 #include "Chat.h"
 #include "Config.h"
 #include "DatabaseEnv.h"
@@ -1600,8 +1599,6 @@ void Guild::HandleLeaveMember(WorldSession* session)
         SendCommandResult(session, GUILD_COMMAND_QUIT, ERR_GUILD_COMMAND_SUCCESS, m_name);
     }
 
-    sCalendarMgr->RemovePlayerGuildEventsAndSignups(player->GetGUID(), GetId());
-
     if (disband)
         delete this;
 }
@@ -2169,39 +2166,6 @@ void Guild::BroadcastPacket(WorldPacket* packet) const
     for (Members::const_iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
         if (Player* player = itr->second->FindPlayer())
             player->GetSession()->SendPacket(packet);
-}
-
-void Guild::MassInviteToEvent(WorldSession* session, uint32 minLevel, uint32 maxLevel, uint32 minRank)
-{
-    uint32 count = 0;
-
-    WorldPacket data(SMSG_CALENDAR_FILTER_GUILD);
-    data << uint32(count); // count placeholder
-
-    for (Members::const_iterator itr = m_members.begin(); itr != m_members.end(); ++itr)
-    {
-        // not sure if needed, maybe client checks it as well
-        if (count >= CALENDAR_MAX_INVITES)
-        {
-            if (Player* player = session->GetPlayer())
-                sCalendarMgr->SendCalendarCommandResult(player->GetGUID(), CALENDAR_ERROR_INVITES_EXCEEDED);
-            return;
-        }
-
-        Member* member = itr->second;
-        uint32 level = Player::GetLevelFromDB(member->GetGUID());
-
-        if (member->GetGUID() != session->GetPlayer()->GetGUID() && level >= minLevel && level <= maxLevel && member->IsRankNotLower(minRank))
-        {
-            data.appendPackGUID(member->GetGUID());
-            data << uint8(0); // unk
-            ++count;
-        }
-    }
-
-    data.put<uint32>(0, count);
-
-    session->SendPacket(&data);
 }
 
 // Members handling

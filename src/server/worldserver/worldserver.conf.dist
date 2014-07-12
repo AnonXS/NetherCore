@@ -1149,14 +1149,6 @@ Warden.BanDuration = 86400
 ###################################################################################################
 # PLAYER INTERACTION
 #
-#    AllowTwoSide.Interaction.Calendar
-#        Description: Allow calendar invites between factions.
-#        Default:     0 - (Disabled)
-#                     1 - (Enabled)
-
-AllowTwoSide.Interaction.Calendar = 0
-
-#
 #    AllowTwoSide.Interaction.Channel
 #        Description: Allow channel chat between factions.
 #        Default:     0 - (Disabled)

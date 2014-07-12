@@ -20,7 +20,6 @@
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "Battleground.h"
-#include "CalendarMgr.h"
 #include "Chat.h"
 #include "Common.h"
 #include "DatabaseEnv.h"
@@ -665,7 +664,6 @@ void WorldSession::HandleCharDeleteOpcode(WorldPacket& recvData)
             sLog->outCharDump(dump.c_str(), accountId, GUID_LOPART(guid), name.c_str());
     }
 
-    sCalendarMgr->RemoveAllPlayerEventsAndInvites(guid);
     Player::DeleteFromDB(guid, accountId);
 
     WorldPacket data(SMSG_CHAR_DELETE, 1);

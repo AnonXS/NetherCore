@@ -77,7 +77,6 @@
 #include "Channel.h"
 #include "WardenCheckMgr.h"
 #include "Warden.h"
-#include "CalendarMgr.h"
 #include "BattlefieldMgr.h"
 #include "TransportMgr.h"
 
@@ -661,7 +660,6 @@ void World::LoadConfigSettings(bool reload)
     else
         m_int_configs[CONFIG_REALM_ZONE] = sConfigMgr->GetIntDefault("RealmZone", REALM_ZONE_DEVELOPMENT);
 
-    m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_CALENDAR]= sConfigMgr->GetBoolDefault("AllowTwoSide.Interaction.Calendar", false);
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_CHANNEL] = sConfigMgr->GetBoolDefault("AllowTwoSide.Interaction.Channel", false);
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP]   = sConfigMgr->GetBoolDefault("AllowTwoSide.Interaction.Group", false);
     m_bool_configs[CONFIG_ALLOW_TWO_SIDE_INTERACTION_GUILD]   = sConfigMgr->GetBoolDefault("AllowTwoSide.Interaction.Guild", false);
@@ -1719,9 +1717,6 @@ void World::SetInitialWorldSettings()
 
     TC_LOG_INFO("server.loading", "Loading SmartAI scripts...");
     sSmartScriptMgr->LoadSmartAIFromDB();
-
-    TC_LOG_INFO("server.loading", "Loading Calendar data...");
-    sCalendarMgr->LoadFromDB();
 
     ///- Initialize game time and timers
     TC_LOG_INFO("server.loading", "Initialize game time and timers");

@@ -868,26 +868,6 @@ class WorldSession
         void HandleGrantLevel(WorldPacket& recvData);
         void HandleAcceptGrantLevel(WorldPacket& recvData);
 
-        // Calendar
-        void HandleCalendarGetCalendar(WorldPacket& recvData);
-        void HandleCalendarGetEvent(WorldPacket& recvData);
-        void HandleCalendarGuildFilter(WorldPacket& recvData);
-        void HandleCalendarArenaTeam(WorldPacket& recvData);
-        void HandleCalendarAddEvent(WorldPacket& recvData);
-        void HandleCalendarUpdateEvent(WorldPacket& recvData);
-        void HandleCalendarRemoveEvent(WorldPacket& recvData);
-        void HandleCalendarCopyEvent(WorldPacket& recvData);
-        void HandleCalendarEventInvite(WorldPacket& recvData);
-        void HandleCalendarEventRsvp(WorldPacket& recvData);
-        void HandleCalendarEventRemoveInvite(WorldPacket& recvData);
-        void HandleCalendarEventStatus(WorldPacket& recvData);
-        void HandleCalendarEventModeratorStatus(WorldPacket& recvData);
-        void HandleCalendarComplain(WorldPacket& recvData);
-        void HandleCalendarGetNumPending(WorldPacket& recvData);
-        void HandleCalendarEventSignup(WorldPacket& recvData);
-
-        void SendCalendarRaidLockout(InstanceSave const* save, bool add);
-        void SendCalendarRaidLockoutUpdated(InstanceSave const* save);
         void HandleSetSavedInstanceExtend(WorldPacket& recvData);
 
         void HandleSpellClick(WorldPacket& recvData);
