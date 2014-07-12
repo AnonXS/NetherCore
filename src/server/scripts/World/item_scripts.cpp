@@ -67,7 +67,7 @@ public:
                     break;
            case 34475:
                 if (const SpellInfo* spellInfo = sSpellMgr->GetSpellInfo(SPELL_ARCANE_CHARGES))
-                    Spell::SendCastResult(player, spellInfo, 1, SPELL_FAILED_NOT_ON_GROUND);
+                    Spell::SendCastResult(player, spellInfo, 1, SPELL_FAILED_NOT_HERE); // Changed for 2.4.3
                     break;
         }
 
