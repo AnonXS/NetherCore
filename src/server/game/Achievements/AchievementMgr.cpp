@@ -652,6 +652,7 @@ void AchievementMgr::LoadFromDB(PreparedQueryResult achievementResult, PreparedQ
 
 void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) const
 {
+    /* Not used in 2.4.3
     if (GetPlayer()->GetSession()->PlayerLoading())
         return;
 
@@ -672,7 +673,6 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
 
     if (achievement->flags & (ACHIEVEMENT_FLAG_REALM_FIRST_KILL | ACHIEVEMENT_FLAG_REALM_FIRST_REACH))
     {
-        /* Not used in 2.4.3
         // broadcast realm first reached
         WorldPacket data(SMSG_SERVER_FIRST_ACHIEVEMENT, GetPlayer()->GetName().size() + 1 + 8 + 4 + 4);
         data << GetPlayer()->GetName();
@@ -680,7 +680,6 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         data << uint32(achievement->ID);
         data << uint32(0);                                  // 1=link supplied string as player name, 0=display plain string
         sWorld->SendGlobalMessage(&data);
-        */
     }
     // if player is in world he can tell his friends about new achievement
     else if (GetPlayer()->IsInWorld())
@@ -691,7 +690,6 @@ void AchievementMgr::SendAchievementEarned(AchievementEntry const* achievement) 
         GetPlayer()->VisitNearbyWorldObject(sWorld->getFloatConfig(CONFIG_LISTEN_RANGE_SAY), _worker);
     }
 
-    /* Not used in 2.4.3
     WorldPacket data(SMSG_ACHIEVEMENT_EARNED, 8+4+8);
     data.append(GetPlayer()->GetPackGUID());
     data << uint32(achievement->ID);
