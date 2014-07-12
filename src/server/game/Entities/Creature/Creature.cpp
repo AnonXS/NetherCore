@@ -861,9 +861,6 @@ bool Creature::isCanInteractWithBattleMaster(Player* player, bool msg) const
             case BATTLEGROUND_BE:
             case BATTLEGROUND_AA:
             case BATTLEGROUND_RL:
-            case BATTLEGROUND_SA:
-            case BATTLEGROUND_DS:
-            case BATTLEGROUND_RV: player->PlayerTalkClass->SendGossipMenu(10024, GetGUID()); break;
             default: break;
         }
         return false;

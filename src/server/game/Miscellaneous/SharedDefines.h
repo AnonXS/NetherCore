@@ -3186,15 +3186,10 @@ enum BattlegroundTypeId
     BATTLEGROUND_BE             = 5, // Blade's Edge Arena
     BATTLEGROUND_AA             = 6, // All Arenas
     BATTLEGROUND_EY             = 7, // Eye of the Storm
-    BATTLEGROUND_RL             = 8, // Ruins of Lordaernon
-    BATTLEGROUND_SA             = 9, // Strand of the Ancients
-    BATTLEGROUND_DS             = 10, // Dalaran Sewers
-    BATTLEGROUND_RV             = 11, // Ring of Valor
-    BATTLEGROUND_IC             = 30, // Isle of Conquest
-    BATTLEGROUND_RB             = 32  // Random Battleground
+    BATTLEGROUND_RL             = 8  // Ruins of Lordaernon
 };
 
-#define MAX_BATTLEGROUND_TYPE_ID 33
+#define MAX_BATTLEGROUND_TYPE_ID 9
 
 enum MailResponseType
 {
@@ -3328,12 +3323,9 @@ enum BattlegroundQueueTypeId
     BATTLEGROUND_QUEUE_WS       = 2,
     BATTLEGROUND_QUEUE_AB       = 3,
     BATTLEGROUND_QUEUE_EY       = 4,
-    BATTLEGROUND_QUEUE_SA       = 5,
-    BATTLEGROUND_QUEUE_IC       = 6,
-    BATTLEGROUND_QUEUE_RB       = 7,
-    BATTLEGROUND_QUEUE_2v2      = 8,
-    BATTLEGROUND_QUEUE_3v3      = 9,
-    BATTLEGROUND_QUEUE_5v5      = 10,
+    BATTLEGROUND_QUEUE_2v2      = 5,
+    BATTLEGROUND_QUEUE_3v3      = 6,
+    BATTLEGROUND_QUEUE_5v5      = 7,
     MAX_BATTLEGROUND_QUEUE_TYPES
 };
 

@@ -375,7 +375,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
         case BATTLEGROUND_RL:
             bg = new BattlegroundRL(*(BattlegroundRL*)bg_template);
             break;
-        case BATTLEGROUND_RB:
         case BATTLEGROUND_AA:
         default:
             return NULL;
@@ -450,10 +449,6 @@ bool BattlegroundMgr::CreateBattleground(BattlegroundTemplate const* bgTemplate)
                 break;
             case BATTLEGROUND_AA:
                 bg = new Battleground();
-                break;
-            case BATTLEGROUND_RB:
-                bg = new Battleground();
-                bg->SetRandom(true);
                 break;
             default:
                 return false;
@@ -540,7 +535,7 @@ void BattlegroundMgr::LoadBattlegroundTemplates()
             continue;
         }
 
-        if (bgTemplate.Id != BATTLEGROUND_AA && bgTemplate.Id != BATTLEGROUND_RB)
+        if (bgTemplate.Id != BATTLEGROUND_AA)
         {
             uint32 startId = fields[5].GetUInt32();
             if (WorldSafeLocsEntry const* start = sWorldSafeLocsStore.LookupEntry(startId))
@@ -623,6 +618,7 @@ void BattlegroundMgr::BuildBattlegroundListPacket(WorldPacket* data, uint64 guid
     *data << uint32(winner_arena);                          // 3.3.3 winArena
     *data << uint32(loser_kills);                           // 3.3.3 lossHonor
 
+    /*
     uint8 isRandom = bgTypeId == BATTLEGROUND_RB;
 
     *data << uint8(isRandom);                               // 3.3.3 isRandom
@@ -633,7 +629,7 @@ void BattlegroundMgr::BuildBattlegroundListPacket(WorldPacket* data, uint64 guid
         *data << uint32(winner_kills);                      // 3.3.3 winHonor_Random
         *data << uint32(winner_arena);                      // 3.3.3 winArena_Random
         *data << uint32(loser_kills);                       // 3.3.3 lossHonor_Random
-    }
+    }*/
 
     if (bgTypeId == BATTLEGROUND_AA)                        // arena
         *data << uint32(0);                                 // unk (count?)
@@ -694,8 +690,6 @@ bool BattlegroundMgr::IsArenaType(BattlegroundTypeId bgTypeId)
     return bgTypeId == BATTLEGROUND_AA
             || bgTypeId == BATTLEGROUND_BE
             || bgTypeId == BATTLEGROUND_NA
-            || bgTypeId == BATTLEGROUND_DS
-            || bgTypeId == BATTLEGROUND_RV
             || bgTypeId == BATTLEGROUND_RL;
 }
 
@@ -709,20 +703,12 @@ BattlegroundQueueTypeId BattlegroundMgr::BGQueueTypeId(BattlegroundTypeId bgType
             return BATTLEGROUND_QUEUE_AV;
         case BATTLEGROUND_EY:
             return BATTLEGROUND_QUEUE_EY;
-        case BATTLEGROUND_IC:
-            return BATTLEGROUND_QUEUE_IC;
-        case BATTLEGROUND_RB:
-            return BATTLEGROUND_QUEUE_RB;
-        case BATTLEGROUND_SA:
-            return BATTLEGROUND_QUEUE_SA;
         case BATTLEGROUND_WS:
             return BATTLEGROUND_QUEUE_WS;
         case BATTLEGROUND_AA:
         case BATTLEGROUND_BE:
-        case BATTLEGROUND_DS:
         case BATTLEGROUND_NA:
         case BATTLEGROUND_RL:
-        case BATTLEGROUND_RV:
             switch (arenaType)
             {
                 case ARENA_TYPE_2v2:
@@ -751,12 +737,6 @@ BattlegroundTypeId BattlegroundMgr::BGTemplateId(BattlegroundQueueTypeId bgQueue
             return BATTLEGROUND_AV;
         case BATTLEGROUND_QUEUE_EY:
             return BATTLEGROUND_EY;
-        case BATTLEGROUND_QUEUE_SA:
-            return BATTLEGROUND_SA;
-        case BATTLEGROUND_QUEUE_IC:
-            return BATTLEGROUND_IC;
-        case BATTLEGROUND_QUEUE_RB:
-            return BATTLEGROUND_RB;
         case BATTLEGROUND_QUEUE_2v2:
         case BATTLEGROUND_QUEUE_3v3:
         case BATTLEGROUND_QUEUE_5v5:
@@ -902,9 +882,7 @@ HolidayIds BattlegroundMgr::BGTypeToWeekendHolidayId(BattlegroundTypeId bgTypeId
         case BATTLEGROUND_AV: return HOLIDAY_CALL_TO_ARMS_AV;
         case BATTLEGROUND_EY: return HOLIDAY_CALL_TO_ARMS_EY;
         case BATTLEGROUND_WS: return HOLIDAY_CALL_TO_ARMS_WS;
-        case BATTLEGROUND_SA: return HOLIDAY_CALL_TO_ARMS_SA;
         case BATTLEGROUND_AB: return HOLIDAY_CALL_TO_ARMS_AB;
-        case BATTLEGROUND_IC: return HOLIDAY_CALL_TO_ARMS_IC;
         default: return HOLIDAY_NONE;
     }
 }
@@ -916,9 +894,7 @@ BattlegroundTypeId BattlegroundMgr::WeekendHolidayIdToBGType(HolidayIds holiday)
         case HOLIDAY_CALL_TO_ARMS_AV: return BATTLEGROUND_AV;
         case HOLIDAY_CALL_TO_ARMS_EY: return BATTLEGROUND_EY;
         case HOLIDAY_CALL_TO_ARMS_WS: return BATTLEGROUND_WS;
-        case HOLIDAY_CALL_TO_ARMS_SA: return BATTLEGROUND_SA;
         case HOLIDAY_CALL_TO_ARMS_AB: return BATTLEGROUND_AB;
-        case HOLIDAY_CALL_TO_ARMS_IC: return BATTLEGROUND_IC;
         default: return BATTLEGROUND_TYPE_NONE;
     }
 }

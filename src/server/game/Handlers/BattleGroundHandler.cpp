@@ -102,7 +102,6 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recvData)
 
     // can do this, since it's battleground, not arena
     BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(bgTypeId, 0);
-    BattlegroundQueueTypeId bgQueueTypeIdRandom = BattlegroundMgr::BGQueueTypeId(BATTLEGROUND_RB, 0);
 
     // ignore if player is already in BG
     if (_player->InBattleground())
@@ -142,24 +141,6 @@ void WorldSession::HandleBattlemasterJoinOpcode(WorldPacket& recvData)
         {
             WorldPacket data;
             sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, ERR_GROUP_JOIN_BATTLEGROUND_DESERTERS);
-            _player->GetSession()->SendPacket(&data);
-            return;
-        }
-
-        if (_player->GetBattlegroundQueueIndex(bgQueueTypeIdRandom) < PLAYER_MAX_BATTLEGROUND_QUEUES)
-        {
-            // player is already in random queue
-            WorldPacket data;
-            sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, ERR_IN_RANDOM_BG);
-            _player->GetSession()->SendPacket(&data);
-            return;
-        }
-
-        if (_player->InBattlegroundQueue() && bgTypeId == BATTLEGROUND_RB)
-        {
-            // player is already in queue, can't start random queue
-            WorldPacket data;
-            sBattlegroundMgr->BuildGroupJoinedBattlegroundPacket(&data, ERR_IN_NON_RANDOM_BG);
             _player->GetSession()->SendPacket(&data);
             return;
         }
