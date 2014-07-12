@@ -682,12 +682,6 @@ size_t ChatHandler::BuildChatPacket(WorldPacket& data, ChatMsg chatType, Languag
             data << uint64(receiverGUID);
             break;
         default:
-            if (gmMessage)
-            {
-                data << uint32(senderName.length() + 1);
-                data << senderName;
-            }
-
             if (chatType == CHAT_MSG_CHANNEL)
             {
                 ASSERT(channelName.length() > 0);
@@ -705,6 +699,11 @@ size_t ChatHandler::BuildChatPacket(WorldPacket& data, ChatMsg chatType, Languag
 
     if (chatType == CHAT_MSG_ACHIEVEMENT || chatType == CHAT_MSG_GUILD_ACHIEVEMENT)
         data << uint32(achievementId);
+    if (gmMessage)
+    {
+        data << uint32(senderName.length() + 1);
+        data << senderName;
+    }
 
     return receiverGUIDPos;
 }
