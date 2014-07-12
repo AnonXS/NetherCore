@@ -31,7 +31,6 @@
 #include "BattlegroundNA.h"
 #include "BattlegroundBE.h"
 #include "BattlegroundRL.h"
-#include "BattlegroundDS.h"
 #include "Chat.h"
 #include "Map.h"
 #include "MapInstanced.h"
@@ -376,9 +375,6 @@ Battleground* BattlegroundMgr::CreateNewBattleground(BattlegroundTypeId original
         case BATTLEGROUND_RL:
             bg = new BattlegroundRL(*(BattlegroundRL*)bg_template);
             break;
-        case BATTLEGROUND_DS:
-            bg = new BattlegroundDS(*(BattlegroundDS*)bg_template);
-            break;
         case BATTLEGROUND_RB:
         case BATTLEGROUND_AA:
         default:
@@ -451,9 +447,6 @@ bool BattlegroundMgr::CreateBattleground(BattlegroundTemplate const* bgTemplate)
                 break;
             case BATTLEGROUND_RL:
                 bg = new BattlegroundRL();
-                break;
-            case BATTLEGROUND_DS:
-                bg = new BattlegroundDS();
                 break;
             case BATTLEGROUND_AA:
                 bg = new Battleground();

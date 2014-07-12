@@ -24,7 +24,6 @@
 struct ArenaScore : public BattlegroundScore
 {
     friend class BattlegroundBE;
-    friend class BattlegroundDS;
     friend class BattlegroundNA;
     friend class BattlegroundRL;
 
