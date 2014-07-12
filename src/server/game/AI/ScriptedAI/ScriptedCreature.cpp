@@ -383,16 +383,14 @@ void ScriptedAI::SetEquipmentSlots(bool loadDefault, int32 mainHand /*= EQUIP_NO
         return;
     }
 
-    /* Not implemented in 2.4.3
     if (mainHand >= 0)
-        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 0, uint32(mainHand));
+        me->SetVirtualItem(VirtualItemSlot(0), uint32(mainHand));
 
     if (offHand >= 0)
-        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 1, uint32(offHand));
+        me->SetVirtualItem(VirtualItemSlot(1), uint32(offHand));
 
     if (ranged >= 0)
-        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, uint32(ranged));
-    */
+        me->SetVirtualItem(VirtualItemSlot(2), uint32(ranged));
 }
 
 void ScriptedAI::SetCombatMovement(bool allowMovement)
