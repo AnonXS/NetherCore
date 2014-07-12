@@ -16,10 +16,12 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ArenaScore.h"
 #include "ArenaTeam.h"
 #include "ArenaTeamMgr.h"
 #include "Battleground.h"
 #include "BattlegroundMgr.h"
+#include "BattlegroundScore.h"
 #include "Creature.h"
 #include "CreatureTextMgr.h"
 #include "Chat.h"
@@ -150,23 +152,8 @@ Battleground::Battleground()
     m_StartMaxDist      = 0.0f;
     ScriptId            = 0;
 
-    m_TeamStartLocX[TEAM_ALLIANCE]   = 0;
-    m_TeamStartLocX[TEAM_HORDE]      = 0;
-
-    m_TeamStartLocY[TEAM_ALLIANCE]   = 0;
-    m_TeamStartLocY[TEAM_HORDE]      = 0;
-
-    m_TeamStartLocZ[TEAM_ALLIANCE]   = 0;
-    m_TeamStartLocZ[TEAM_HORDE]      = 0;
-
-    m_TeamStartLocO[TEAM_ALLIANCE]   = 0;
-    m_TeamStartLocO[TEAM_HORDE]      = 0;
-
     m_ArenaTeamIds[TEAM_ALLIANCE]   = 0;
     m_ArenaTeamIds[TEAM_HORDE]      = 0;
-
-    m_ArenaTeamRatingChanges[TEAM_ALLIANCE]   = 0;
-    m_ArenaTeamRatingChanges[TEAM_HORDE]      = 0;
 
     m_ArenaTeamMMR[TEAM_ALLIANCE]   = 0;
     m_ArenaTeamMMR[TEAM_HORDE]      = 0;
@@ -301,16 +288,15 @@ inline void Battleground::_CheckSafePositions(uint32 diff)
     {
         m_ValidStartPositionTimer = 0;
 
-        float x, y, z, o;
         for (BattlegroundPlayerMap::const_iterator itr = GetPlayers().begin(); itr != GetPlayers().end(); ++itr)
             if (Player* player = ObjectAccessor::FindPlayer(itr->first))
             {
                 Position pos = player->GetPosition();
-                GetTeamStartLoc(player->GetBGTeam(), x, y, z, o);
-                if (pos.GetExactDistSq(x, y, z) > maxDist)
+                Position const* startPos = GetTeamStartPosition(Battleground::GetTeamIndexByTeamId(player->GetBGTeam()));
+                if (pos.GetExactDistSq(startPos) > maxDist)
                 {
                     TC_LOG_DEBUG("bg.battleground", "BATTLEGROUND: Sending %s back to start location (map: %u) (possible exploit)", player->GetName().c_str(), GetMapId());
-                    player->TeleportTo(GetMapId(), x, y, z, o);
+                    player->TeleportTo(GetMapId(), startPos->GetPositionX(), startPos->GetPositionY(), startPos->GetPositionZ(), startPos->GetOrientation());
                 }
             }
     }
@@ -551,7 +537,7 @@ inline void Battleground::_ProcessJoin(uint32 diff)
                 }
             // Announce BG starting
             if (sWorld->getBoolConfig(CONFIG_BATTLEGROUND_QUEUE_ANNOUNCER_ENABLE))
-                sWorld->SendWorldText(LANG_BG_STARTED_ANNOUNCE_WORLD, GetName(), GetMinLevel(), GetMaxLevel());
+                sWorld->SendWorldText(LANG_BG_STARTED_ANNOUNCE_WORLD, GetName().c_str(), GetMinLevel(), GetMaxLevel());
         }
     }
 }
@@ -615,13 +601,16 @@ inline Player* Battleground::_GetPlayerForTeam(uint32 teamId, BattlegroundPlayer
     return player;
 }
 
-void Battleground::SetTeamStartLoc(uint32 TeamID, float X, float Y, float Z, float O)
+void Battleground::SetTeamStartPosition(TeamId teamId, Position const& pos)
 {
-    TeamId idx = GetTeamIndexByTeamId(TeamID);
-    m_TeamStartLocX[idx] = X;
-    m_TeamStartLocY[idx] = Y;
-    m_TeamStartLocZ[idx] = Z;
-    m_TeamStartLocO[idx] = O;
+    ASSERT(teamId < TEAM_NEUTRAL);
+    StartPosition[teamId] = pos;
+}
+
+Position const* Battleground::GetTeamStartPosition(TeamId teamId) const
+{
+    ASSERT(teamId < TEAM_NEUTRAL);
+    return &StartPosition[teamId];
 }
 
 void Battleground::SendPacketToAll(WorldPacket* packet)
@@ -756,7 +745,7 @@ void Battleground::EndBattleground(uint32 winner)
     }
     else
     {
-        SetWinner(3);
+        SetWinner(3); // weird
     }
 
     SetStatus(STATUS_WAIT_LEAVE);
@@ -771,49 +760,52 @@ void Battleground::EndBattleground(uint32 winner)
 
         if (winnerArenaTeam && loserArenaTeam && winnerArenaTeam != loserArenaTeam)
         {
+            loserTeamRating = loserArenaTeam->GetRating();
+            loserMatchmakerRating = GetArenaMatchmakerRating(GetOtherTeam(winner));
+            winnerTeamRating = winnerArenaTeam->GetRating();
+            winnerMatchmakerRating = GetArenaMatchmakerRating(winner);
+
             if (winner != WINNER_NONE)
             {
-                loserTeamRating = loserArenaTeam->GetRating();
-                loserMatchmakerRating = GetArenaMatchmakerRating(GetOtherTeam(winner));
-                winnerTeamRating = winnerArenaTeam->GetRating();
-                winnerMatchmakerRating = GetArenaMatchmakerRating(winner);
                 winnerMatchmakerChange = winnerArenaTeam->WonAgainst(winnerMatchmakerRating, loserMatchmakerRating, winnerChange);
                 loserMatchmakerChange = loserArenaTeam->LostAgainst(loserMatchmakerRating, winnerMatchmakerRating, loserChange);
                 TC_LOG_DEBUG("bg.arena", "match Type: %u --- Winner: old rating: %u, rating gain: %d, old MMR: %u, MMR gain: %d --- Loser: old rating: %u, rating loss: %d, old MMR: %u, MMR loss: %d ---", m_ArenaType, winnerTeamRating, winnerChange, winnerMatchmakerRating,
                     winnerMatchmakerChange, loserTeamRating, loserChange, loserMatchmakerRating, loserMatchmakerChange);
                 SetArenaMatchmakerRating(winner, winnerMatchmakerRating + winnerMatchmakerChange);
                 SetArenaMatchmakerRating(GetOtherTeam(winner), loserMatchmakerRating + loserMatchmakerChange);
-                SetArenaTeamRatingChangeForTeam(winner, winnerChange);
-                SetArenaTeamRatingChangeForTeam(GetOtherTeam(winner), loserChange);
+
+                // bg team that the client expects is different to TeamId
+                // alliance 1, horde 0
+                uint8 winnerTeam = winner == ALLIANCE ? WINNER_ALLIANCE : WINNER_HORDE;
+                uint8 loserTeam = winner == ALLIANCE ? WINNER_HORDE : WINNER_ALLIANCE;
+
+                _arenaTeamScores[winnerTeam].Assign(winnerChange, winnerMatchmakerRating, winnerArenaTeam->GetName());
+                _arenaTeamScores[loserTeam].Assign(loserChange, loserMatchmakerRating, loserArenaTeam->GetName());
+
                 TC_LOG_DEBUG("bg.arena", "Arena match Type: %u for Team1Id: %u - Team2Id: %u ended. WinnerTeamId: %u. Winner rating: +%d, Loser rating: %d", m_ArenaType, m_ArenaTeamIds[TEAM_ALLIANCE], m_ArenaTeamIds[TEAM_HORDE], winnerArenaTeam->GetId(), winnerChange, loserChange);
                 if (sWorld->getBoolConfig(CONFIG_ARENA_LOG_EXTENDED_INFO))
-                    for (Battleground::BattlegroundScoreMap::const_iterator itr = GetPlayerScoresBegin(); itr != GetPlayerScoresEnd(); ++itr)
-                        if (Player* player = ObjectAccessor::FindPlayer(itr->first))
+                    for (auto const& score : PlayerScores)
+                        if (Player* player = ObjectAccessor::FindPlayer(MAKE_NEW_GUID(score.first, 0, HIGHGUID_PLAYER)))
                         {
-                            TC_LOG_DEBUG("bg.arena", "Statistics match Type: %u for %s (GUID: " UI64FMTD ", Team: %d, IP: %s): %u damage, %u healing, %u killing blows",
-                                m_ArenaType, player->GetName().c_str(), itr->first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3),
-                                player->GetSession()->GetRemoteAddress().c_str(), itr->second->DamageDone, itr->second->HealingDone,
-                                itr->second->KillingBlows);
+                            TC_LOG_DEBUG("bg.arena", "Statistics match Type: %u for %s (GUID: %u, Team: %d, IP: %s): %s",
+                                m_ArenaType, player->GetName().c_str(), score.first, player->GetArenaTeamId(m_ArenaType == 5 ? 2 : m_ArenaType == 3),
+                                player->GetSession()->GetRemoteAddress().c_str(), score.second->ToString().c_str());
                         }
             }
             // Deduct 16 points from each teams arena-rating if there are no winners after 45+2 minutes
             else
             {
-                SetArenaTeamRatingChangeForTeam(ALLIANCE, ARENA_TIMELIMIT_POINTS_LOSS);
-                SetArenaTeamRatingChangeForTeam(HORDE, ARENA_TIMELIMIT_POINTS_LOSS);
+                _arenaTeamScores[WINNER_ALLIANCE].Assign(ARENA_TIMELIMIT_POINTS_LOSS, winnerMatchmakerRating, winnerArenaTeam->GetName());
+                _arenaTeamScores[WINNER_HORDE].Assign(ARENA_TIMELIMIT_POINTS_LOSS, loserMatchmakerRating, loserArenaTeam->GetName());
+
                 winnerArenaTeam->FinishGame(ARENA_TIMELIMIT_POINTS_LOSS);
                 loserArenaTeam->FinishGame(ARENA_TIMELIMIT_POINTS_LOSS);
             }
         }
-        else
-        {
-            SetArenaTeamRatingChangeForTeam(ALLIANCE, 0);
-            SetArenaTeamRatingChangeForTeam(HORDE, 0);
-        }
     }
 
     WorldPacket pvpLogData;
-    sBattlegroundMgr->BuildPvpLogDataPacket(&pvpLogData, this);
+    BuildPvPLogDataPacket(pvpLogData);
 
     BattlegroundQueueTypeId bgQueueTypeId = BattlegroundMgr::BGQueueTypeId(GetTypeID(), GetArenaType());
 
@@ -958,7 +950,7 @@ void Battleground::RemovePlayerAtLeave(uint64 guid, bool Transport, bool SendPac
         participant = true;
     }
 
-    BattlegroundScoreMap::iterator itr2 = PlayerScores.find(guid);
+    BattlegroundScoreMap::iterator itr2 = PlayerScores.find(GUID_LOPART(guid));
     if (itr2 != PlayerScores.end())
     {
         delete itr2->second;                                // delete player's score
@@ -1098,6 +1090,9 @@ void Battleground::Reset()
     for (BattlegroundScoreMap::const_iterator itr = PlayerScores.begin(); itr != PlayerScores.end(); ++itr)
         delete itr->second;
     PlayerScores.clear();
+
+    for (uint8 i = 0; i < BG_TEAMS_COUNT; ++i)
+        _arenaTeamScores[i].Reset();
 
     ResetBGSubclass();
 }
@@ -1349,47 +1344,47 @@ bool Battleground::HasFreeSlots() const
     return GetPlayersSize() < GetMaxPlayers();
 }
 
-void Battleground::UpdatePlayerScore(Player* Source, uint32 type, uint32 value, bool doAddHonor)
+void Battleground::BuildPvPLogDataPacket(WorldPacket& data)
 {
-    //this procedure is called from virtual function implemented in bg subclass
-    BattlegroundScoreMap::const_iterator itr = PlayerScores.find(Source->GetGUID());
-    if (itr == PlayerScores.end())                         // player not found...
-        return;
+    uint8 type = (isArena() ? 1 : 0);
 
-    switch (type)
+    data.Initialize(MSG_PVP_LOG_DATA, 1 + 1 + 4 + 40 * GetPlayerScoresSize());
+    data << uint8(type);                                // type (battleground = 0 / arena = 1)
+
+    if (type)                                           // arena
     {
-        case SCORE_KILLING_BLOWS:                           // Killing blows
-            itr->second->KillingBlows += value;
-            break;
-        case SCORE_DEATHS:                                  // Deaths
-            itr->second->Deaths += value;
-            break;
-        case SCORE_HONORABLE_KILLS:                         // Honorable kills
-            itr->second->HonorableKills += value;
-            break;
-        case SCORE_BONUS_HONOR:                             // Honor bonus
-            // do not add honor in arenas
-            if (isBattleground())
-            {
-                // reward honor instantly
-                if (doAddHonor)
-                    Source->RewardHonor(NULL, 1, value);    // RewardHonor calls UpdatePlayerScore with doAddHonor = false
-                else
-                    itr->second->BonusHonor += value;
-            }
-            break;
-            // used only in EY, but in MSG_PVP_LOG_DATA opcode
-        case SCORE_DAMAGE_DONE:                             // Damage Done
-            itr->second->DamageDone += value;
-            break;
-        case SCORE_HEALING_DONE:                            // Healing Done
-            itr->second->HealingDone += value;
-            break;
-        default:
-            TC_LOG_ERROR("bg.battleground", "Battleground::UpdatePlayerScore: unknown score type (%u) for BG (map: %u, instance id: %u)!",
-                type, m_MapId, m_InstanceID);
-            break;
+        for (uint8 i = 0; i < BG_TEAMS_COUNT; ++i)
+            _arenaTeamScores[i].BuildRatingInfoBlock(data);
+
+        for (uint8 i = 0; i < BG_TEAMS_COUNT; ++i)
+            _arenaTeamScores[i].BuildTeamInfoBlock(data);
     }
+
+    if (GetStatus() == STATUS_WAIT_LEAVE)
+    {
+        data << uint8(1);                      // bg ended
+        data << uint8(GetWinner());            // who win
+    }
+    else
+        data << uint8(0);                      // bg not ended
+
+    data << uint32(GetPlayerScoresSize());
+    for (auto const& score : PlayerScores)
+        score.second->AppendToPacket(data);
+}
+
+bool Battleground::UpdatePlayerScore(Player* player, uint32 type, uint32 value, bool doAddHonor)
+{
+    BattlegroundScoreMap::const_iterator itr = PlayerScores.find(player->GetGUIDLow());
+    if (itr == PlayerScores.end()) // player not found...
+        return false;
+
+    itr->second->UpdateScore(type, value);
+
+    if (type == SCORE_BONUS_HONOR && doAddHonor && isBattleground())
+        player->RewardHonor(NULL, 1, value); // RewardHonor calls UpdatePlayerScore with doAddHonor = false
+
+    return true;
 }
 
 void Battleground::AddPlayerToResurrectQueue(uint64 npc_guid, uint64 player_guid)
@@ -1868,7 +1863,7 @@ void Battleground::PlayerAddedToBGCheckIfBGIsRunning(Player* player)
 
     BlockMovement(player);
 
-    sBattlegroundMgr->BuildPvpLogDataPacket(&data, this);
+    BuildPvPLogDataPacket(data);
     player->SendDirectMessage(&data);
 
     sBattlegroundMgr->BuildBattlegroundStatusPacket(&data, this, player->GetBattlegroundQueueIndex(bgQueueTypeId), STATUS_IN_PROGRESS, GetEndTime(), GetStartTime(), GetArenaType(), player->GetBGTeam());

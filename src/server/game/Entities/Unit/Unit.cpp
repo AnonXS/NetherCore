@@ -21,6 +21,7 @@
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
 #include "Battleground.h"
+#include "BattlegroundScore.h"
 #include "CellImpl.h"
 #include "ConditionMgr.h"
 #include "CreatureAI.h"
@@ -2838,12 +2839,10 @@ uint32 Unit::GetWeaponSkillValue (WeaponAttackType attType, Unit const* target) 
         if (IsInFeralForm())
             return GetMaxSkillValueForLevel();              // always maximized SKILL_FERAL_COMBAT in fact
 
-        // weapon skill or (unarmed for base attack and fist weapons)
-        uint32 skill;
-        if (item && item->GetSkill() != SKILL_FIST_WEAPONS)
+        // weapon skill or (unarmed for base attack)
+        uint32 skill = SKILL_UNARMED;
+        if (item)
             skill = item->GetSkill();
-        else
-            skill = SKILL_UNARMED;
 
         // in PvP use full skill instead current skill value
         value = (target && target->IsControlledByPlayer())
@@ -3850,8 +3849,7 @@ void Unit::RemoveAurasByType(AuraType auraType, uint64 casterGUID, Aura* except,
     {
         Aura* aura = (*iter)->GetBase();
         AuraApplication * aurApp = aura->GetApplicationOfTarget(GetGUID());
-        if (!aurApp)
-            continue;
+        ASSERT(aurApp);
 
         ++iter;
         if (aura != except && (!casterGUID || aura->GetCasterGUID() == casterGUID)
@@ -6834,31 +6832,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     }
                     break;
                 }
-                // Item - Shaman T10 Elemental 2P Bonus
-                case 70811:
-                {
-                    // Lightning Bolt & Chain Lightning
-                    if (procSpell->SpellFamilyFlags[0] & 0x3)
-                    {
-                        if (ToPlayer()->HasSpellCooldown(16166))
-                        {
-                            uint32 newCooldownDelay = ToPlayer()->GetSpellCooldownDelay(16166);
-                            if (newCooldownDelay < 3)
-                                newCooldownDelay = 0;
-                            else
-                                newCooldownDelay -= 2;
-                            ToPlayer()->AddSpellCooldown(16166, 0, uint32(time(NULL) + newCooldownDelay));
-
-                            WorldPacket data(SMSG_MODIFY_COOLDOWN, 4+8+4);
-                            data << uint32(16166);                  // Spell ID
-                            data << uint64(GetGUID());              // Player GUID
-                            data << int32(-2000);                   // Cooldown mod in milliseconds
-                            ToPlayer()->GetSession()->SendPacket(&data);
-                            return true;
-                        }
-                    }
-                    return false;
-                }
                 // Item - Shaman T10 Elemental 4P Bonus
                 case 70817:
                 {
@@ -7367,7 +7340,8 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
         ? ToPlayer()->GetItemByGuid(triggeredByAura->GetBase()->GetCastItemGUID()) : NULL;
 
     // Try handle unknown trigger spells
-    if (sSpellMgr->GetSpellInfo(trigger_spell_id) == NULL)
+    // triggered spells exists only in serverside spell_dbc
+    /// @todo: reverify and move these spells to spellscripts
     {
         switch (auraSpellInfo->SpellFamilyName)
         {
@@ -10678,6 +10652,9 @@ bool Unit::IsImmunedToSpell(SpellInfo const* spellInfo) const
 bool Unit::IsImmunedToSpellEffect(SpellInfo const* spellInfo, uint32 index) const
 {
     if (!spellInfo || !spellInfo->Effects[index].IsEffect())
+        return false;
+
+    if (spellInfo->Attributes & SPELL_ATTR0_UNAFFECTED_BY_INVULNERABILITY)
         return false;
 
     // If m_immuneToEffect type contain this effect type, IMMUNE effect.
@@ -14767,11 +14744,8 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         if (creature)
         {
             Loot* loot = &creature->loot;
-            if (creature->lootForPickPocketed)
-            {
+            if (creature->loot.loot_type == LOOT_PICKPOCKETING)
                 creature->ResetPickPocketRefillTimer();
-                creature->lootForPickPocketed = false;
-            }
 
             loot->clear();
             if (uint32 lootid = creature->GetCreatureTemplate()->lootid)
@@ -14787,7 +14761,7 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
                     group->SendLooter(creature, NULL);
 
                 // Update round robin looter only if the creature had loot
-                if (!creature->loot.empty())
+                if (!loot->empty())
                     group->UpdateLooterGuid(creature);
             }
         }
@@ -14890,9 +14864,12 @@ void Unit::Kill(Unit* victim, bool durabilityLoss)
         if (!creature->IsPet())
         {
             creature->DeleteThreatList();
-            CreatureTemplate const* cInfo = creature->GetCreatureTemplate();
-            if (cInfo && (cInfo->lootid || cInfo->maxgold > 0))
+
+            // must be after setDeathState which resets dynamic flags
+            if (!creature->loot.isLooted())
                 creature->SetFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
+            else
+                creature->AllLootRemovedFromCorpse();
         }
 
         // Call KilledUnit for creatures, this needs to be called after the lootable flag is set

@@ -249,6 +249,14 @@ struct PlayerCreateInfoAction
 
 typedef std::list<PlayerCreateInfoAction> PlayerCreateInfoActions;
 
+struct PlayerCreateInfoSkill
+{
+    uint16 SkillId;
+    uint16 Rank;
+};
+
+typedef std::list<PlayerCreateInfoSkill> PlayerCreateInfoSkills;
+
 struct PlayerInfo
 {
                                                             // existence checked by displayId != 0
@@ -263,8 +271,9 @@ struct PlayerInfo
     uint16 displayId_m;
     uint16 displayId_f;
     PlayerCreateInfoItems item;
-    PlayerCreateInfoSpells spell;
+    PlayerCreateInfoSpells customSpells;
     PlayerCreateInfoActions action;
+    PlayerCreateInfoSkills skills;
 
     PlayerLevelInfo* levelInfo;                             //[level-1] 0..MaxPlayerLevel-1
 };
@@ -1527,7 +1536,9 @@ class Player : public Unit, public GridObject<Player>
         void learnSpell(uint32 spell_id, bool dependent);
         void removeSpell(uint32 spell_id, bool disabled = false, bool learn_low_rank = true);
         void resetSpells(bool myClassOnly = false);
-        void learnDefaultSpells();
+        void LearnCustomSpells();
+        void LearnDefaultSkills();
+        void LearnDefaultSkill(uint32 skillId, uint16 rank);
         void learnQuestRewardedSpells();
         void learnQuestRewardedSpells(Quest const* quest);
         void learnSpellHighRank(uint32 spellid);
@@ -1590,6 +1601,7 @@ class Player : public Unit, public GridObject<Player>
         uint32 GetSpellCooldownDelay(uint32 spell_id) const;
         void AddSpellAndCategoryCooldowns(SpellInfo const* spellInfo, uint32 itemId, Spell* spell = NULL, bool infinityCooldown = false);
         void AddSpellCooldown(uint32 spell_id, uint32 itemid, time_t end_time);
+        void ModifySpellCooldown(uint32 spellId, int32 cooldown);
         void SendCooldownEvent(SpellInfo const* spellInfo, uint32 itemId = 0, Spell* spell = NULL, bool setCooldown = true);
         void ProhibitSpellSchool(SpellSchoolMask idSchoolMask, uint32 unTimeMs);
         void RemoveSpellCooldown(uint32 spell_id, bool update = false);
