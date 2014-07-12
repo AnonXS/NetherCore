@@ -238,8 +238,8 @@ public:
             InnerDemon_Count = 0;
             me->SetSpeed(MOVE_RUN, 2.0f, true);
             me->SetDisplayId(MODEL_NIGHTELF);
-            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID  , 0);
-            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID+1, 0);
+            me->SetVirtualItem(VirtualItemSlot(0), uint32(EQUIP_UNEQUIP));
+            me->SetVirtualItem(VirtualItemSlot(1), uint32(EQUIP_UNEQUIP));
             DoCast(me, SPELL_DUAL_WIELD, true);
             me->SetCorpseDelay(1000*60*60);
             instance->SetData(DATA_LEOTHERASTHEBLINDEVENT, NOT_STARTED);
@@ -337,8 +337,8 @@ public:
                 me->SetDisplayId(MODEL_DEMON);
 
                 // and removing weapons
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID  , 0);
-                me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID+1, 0);
+                me->SetVirtualItem(VirtualItemSlot(0), uint32(EQUIP_UNEQUIP));
+                me->SetVirtualItem(VirtualItemSlot(1), uint32(EQUIP_UNEQUIP));
             }
         }
 
@@ -484,8 +484,8 @@ public:
                         me->RemoveAurasDueToSpell(SPELL_WHIRLWIND, 0);
                         me->SetDisplayId(MODEL_DEMON);
                         Talk(SAY_SWITCH_TO_DEMON);
-                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID  , 0);
-                        me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID+1, 0);
+                        me->SetVirtualItem(VirtualItemSlot(0), uint32(EQUIP_UNEQUIP));
+                        me->SetVirtualItem(VirtualItemSlot(1), uint32(EQUIP_UNEQUIP));
                         DemonForm = true;
                         NeedThreatReset = true;
                         SwitchToDemon_Timer = 45000;

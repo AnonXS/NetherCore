@@ -567,7 +567,7 @@ public:
         {
             if (spell->Id == SPELL_GLAIVE_RETURNS) // Re-equip our warblades!
             {
-                if (!me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID))
+                if (!me->GetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_DISPLAY + 0))
                     SetEquipmentSlots(false, EQUIP_ID_MAIN_HAND, EQUIP_UNEQUIP, EQUIP_NO_CHANGE);
                 else
                     SetEquipmentSlots(false, EQUIP_UNEQUIP, EQUIP_ID_OFF_HAND, EQUIP_NO_CHANGE);
