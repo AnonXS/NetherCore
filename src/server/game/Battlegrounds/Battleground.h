@@ -629,7 +629,7 @@ class Battleground
                 // should be old rating, new rating, and client will calculate rating change itself
                 data << uint32(ratingLost);
                 data << uint32(ratingWon);
-                data << uint32(MatchmakerRating);
+                //data << uint32(MatchmakerRating); not implemented in 2.4.3
             }
 
             void BuildTeamInfoBlock(WorldPacket& data)
