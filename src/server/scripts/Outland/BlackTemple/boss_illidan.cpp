@@ -1148,7 +1148,7 @@ public:
             Timer[EVENT_MAIEV_TAUNT] = urand(22, 43) * 1000;
             Timer[EVENT_MAIEV_SHADOW_STRIKE] = 30000;
             SetEquipmentSlots(false, EQUIP_ID_MAIN_HAND_MAIEV, EQUIP_UNEQUIP, EQUIP_NO_CHANGE);
-            me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + 2, 45738);
+            me->SetVirtualItem(VirtualItemSlot(2), uint32(45738));
         }
 
         void EnterCombat(Unit* /*who*/) override { }
