@@ -195,21 +195,6 @@ void Vehicle::ApplyAllImmunities()
         _me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_STAT, true);
         _me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_DAMAGE_PERCENT_TAKEN, true);
     }
-
-    // Different immunities for vehicles goes below
-    switch (GetVehicleInfo()->m_ID)
-    {
-        // code below prevents a bug with movable cannons
-        case 160: // Strand of the Ancients
-        case 244: // Wintergrasp
-        case 510: // Isle of Conquest
-            _me->SetControlled(true, UNIT_STATE_ROOT);
-            // why we need to apply this? we can simple add immunities to slow mechanic in DB
-            _me->ApplySpellImmune(0, IMMUNITY_STATE, SPELL_AURA_MOD_DECREASE_SPEED, true);
-            break;
-        default:
-            break;
-    }
 }
 
 /**

@@ -1269,7 +1269,6 @@ class ObjectMgr
             return _gossipMenuItemsStore.equal_range(uiMenuId);
         }
 
-        // for wintergrasp only
         GraveYardContainer GraveYardStore;
 
         static void AddLocaleString(std::string const& s, LocaleConstant locale, StringVector& data);
