@@ -55,7 +55,7 @@ enum RBACPermissions
     RBAC_PERM_JOIN_NORMAL_BG                                 = 3,
     RBAC_PERM_JOIN_RANDOM_BG                                 = 4,
     RBAC_PERM_JOIN_ARENAS                                    = 5,
-    RBAC_PERM_JOIN_DUNGEON_FINDER                            = 6,
+    //  6 - reuse
     //  7 - reuse
     //  8 - reuse
     //  9 - reuse
@@ -333,12 +333,12 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_LEARN_ALL_LANG                         = 427,
     RBAC_PERM_COMMAND_LEARN_ALL_RECIPES                      = 428,
     RBAC_PERM_COMMAND_UNLEARN                                = 429,
-    RBAC_PERM_COMMAND_LFG                                    = 430,
-    RBAC_PERM_COMMAND_LFG_PLAYER                             = 431,
-    RBAC_PERM_COMMAND_LFG_GROUP                              = 432,
-    RBAC_PERM_COMMAND_LFG_QUEUE                              = 433,
-    RBAC_PERM_COMMAND_LFG_CLEAN                              = 434,
-    RBAC_PERM_COMMAND_LFG_OPTIONS                            = 435,
+    //  430 - reuse
+    //  431 - reuse
+    //  432 - reuse
+    //  433 - reuse
+    //  434 - reuse
+    //  435 - reuse
     RBAC_PERM_COMMAND_LIST                                   = 436,
     RBAC_PERM_COMMAND_LIST_CREATURE                          = 437,
     RBAC_PERM_COMMAND_LIST_ITEM                              = 438,
@@ -559,7 +559,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_RELOAD_ITEM_ENCHANTMENT_TEMPLATE       = 653,
     RBAC_PERM_COMMAND_RELOAD_ITEM_LOOT_TEMPLATE              = 654,
     RBAC_PERM_COMMAND_RELOAD_ITEM_SET_NAMES                  = 655,
-    RBAC_PERM_COMMAND_RELOAD_LFG_DUNGEON_REWARDS             = 656,
+    //  656 - reuse
     RBAC_PERM_COMMAND_RELOAD_LOCALES_ACHIEVEMENT_REWARD      = 657,
     RBAC_PERM_COMMAND_RELOAD_LOCALES_CRETURE                 = 658,
     RBAC_PERM_COMMAND_RELOAD_LOCALES_CRETURE_TEXT            = 659,

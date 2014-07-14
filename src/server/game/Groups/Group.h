@@ -85,9 +85,6 @@ enum GroupType
     GROUPTYPE_BG     = 0x01,
     GROUPTYPE_RAID   = 0x02,
     GROUPTYPE_BGRAID = GROUPTYPE_BG | GROUPTYPE_RAID,       // mask
-    GROUPTYPE_UNK1   = 0x04,
-    GROUPTYPE_LFG    = 0x08
-    // 0x10, leave/change group?, I saw this flag when leaving group and after leaving BG while in group
 };
 
 enum GroupUpdateFlags
@@ -198,11 +195,9 @@ class Group
         void   UpdateLooterGuid(WorldObject* pLootedObject, bool ifneed = false);
         void   SetLootThreshold(ItemQualities threshold);
         void   Disband(bool hideDestroy=false);
-        void   SetLfgRoles(uint64 guid, const uint8 roles);
 
         // properties accessories
         bool IsFull() const;
-        bool isLFGGroup()  const;
         bool isRaidGroup() const;
         bool isBGGroup()   const;
         bool IsCreated()   const;
@@ -238,7 +233,6 @@ class Group
 
         uint8 GetMemberGroup(uint64 guid) const;
 
-        void ConvertToLFG();
         void ConvertToRaid();
 
         void SetBattlegroundGroup(Battleground* bg);

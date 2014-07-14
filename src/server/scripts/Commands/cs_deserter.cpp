@@ -30,7 +30,6 @@
 
 enum Spells
 {
-    LFG_SPELL_DUNGEON_DESERTER = 71041,
     BG_SPELL_DESERTER = 26013
 };
 
@@ -45,12 +44,6 @@ public:
 
     ChatCommand* GetCommands() const override
     {
-        static ChatCommand deserterInstanceCommandTable[] =
-        {
-            { "add",      rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE_ADD,    false, &HandleDeserterInstanceAdd,    "", NULL },
-            { "remove",   rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE_REMOVE, false, &HandleDeserterInstanceRemove, "", NULL },
-            { NULL,       0,                                          false, NULL,                          "", NULL }
-        };
         static ChatCommand deserterBGCommandTable[] =
         {
             { "add",      rbac::RBAC_PERM_COMMAND_DESERTER_BG_ADD,    false, &HandleDeserterBGAdd,    "", NULL },
@@ -60,7 +53,6 @@ public:
 
         static ChatCommand deserterCommandTable[] =
         {
-            { "instance", rbac::RBAC_PERM_COMMAND_DESERTER_INSTANCE, false, NULL, "", deserterInstanceCommandTable },
             { "bg",       rbac::RBAC_PERM_COMMAND_DESERTER_BG,       false, NULL, "", deserterBGCommandTable },
             { NULL,       0,                                   false, NULL, "", NULL }
         };
@@ -120,7 +112,7 @@ public:
             return false;
         }
 
-        Aura* aura = player->AddAura(isInstance ? LFG_SPELL_DUNGEON_DESERTER : BG_SPELL_DESERTER, player);
+        Aura* aura = player->AddAura(BG_SPELL_DESERTER, player);
 
         if (!aura)
         {
@@ -163,27 +155,15 @@ public:
             return false;
         }
 
-        player->RemoveAura(isInstance ? LFG_SPELL_DUNGEON_DESERTER : BG_SPELL_DESERTER);
+        player->RemoveAura(BG_SPELL_DESERTER);
 
         return true;
-    }
-
-    /// @sa HandleDeserterAdd()
-    static bool HandleDeserterInstanceAdd(ChatHandler* handler, char const* args)
-    {
-        return HandleDeserterAdd(handler, args, true);
     }
 
     /// @sa HandleDeserterAdd()
     static bool HandleDeserterBGAdd(ChatHandler* handler, char const* args)
     {
         return HandleDeserterAdd(handler, args, false);
-    }
-
-    /// @sa HandleDeserterRemove()
-    static bool HandleDeserterInstanceRemove(ChatHandler* handler, char const* args)
-    {
-        return HandleDeserterRemove(handler, args, true);
     }
 
     /// @sa HandleDeserterRemove()

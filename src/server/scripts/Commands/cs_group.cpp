@@ -17,7 +17,6 @@
 
 #include "Chat.h"
 #include "Language.h"
-#include "LFG.h"
 #include "Player.h"
 #include "ObjectMgr.h"
 #include "GroupMgr.h"
@@ -368,8 +367,7 @@ public:
 
             // Now we can print those informations for every single member of each group!
             handler->PSendSysMessage(LANG_GROUP_PLAYER_NAME_GUID, slot.name.c_str(), onlineState,
-                zoneName.c_str(), phase, GUID_LOPART(slot.guid), flags.c_str(),
-                lfg::GetRolesString(slot.roles).c_str());
+                zoneName.c_str(), phase, GUID_LOPART(slot.guid), flags.c_str());
         }
 
         // And finish after every iterator is done.
