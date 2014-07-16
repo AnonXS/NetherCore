@@ -149,6 +149,24 @@ enum UnitClass
 
 #define PLAYER_MAX_BATTLEGROUND_QUEUES 2
 
+enum LfgMode
+{
+    LFG_MODE = 0,
+    LFM_MODE = 1,
+};
+
+enum LfgType
+{
+    LFG_TYPE_NONE = 0,
+    LFG_TYPE_DUNGEON = 1,
+    LFG_TYPE_RAID = 2,
+    LFG_TYPE_QUEST = 3,
+    LFG_TYPE_ZONE = 4,
+    LFG_TYPE_HEROIC_DUNGEON = 5
+};
+
+#define MAX_LOOKING_FOR_GROUP_SLOT 3
+
 enum ReputationRank
 {
     REP_HATED       = 0,

@@ -215,6 +215,7 @@ class WorldSession
         void SendNotification(const char *format, ...) ATTR_PRINTF(2, 3);
         void SendNotification(uint32 string_id, ...);
         void SendPetNameInvalid(uint32 error, std::string const& name, DeclinedName *declinedName);
+        void SendLfgResult(LfgType type, uint32 entry, LfgMode mode);
         void SendPartyResult(PartyOperation operation, std::string const& member, PartyResult res, uint32 val = 0);
         void SendAreaTriggerMessage(const char* Text, ...) ATTR_PRINTF(2, 3);
         void SendSetPhaseShift(uint32 phaseShift);
@@ -341,6 +342,11 @@ class WorldSession
         void SendArenaTeamCommandResult(uint32 team_action, std::string const& team, std::string const& player, uint32 error_id = 0);
         void SendNotInArenaTeamPacket(uint8 type);
         void SendPetitionShowList(uint64 guid);
+
+        // Looking For Group
+        // true values are set by client sending CMSG_LFM_SET_AUTOFILL or CMSG_SET_LFG_COMMENT before player login
+        bool LookingForGroup_auto_join = false;
+        bool LookingForGroup_auto_add = false;
 
         void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
 
@@ -779,16 +785,16 @@ class WorldSession
         void HandleInstanceLockResponse(WorldPacket& recvPacket);
 
         // Looking for Dungeon/Raid
-        //void HandleSetLfgOpcode(WorldPacket& recv_data);
-        //void HandleLfgSetAutoJoinOpcode(WorldPacket& recv_data);
-        //void HandleLfgClearAutoJoinOpcode(WorldPacket& recv_data);
-        //void HandleLfgClearOpcode(WorldPacket& recv_data);
-        //void HandleLfmClearOpcode(WorldPacket& recv_data);
-        //void HandleSetLfmOpcode(WorldPacket& recv_data);
-        //void HandleSetLfgCommentOpcode(WorldPacket& recv_data);
-
-        //void SendLfgResult(LfgType type, uint32 entry, LfgMode mode);
-        //void SendLfgDisabled();  needed? 
+        void HandleLookingForGroup(WorldPacket& recvPacket);    
+        void HandleLfgSetOpcode(WorldPacket& recv_data);
+        void HandleLfgSetCommentOpcode(WorldPacket& recv_data);
+        void HandleLfgSetAutoJoinOpcode(WorldPacket& recv_data);
+        void HandleLfgClearAutoJoinOpcode(WorldPacket& recv_data);
+        void HandleLfgClearOpcode(WorldPacket& recv_data);
+        void HandleLfmSetOpcode(WorldPacket& recv_data);
+        void HandleLfmSetAutoFillOpcode(WorldPacket& recv_data);
+        void HandleLfmClearAutoFillOpcode(WorldPacket& recv_data);
+        void HandleLfmClearOpcode(WorldPacket& recv_data);
 
         // Arena Team
         void HandleInspectArenaTeamsOpcode(WorldPacket& recvData);
