@@ -648,6 +648,10 @@ void Group::Disband(bool hideDestroy /* = false */)
         if (!player)
             continue;
 
+        //Remove leader flag from group leader
+        if (player->GetGUID() == player->GetGroup()->GetLeaderGUID())
+            player->RemoveFlag(PLAYER_FLAGS, PLAYER_FLAGS_GROUP_LEADER);
+
         //we cannot call _removeMember because it would invalidate member iterator
         //if we are removing player from battleground raid
         if (isBGGroup())
