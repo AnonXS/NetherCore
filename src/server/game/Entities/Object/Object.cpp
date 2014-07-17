@@ -367,6 +367,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     }
     else
     {
+        /* not iplemented in 2.4.3, maybe we need parts of this code in 0x40
         if (flags & UPDATEFLAG_POSITION)
         {
             ASSERT(object);
@@ -406,18 +407,16 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
                 *data << float(object->GetOrientation());
             else
                 *data << float(0);
-        }
-        else
+        }*/
+
+        // 0x40
+        if (flags & UPDATEFLAG_STATIONARY_POSITION)
         {
-            // 0x40
-            if (flags & UPDATEFLAG_STATIONARY_POSITION)
-            {
-                ASSERT(object);
-                *data << object->GetStationaryX();
-                *data << object->GetStationaryY();
-                *data << object->GetStationaryZ();
-                *data << object->GetStationaryO();
-            }
+            ASSERT(object);
+            *data << object->GetStationaryX();
+            *data << object->GetStationaryY();
+            *data << object->GetStationaryZ();
+            *data << object->GetStationaryO();
         }
     }
 
@@ -492,28 +491,6 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         else
             *data << uint32(getMSTime());
     }
-
-    /* Not used in 2.4.3
-    // 0x80
-    if (flags & UPDATEFLAG_VEHICLE)
-    {
-        /// @todo Allow players to aquire this updateflag.
-        ASSERT(unit);
-        ASSERT(unit->GetVehicleKit());
-        ASSERT(unit->GetVehicleKit()->GetVehicleInfo());
-        *data << uint32(unit->GetVehicleKit()->GetVehicleInfo()->m_ID);
-        if (unit->HasUnitMovementFlag(MOVEMENTFLAG_ONTRANSPORT))
-            *data << float(unit->GetTransOffsetO());
-        else
-            *data << float(unit->GetOrientation());
-    }
-    */
-
-    /* Not used in 2.4.3
-    // 0x200
-    if (flags & UPDATEFLAG_ROTATION)
-        *data << int64(ToGameObject()->GetRotation());
-    */
 }
 
 void Object::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* target) const

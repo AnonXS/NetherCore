@@ -43,10 +43,7 @@ enum OBJECT_UPDATE_FLAGS
     UPDATEFLAG_LOWGUID              = 0x0008,
     UPDATEFLAG_HIGHGUID             = 0x0010,
     UPDATEFLAG_LIVING               = 0x0020,
-    UPDATEFLAG_STATIONARY_POSITION  = 0x0040,
-    UPDATEFLAG_VEHICLE              = 0x0080,   //wotlk
-    UPDATEFLAG_POSITION             = 0x0100,   //wotlk
-    UPDATEFLAG_ROTATION             = 0x0200    //wotlk
+    UPDATEFLAG_STATIONARY_POSITION  = 0x0040
 };
 
 class UpdateData
