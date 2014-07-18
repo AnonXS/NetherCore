@@ -2496,8 +2496,8 @@ enum CreatureTypeFlags
     CREATURE_TYPEFLAGS_UNK14            = 0x00004000,         // ? Possibly not in use
     CREATURE_TYPEFLAGS_ENGINEERLOOT     = 0x00008000,         // Can be looted by engineer
     CREATURE_TYPEFLAGS_EXOTIC           = 0x00010000,         // Can be tamed by hunter as exotic pet
-    CREATURE_TYPEFLAGS_UNK17            = 0x00020000,         // ? Related to vehicles/pvp?
-    CREATURE_TYPEFLAGS_UNK18            = 0x00040000,         // ? Related to vehicle/siege weapons?
+    CREATURE_TYPEFLAGS_UNK17            = 0x00020000,
+    CREATURE_TYPEFLAGS_UNK18            = 0x00040000,
     CREATURE_TYPEFLAGS_PROJECTILE_COLLISION = 0x00080000,     // Projectiles can collide with this creature - interacts with TARGET_DEST_TRAJ
     CREATURE_TYPEFLAGS_UNK20            = 0x00100000,
     CREATURE_TYPEFLAGS_UNK21            = 0x00200000,
@@ -3039,10 +3039,7 @@ enum SummonCategory
     SUMMON_CATEGORY_WILD        = 0,
     SUMMON_CATEGORY_ALLY        = 1,
     SUMMON_CATEGORY_PET         = 2,
-    SUMMON_CATEGORY_PUPPET      = 3,
-    SUMMON_CATEGORY_VEHICLE     = 4,
-    SUMMON_CATEGORY_UNK         = 5  // as of patch 3.3.5a only Bone Spike in Icecrown Citadel
-                                     // uses this category
+    SUMMON_CATEGORY_PUPPET      = 3
 };
 
 enum SummonType
@@ -3054,10 +3051,10 @@ enum SummonType
     SUMMON_TYPE_TOTEM       = 4,
     SUMMON_TYPE_MINIPET     = 5,
     SUMMON_TYPE_GUARDIAN2   = 6,
-    SUMMON_TYPE_WILD2       = 7,
-    SUMMON_TYPE_WILD3       = 8,    // Related to phases and DK prequest line (3.3.5a)
-    SUMMON_TYPE_VEHICLE     = 9,
-    SUMMON_TYPE_VEHICLE2    = 10,   // Oculus and Argent Tournament vehicles (3.3.5a)
+    //SUMMON_TYPE_WILD2       = 7,
+    //SUMMON_TYPE_WILD3       = 8,    // Related to phases and DK prequest line (3.3.5a)
+    //SUMMON_TYPE_VEHICLE     = 9,
+    //SUMMON_TYPE_VEHICLE2    = 10,
     SUMMON_TYPE_LIGHTWELL   = 11,
     SUMMON_TYPE_JEEVES      = 12
 };

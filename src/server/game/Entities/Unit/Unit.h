@@ -267,7 +267,6 @@ enum ShapeshiftForm
 
 #define CREATURE_MAX_SPELLS     8
 #define MAX_SPELL_CHARM         4
-#define MAX_SPELL_VEHICLE       6
 #define MAX_SPELL_POSSESS       8
 #define MAX_SPELL_CONTROL_BAR   10
 
@@ -369,8 +368,6 @@ class Guardian;
 class UnitAI;
 class Totem;
 class Transport;
-class Vehicle;
-class VehicleJoinEvent;
 class TransportBase;
 class SpellCastTargets;
 
@@ -1150,7 +1147,6 @@ enum CharmType
 {
     CHARM_TYPE_CHARM,
     CHARM_TYPE_POSSESS,
-    CHARM_TYPE_VEHICLE,
     CHARM_TYPE_CONVERT
 };
 
@@ -1382,7 +1378,6 @@ class Unit : public WorldObject
         bool IsPet() const      { return m_unitTypeMask & UNIT_MASK_PET; }
         bool IsHunterPet() const{ return m_unitTypeMask & UNIT_MASK_HUNTER_PET; }
         bool IsTotem() const    { return m_unitTypeMask & UNIT_MASK_TOTEM; }
-        bool IsVehicle() const  { return m_unitTypeMask & UNIT_MASK_VEHICLE; }
 
         uint8 getLevel() const { return uint8(GetUInt32Value(UNIT_FIELD_LEVEL)); }
         uint8 getLevelForTarget(WorldObject const* /*target*/) const { return getLevel(); }
@@ -2122,31 +2117,15 @@ class Unit : public WorldObject
         uint32 GetRedirectThreatPercent() const { return _redirectThreadInfo.GetThreatPct(); }
         Unit* GetRedirectThreatTarget();
 
-        friend class VehicleJoinEvent;
         bool IsAIEnabled, NeedChangeAI;
         uint64 LastCharmerGUID;
-        bool CreateVehicleKit(uint32 id, uint32 creatureEntry);
-        void RemoveVehicleKit();
-        Vehicle* GetVehicleKit()const { return m_vehicleKit; }
-        Vehicle* GetVehicle()   const { return m_vehicle; }
-        void SetVehicle(Vehicle* vehicle) { m_vehicle = vehicle; }
-        bool IsOnVehicle(const Unit* vehicle) const;
-        Unit* GetVehicleBase()  const;
-        Creature* GetVehicleCreatureBase() const;
         uint64 GetTransGUID()   const;
-        /// Returns the transport this unit is on directly (if on vehicle and transport, return vehicle)
+        /// Returns the transport this unit is on directly
         TransportBase* GetDirectTransport() const;
 
         bool m_ControlledByPlayer;
 
-        bool HandleSpellClick(Unit* clicker, int8 seatId = -1);
-        void EnterVehicle(Unit* base, int8 seatId = -1);
-        void ExitVehicle(Position const* exitPosition = NULL);
-        void ChangeSeat(int8 seatId, bool next = true);
-
-        // Should only be called by AuraEffect::HandleAuraControlVehicle(AuraApplication const* auraApp, uint8 mode, bool apply) const;
-        void _ExitVehicle(Position const* exitPosition = NULL);
-        void _EnterVehicle(Vehicle* vehicle, int8 seatId, AuraApplication const* aurApp = NULL);
+        bool HandleSpellClick(Unit* clicker);
 
         void BuildMovementPacket(ByteBuffer *data) const;
 
@@ -2251,9 +2230,6 @@ class Unit : public WorldObject
         uint32 m_regenTimer;
 
         ThreatManager m_ThreatManager;
-
-        Vehicle* m_vehicle;
-        Vehicle* m_vehicleKit;
 
         uint32 m_unitTypeMask;
         LiquidTypeEntry const* _lastLiquid;

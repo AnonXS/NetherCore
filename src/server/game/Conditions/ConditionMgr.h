@@ -139,7 +139,6 @@ enum RelationType
     RELATION_IN_PARTY,
     RELATION_IN_RAID_OR_PARTY,
     RELATION_OWNED_BY,
-    RELATION_PASSENGER_OF,
     RELATION_CREATED_BY,
     RELATION_MAX
 };
@@ -243,7 +242,6 @@ class ConditionMgr
         ConditionList GetConditionsForNotGroupedEntry(ConditionSourceType sourceType, uint32 entry);
         ConditionList GetConditionsForSpellClickEvent(uint32 creatureId, uint32 spellId);
         ConditionList GetConditionsForSmartEvent(int32 entryOrGuid, uint32 eventId, uint32 sourceType);
-        ConditionList GetConditionsForVehicleSpell(uint32 creatureId, uint32 spellId);
         ConditionList GetConditionsForNpcVendorEvent(uint32 creatureId, uint32 itemId);
 
     private:
@@ -259,7 +257,6 @@ class ConditionMgr
 
         ConditionContainer                ConditionStore;
         ConditionReferenceContainer       ConditionReferenceStore;
-        CreatureSpellConditionContainer   VehicleSpellConditionStore;
         CreatureSpellConditionContainer   SpellClickEventConditionStore;
         NpcVendorConditionContainer       NpcVendorConditionContainerStore;
         SmartEventConditionContainer      SmartEventConditionStore;

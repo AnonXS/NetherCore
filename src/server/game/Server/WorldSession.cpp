@@ -30,7 +30,6 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "Player.h"
-#include "Vehicle.h"
 #include "ObjectMgr.h"
 #include "GuildMgr.h"
 #include "Group.h"
@@ -1383,7 +1382,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_AUTOBANK_ITEM:                        //   0               6
         case CMSG_AUTOSTORE_BANK_ITEM:                  //   0               6
         case CMSG_WHO:                                  //   0               7
-        case CMSG_PLAYER_VEHICLE_ENTER:                 //   0               8
         case CMSG_LEARN_PREVIEW_TALENTS_PET:            // not profiled
         case MSG_MOVE_HEARTBEAT:
         {
@@ -1428,13 +1426,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_GROUP_RAID_CONVERT:                   //   1               5         1 async db query
         case CMSG_GROUP_ASSISTANT_LEADER:               //   1               2         1 async db query
         case CMSG_PETITION_BUY:                         // not profiled                1 sync 1 async db queries
-        case CMSG_CHANGE_SEATS_ON_CONTROLLED_VEHICLE:   // not profiled
-        case CMSG_REQUEST_VEHICLE_PREV_SEAT:            // not profiled
-        case CMSG_REQUEST_VEHICLE_NEXT_SEAT:            // not profiled
-        case CMSG_REQUEST_VEHICLE_SWITCH_SEAT:          // not profiled
-        case CMSG_DISMISS_CONTROLLED_VEHICLE:           // not profiled
-        case CMSG_REQUEST_VEHICLE_EXIT:                 // not profiled
-        case CMSG_CONTROLLER_EJECT_PASSENGER:           // not profiled
         case CMSG_ITEM_REFUND:                          // not profiled
         case CMSG_SOCKET_GEMS:                          // not profiled
         case CMSG_WRAP_ITEM:                            // not profiled

@@ -21,7 +21,7 @@
 
 #include "GameObject.h"
 #include "TransportMgr.h"
-#include "VehicleDefines.h"
+#include "TransportBase.h"
 
 struct CreatureData;
 

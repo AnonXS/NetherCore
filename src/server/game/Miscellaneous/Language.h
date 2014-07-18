@@ -795,7 +795,6 @@ enum TrinityStrings
     LANG_NPCINFO_GUILD_BANKER           = 839,
     LANG_NPCINFO_SPELLCLICK             = 840,
     LANG_NPCINFO_MAILBOX                = 841,
-    LANG_NPCINFO_PLAYER_VEHICLE         = 842,
 
     // Pinfo commands
     LANG_PINFO_PLAYER                   = 453,

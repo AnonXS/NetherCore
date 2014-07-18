@@ -19,7 +19,6 @@
 #include "CombatAI.h"
 #include "SpellMgr.h"
 #include "SpellInfo.h"
-#include "Vehicle.h"
 #include "ObjectAccessor.h"
 #include "Player.h"
 
@@ -253,77 +252,4 @@ void TurretAI::UpdateAI(uint32 /*diff*/)
         return;
 
     DoSpellAttackIfReady(me->m_spells[0]);
-}
-
-//////////////
-// VehicleAI
-//////////////
-
-VehicleAI::VehicleAI(Creature* creature) : CreatureAI(creature), m_ConditionsTimer(VEHICLE_CONDITION_CHECK_TIME)
-{
-    LoadConditions();
-    m_DoDismiss = false;
-    m_DismissTimer = VEHICLE_DISMISS_TIME;
-}
-
-// NOTE: VehicleAI::UpdateAI runs even while the vehicle is mounted
-void VehicleAI::UpdateAI(uint32 diff)
-{
-    CheckConditions(diff);
-
-    if (m_DoDismiss)
-    {
-        if (m_DismissTimer < diff)
-        {
-            m_DoDismiss = false;
-            me->DespawnOrUnsummon();
-        }
-        else
-            m_DismissTimer -= diff;
-    }
-}
-
-void VehicleAI::OnCharmed(bool apply)
-{
-    if (!me->GetVehicleKit()->IsVehicleInUse() && !apply && !conditions.empty()) // was used and has conditions
-    {
-        m_DoDismiss = true; // needs reset
-    }
-    else if (apply)
-        m_DoDismiss = false; // in use again
-
-    m_DismissTimer = VEHICLE_DISMISS_TIME; // reset timer
-}
-
-void VehicleAI::LoadConditions()
-{
-    conditions = sConditionMgr->GetConditionsForNotGroupedEntry(CONDITION_SOURCE_TYPE_CREATURE_TEMPLATE_VEHICLE, me->GetEntry());
-    if (!conditions.empty())
-        TC_LOG_DEBUG("condition", "VehicleAI::LoadConditions: loaded %u conditions", uint32(conditions.size()));
-}
-
-void VehicleAI::CheckConditions(uint32 diff)
-{
-    if (m_ConditionsTimer < diff)
-    {
-        if (!conditions.empty())
-        {
-            if (Vehicle* vehicleKit = me->GetVehicleKit())
-                for (SeatMap::iterator itr = vehicleKit->Seats.begin(); itr != vehicleKit->Seats.end(); ++itr)
-                    if (Unit* passenger = ObjectAccessor::GetUnit(*me, itr->second.Passenger.Guid))
-                    {
-                        if (Player* player = passenger->ToPlayer())
-                        {
-                            if (!sConditionMgr->IsObjectMeetToConditions(player, me, conditions))
-                            {
-                                player->ExitVehicle();
-                                return; // check other pessanger in next tick
-                            }
-                        }
-                    }
-        }
-        m_ConditionsTimer = VEHICLE_CONDITION_CHECK_TIME;
-    }
-    else
-        m_ConditionsTimer -= diff;
 }

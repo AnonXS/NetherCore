@@ -30,7 +30,6 @@ enum HighGuid
     HIGHGUID_TRANSPORT      = 0xF120,                      // blizz F120 (for GAMEOBJECT_TYPE_TRANSPORT)
     HIGHGUID_UNIT           = 0xF130,                      // blizz F130
     HIGHGUID_PET            = 0xF140,                      // blizz F140
-    HIGHGUID_VEHICLE        = 0xF150,                      // blizz F550
     HIGHGUID_DYNAMICOBJECT  = 0xF100,                      // blizz F100
     HIGHGUID_CORPSE         = 0xF101,                      // blizz F100
     HIGHGUID_MO_TRANSPORT   = 0x1FC0,                      // blizz 1FC0 (for GAMEOBJECT_TYPE_MO_TRANSPORT)
@@ -211,7 +210,6 @@ bool IsGuidHaveEnPart(uint64 guid)
         case HIGHGUID_TRANSPORT:
         case HIGHGUID_UNIT:
         case HIGHGUID_PET:
-        case HIGHGUID_VEHICLE:
         case HIGHGUID_MO_TRANSPORT:
         default:
             return true;
@@ -228,7 +226,6 @@ char const* GetLogNameForGuid(uint64 guid)
         case HIGHGUID_TRANSPORT:    return "transport";
         case HIGHGUID_UNIT:         return "creature";
         case HIGHGUID_PET:          return "pet";
-        case HIGHGUID_VEHICLE:      return "vehicle";
         case HIGHGUID_DYNAMICOBJECT:return "dynobject";
         case HIGHGUID_CORPSE:       return "corpse";
         case HIGHGUID_MO_TRANSPORT: return "mo_transport";

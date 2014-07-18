@@ -875,11 +875,6 @@ struct SmartAction
 
         struct
         {
-            uint32 seat;
-        } enterVehicle;
-
-        struct
-        {
             uint32 id;
             uint32 timerType;
         } timedActionList;

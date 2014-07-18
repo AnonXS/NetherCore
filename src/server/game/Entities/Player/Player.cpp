@@ -68,7 +68,6 @@
 #include "UpdateFieldFlags.h"
 #include "UpdateMask.h"
 #include "Util.h"
-#include "Vehicle.h"
 #include "Weather.h"
 #include "WeatherMgr.h"
 #include "World.h"
@@ -20202,12 +20201,6 @@ bool Player::RemoveMItem(uint32 id)
     return mMitems.erase(id) ? true : false;
 }
 
-void Player::SendOnCancelExpectedVehicleRideAura()
-{
-    WorldPacket data(SMSG_ON_CANCEL_EXPECTED_RIDE_VEHICLE_AURA, 0);
-    GetSession()->SendPacket(&data);
-}
-
 void Player::PetSpellInitialize()
 {
     Pet* pet = GetPet();
@@ -20314,91 +20307,6 @@ void Player::PossessSpellInitialize()
 
     data << uint8(0);                                       // spells count
     data << uint8(0);                                       // cooldowns count
-
-    GetSession()->SendPacket(&data);
-}
-
-void Player::VehicleSpellInitialize()
-{
-    Creature* vehicle = GetVehicleCreatureBase();
-    if (!vehicle)
-        return;
-
-    uint8 cooldownCount = vehicle->m_CreatureSpellCooldowns.size();
-
-    WorldPacket data(SMSG_PET_SPELLS, 8 + 2 + 4 + 4 + 4 * 10 + 1 + 1 + cooldownCount * (4 + 2 + 4 + 4));
-    data << uint64(vehicle->GetGUID());                     // Guid
-    data << uint16(0);                                      // Pet Family (0 for all vehicles)
-    data << uint32(vehicle->IsSummon() ? vehicle->ToTempSummon()->GetTimer() : 0); // Duration
-    // The following three segments are read by the client as one uint32
-    data << uint8(vehicle->GetReactState());                // React State
-    data << uint8(0);                                       // Command State
-    data << uint16(0x800);                                  // DisableActions (set for all vehicles)
-
-    for (uint32 i = 0; i < CREATURE_MAX_SPELLS; ++i)
-    {
-        uint32 spellId = vehicle->m_spells[i];
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
-        if (!spellInfo)
-        {
-            data << uint16(0) << uint8(0) << uint8(i+8);
-            continue;
-        }
-
-        ConditionList conditions = sConditionMgr->GetConditionsForVehicleSpell(vehicle->GetEntry(), spellId);
-        if (!sConditionMgr->IsObjectMeetToConditions(this, vehicle, conditions))
-        {
-            TC_LOG_DEBUG("condition", "VehicleSpellInitialize: conditions not met for Vehicle entry %u spell %u", vehicle->ToCreature()->GetEntry(), spellId);
-            data << uint16(0) << uint8(0) << uint8(i+8);
-            continue;
-        }
-
-        if (spellInfo->IsPassive())
-            vehicle->CastSpell(vehicle, spellId, true);
-
-        data << uint32(MAKE_UNIT_ACTION_BUTTON(spellId, i+8));
-    }
-
-    for (uint32 i = CREATURE_MAX_SPELLS; i < MAX_SPELL_CONTROL_BAR; ++i)
-        data << uint32(0);
-
-    data << uint8(0); // Auras?
-
-    // Cooldowns
-    data << uint8(cooldownCount);
-
-    time_t now = sWorld->GetGameTime();
-
-    for (CreatureSpellCooldowns::const_iterator itr = vehicle->m_CreatureSpellCooldowns.begin(); itr != vehicle->m_CreatureSpellCooldowns.end(); ++itr)
-    {
-        SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itr->first);
-        if (!spellInfo)
-        {
-            data << uint32(0);
-            data << uint16(0);
-            data << uint32(0);
-            data << uint32(0);
-            continue;
-        }
-
-        time_t cooldown = (itr->second > now) ? (itr->second - now) * IN_MILLISECONDS : 0;
-        data << uint32(itr->first);                 // spell ID
-
-        CreatureSpellCooldowns::const_iterator categoryitr = vehicle->m_CreatureCategoryCooldowns.find(spellInfo->GetCategory());
-        if (categoryitr != vehicle->m_CreatureCategoryCooldowns.end())
-        {
-            time_t categoryCooldown = (categoryitr->second > now) ? (categoryitr->second - now) * IN_MILLISECONDS : 0;
-            data << uint16(spellInfo->GetCategory());   // spell category
-            data << uint32(cooldown);                   // spell cooldown
-            data << uint32(categoryCooldown);           // category cooldown
-        }
-        else
-        {
-            data << uint16(0);
-            data << uint32(cooldown);
-            data << uint32(0);
-        }
-    }
 
     GetSession()->SendPacket(&data);
 }
