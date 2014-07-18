@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_ATTACK_POWER_OF_STAT_PERCENT = 268,
     SPELL_AURA_MOD_IGNORE_TARGET_RESIST                     = 269,
     SPELL_AURA_MOD_ABILITY_IGNORE_TARGET_RESIST             = 270,  // Possibly need swap vs 195 aura used only in 1 spell Chaos Bolt Passive
     SPELL_AURA_MOD_DAMAGE_FROM_CASTER                       = 271,
@@ -340,7 +339,6 @@ enum AuraType
     SPELL_AURA_MOD_BASE_HEALTH_PCT                          = 282,
     SPELL_AURA_MOD_HEALING_RECEIVED                         = 283,  // Possibly only for some spell family class spells
     SPELL_AURA_LINKED                                       = 284,
-    SPELL_AURA_MOD_ATTACK_POWER_OF_ARMOR                    = 285,
     SPELL_AURA_ABILITY_PERIODIC_CRIT                        = 286,
     SPELL_AURA_DEFLECT_SPELLS                               = 287,
     SPELL_AURA_IGNORE_HIT_DIRECTION                         = 288,
