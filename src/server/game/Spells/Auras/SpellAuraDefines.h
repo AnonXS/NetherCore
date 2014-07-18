@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_HEALING_RECEIVED                         = 283,  // Possibly only for some spell family class spells
     SPELL_AURA_LINKED                                       = 284,
     SPELL_AURA_ABILITY_PERIODIC_CRIT                        = 286,
     SPELL_AURA_DEFLECT_SPELLS                               = 287,

@@ -10314,11 +10314,6 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
         TakenTotal += int32(TakenAdvertisedBenefit * coeff * factorMod);
     }
 
-    AuraEffectList const& mHealingGet= GetAuraEffectsByType(SPELL_AURA_MOD_HEALING_RECEIVED);
-    for (AuraEffectList::const_iterator i = mHealingGet.begin(); i != mHealingGet.end(); ++i)
-        if (caster->GetGUID() == (*i)->GetCasterGUID() && (*i)->IsAffectedOnSpell(spellProto))
-            AddPct(TakenTotalMod, (*i)->GetAmount());
-
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
     {
         switch (spellProto->Effects[i].ApplyAuraName)
