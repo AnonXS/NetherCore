@@ -4401,26 +4401,13 @@ SpellCastResult Spell::CheckCast(bool strict)
     // for now, ignore triggered spells
     if (strict && !(_triggeredCastFlags & TRIGGERED_IGNORE_SHAPESHIFT))
     {
-        bool checkForm = true;
-        // Ignore form req aura
-        Unit::AuraEffectList const& ignore = m_caster->GetAuraEffectsByType(SPELL_AURA_MOD_IGNORE_SHAPESHIFT);
-        for (Unit::AuraEffectList::const_iterator i = ignore.begin(); i != ignore.end(); ++i)
-        {
-            if (!(*i)->IsAffectedOnSpell(m_spellInfo))
-                continue;
-            checkForm = false;
-            break;
-        }
-        if (checkForm)
-        {
-            // Cannot be used in this stance/form
-            SpellCastResult shapeError = m_spellInfo->CheckShapeshift(m_caster->GetShapeshiftForm());
-            if (shapeError != SPELL_CAST_OK)
-                return shapeError;
+        // Cannot be used in this stance/form
+        SpellCastResult shapeError = m_spellInfo->CheckShapeshift(m_caster->GetShapeshiftForm());
+        if (shapeError != SPELL_CAST_OK)
+            return shapeError;
 
-            if ((m_spellInfo->Attributes & SPELL_ATTR0_ONLY_STEALTHED) && !(m_caster->HasStealthAura()))
-                return SPELL_FAILED_ONLY_STEALTHED;
-        }
+        if ((m_spellInfo->Attributes & SPELL_ATTR0_ONLY_STEALTHED) && !(m_caster->HasStealthAura()))
+            return SPELL_FAILED_ONLY_STEALTHED;
     }
 
     Unit::AuraEffectList const& blockSpells = m_caster->GetAuraEffectsByType(SPELL_AURA_BLOCK_SPELL_FAMILY);
