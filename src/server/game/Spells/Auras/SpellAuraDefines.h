@@ -36,10 +36,9 @@ enum AURA_FLAGS
 };
 
 // these are modes, in which aura effect handler may be called
-
 enum AuraEffectHandleModes
 {
-    AURA_EFFECT_HANDLE_DEFAULT = 0x0,
+    AURA_EFFECT_HANDLE_DEFAULT = 0x00,
     AURA_EFFECT_HANDLE_REAL = 0x01, // handler applies/removes effect from unit
     AURA_EFFECT_HANDLE_SEND_FOR_CLIENT = 0x02, // handler sends apply/remove packet to unit
     AURA_EFFECT_HANDLE_CHANGE_AMOUNT = 0x04, // handler updates effect on target after effect amount change
