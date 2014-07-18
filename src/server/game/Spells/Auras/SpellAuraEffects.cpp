@@ -318,7 +318,6 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandlePhase                                      //261 SPELL_AURA_PHASE
 
     /* FOR REMOVE
-    &AuraEffect::HandleNoImmediateEffect,                         //286 SPELL_AURA_ABILITY_PERIODIC_CRIT implemented in AuraEffect::PeriodicTick
     &AuraEffect::HandleNoImmediateEffect,                         //287 SPELL_AURA_DEFLECT_SPELLS             implemented in Unit::MagicSpellHitResult and Unit::MeleeSpellHitResult
     &AuraEffect::HandleNoImmediateEffect,                         //288 SPELL_AURA_IGNORE_HIT_DIRECTION  implemented in Unit::MagicSpellHitResult and Unit::MeleeSpellHitResult Unit::RollMeleeOutcomeAgainst
     &AuraEffect::HandleNULL,                                      //289 unused (3.2.0)
@@ -850,12 +849,10 @@ void AuraEffect::UpdatePeriodic(Unit* caster)
 bool AuraEffect::CanPeriodicTickCrit(Unit const* caster) const
 {
     ASSERT(caster);
-    if (caster->HasAuraTypeWithAffectMask(SPELL_AURA_ABILITY_PERIODIC_CRIT, m_spellInfo))
-        return true;
 
     // Rupture - since 3.3.3 can crit
-    if (m_spellInfo->SpellIconID == 500 && m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
-        return true;
+    //if (m_spellInfo->SpellIconID == 500 && m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE)
+    //    return true;
 
     return false;
 }
