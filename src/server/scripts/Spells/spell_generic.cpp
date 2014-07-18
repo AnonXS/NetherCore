@@ -2118,7 +2118,7 @@ class spell_gen_remove_flight_auras : public SpellScriptLoader
                 if (Unit* target = GetHitUnit())
                 {
                     target->RemoveAurasByType(SPELL_AURA_FLY);
-                    target->RemoveAurasByType(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
+                    target->RemoveAurasByType(SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED);
                 }
             }
 

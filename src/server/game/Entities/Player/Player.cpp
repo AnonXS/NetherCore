@@ -3769,7 +3769,7 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
 
                 if (pSkill->id == SKILL_MOUNTS && !Has310Flyer(false))
                     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                        if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                        if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED &&
                             spellInfo->Effects[i].CalcValue() == 310)
                             SetHas310Flyer(true);
             }
@@ -4010,7 +4010,7 @@ void Player::RemoveSpell(uint32 spell_id, bool disabled, bool learn_low_rank)
                 {
                     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
                     {
-                        if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                        if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED &&
                             spellInfo->Effects[i].CalcValue() == 310)
                         {
                             Has310Flyer(true, spell_id);    // with true as first argument its also used to set/remove the flag
@@ -4110,7 +4110,7 @@ bool Player::Has310Flyer(bool checkAllSpells, uint32 excludeSpellId)
 
                 spellInfo = sSpellMgr->EnsureSpellInfo(itr->first);
                 for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
-                    if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED &&
+                    if (spellInfo->Effects[i].ApplyAuraName == SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED &&
                         spellInfo->Effects[i].CalcValue() == 310)
                     {
                         SetHas310Flyer(true);
@@ -22412,7 +22412,7 @@ void Player::SendInitialPacketsAfterAddToMap()
     {
         SPELL_AURA_MOD_FEAR,     SPELL_AURA_TRANSFORM,                 SPELL_AURA_WATER_WALK,
         SPELL_AURA_FEATHER_FALL, SPELL_AURA_HOVER,                     SPELL_AURA_SAFE_FALL,
-        SPELL_AURA_FLY,          SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED, SPELL_AURA_NONE
+        SPELL_AURA_FLY,          SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED, SPELL_AURA_NONE
     };
     for (AuraType const* itr = &auratypes[0]; itr && itr[0] != SPELL_AURA_NONE; ++itr)
     {
