@@ -48,16 +48,14 @@ enum LootModes
 enum Builds
 {
 	BUILD_CLASSIC                      = 5875,
-    BUILD_THE_BURNING_CRUSADE          = 8606,
-    BUILD_WRATH_OF_THE_LICH_KING       = 12340
+    BUILD_THE_BURNING_CRUSADE          = 8606
 };
 
 enum Expansions
 {
     EXPANSION_CLASSIC                  = 0,
     EXPANSION_THE_BURNING_CRUSADE      = 1,
-    EXPANSION_WRATH_OF_THE_LICH_KING   = 2,
-    MAX_EXPANSIONS                     = 3
+    MAX_EXPANSIONS                     = 2
 };
 
 enum Gender

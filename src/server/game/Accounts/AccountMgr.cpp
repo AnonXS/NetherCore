@@ -51,6 +51,7 @@ AccountOpResult AccountMgr::CreateAccount(std::string username, std::string pass
     stmt->setString(1, CalculateShaPassHash(username, password));
     stmt->setString(2, email);
     stmt->setString(3, email);
+    stmt->setUInt8(4, sWorld->getIntConfig(CONFIG_EXPANSION));
 
     LoginDatabase.DirectExecute(stmt); // Enforce saving, otherwise AddGroup can fail
 
