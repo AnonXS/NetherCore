@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_DEFLECT_SPELLS                               = 287,
     SPELL_AURA_IGNORE_HIT_DIRECTION                         = 288,
     SPELL_AURA_289                                          = 289,
     SPELL_AURA_MOD_CRIT_PCT                                 = 290,
