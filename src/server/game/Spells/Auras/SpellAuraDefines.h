@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_CRITICAL_HEALING_AMOUNT                  = 000,
     SPELL_AURA_MOD_SPEED_SLOW_ALL                           = 252,
     SPELL_AURA_MOD_BLOCK_CRIT_CHANCE                        = 253,
     SPELL_AURA_MOD_DISARM_OFFHAND                           = 254,
