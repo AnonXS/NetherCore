@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_PET_TALENT_POINTS                        = 000,
     SPELL_AURA_MOD_TARGET_ABSORB_SCHOOL                     = 000,
     SPELL_AURA_MOD_TARGET_ABILITY_ABSORB_SCHOOL             = 000,
     SPELL_AURA_MOD_AURA_DURATION_BY_DISPEL                  = 000,
