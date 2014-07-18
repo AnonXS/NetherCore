@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_BLOCK_CRIT_CHANCE                        = 253,
     SPELL_AURA_MOD_DISARM_OFFHAND                           = 254,
     SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT            = 255,
     SPELL_AURA_NO_REAGENT_USE                               = 256,
