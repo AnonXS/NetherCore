@@ -4395,7 +4395,7 @@ bool Player::ResetTalents(bool no_cost)
     /* when prev line will dropped use next line
     if (Pet* pet = GetPet())
     {
-        if (pet->getPetType() == HUNTER_PET && !pet->GetCreatureTemplate()->IsTameable(CanTameExoticPets()))
+        if (pet->getPetType() == HUNTER_PET && !pet->GetCreatureTemplate()->IsTameable())
             RemovePet(NULL, PET_SAVE_NOT_IN_SLOT, true);
     }
     */

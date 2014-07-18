@@ -2778,15 +2778,15 @@ enum SkillType
     //SKILL_RUNEFORGING              = 776,
     SKILL_MOUNTS                   = 777,
     SKILL_COMPANIONS               = 778,
-    SKILL_PET_EXOTIC_CHIMAERA      = 780,
-    SKILL_PET_EXOTIC_DEVILSAUR     = 781,
+    //SKILL_PET_EXOTIC_CHIMAERA      = 780,
+    //SKILL_PET_EXOTIC_DEVILSAUR     = 781,
     SKILL_PET_GHOUL                = 782,
-    SKILL_PET_EXOTIC_SILITHID      = 783,
-    SKILL_PET_EXOTIC_WORM          = 784,
+    //SKILL_PET_EXOTIC_SILITHID      = 783,
+    //SKILL_PET_EXOTIC_WORM          = 784,
     SKILL_PET_WASP                 = 785,
-    SKILL_PET_EXOTIC_RHINO         = 786,
-    SKILL_PET_EXOTIC_CORE_HOUND    = 787,
-    SKILL_PET_EXOTIC_SPIRIT_BEAST  = 788
+    //SKILL_PET_EXOTIC_RHINO         = 786,
+    //SKILL_PET_EXOTIC_CORE_HOUND    = 787,
+    //SKILL_PET_EXOTIC_SPIRIT_BEAST  = 788
 };
 
 #define MAX_SKILL_TYPE               789
