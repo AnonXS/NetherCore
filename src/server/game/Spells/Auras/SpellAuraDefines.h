@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_SCREEN_EFFECT                                = 260,
     SPELL_AURA_ABILITY_IGNORE_AURASTATE                     = 262,
     SPELL_AURA_ALLOW_ONLY_ABILITY                           = 263,
     SPELL_AURA_264                                          = 264,
