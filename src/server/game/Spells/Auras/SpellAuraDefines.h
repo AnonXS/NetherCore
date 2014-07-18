@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_DISARM_OFFHAND                           = 254,
     SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT            = 255,
     SPELL_AURA_NO_REAGENT_USE                               = 256,
     SPELL_AURA_MOD_TARGET_RESIST_BY_SPELL_CLASS             = 257,
@@ -346,7 +345,6 @@ enum AuraType
     SPELL_AURA_MOD_IGNORE_SHAPESHIFT                        = 275,
     SPELL_AURA_MOD_DAMAGE_DONE_FOR_MECHANIC                 = 276,  // NYI
     SPELL_AURA_MOD_MAX_AFFECTED_TARGETS                     = 277,
-    SPELL_AURA_MOD_DISARM_RANGED                            = 278,
     SPELL_AURA_INITIALIZE_IMAGES                            = 279,
     SPELL_AURA_MOD_ARMOR_PENETRATION_PCT = 280,
     SPELL_AURA_MOD_HONOR_GAIN_PCT                           = 281,
