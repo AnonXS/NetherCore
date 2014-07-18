@@ -23,7 +23,6 @@
 #include "ConditionMgr.h"
 #include "Player.h"
 #include "Battleground.h"
-#include "Vehicle.h"
 #include "Pet.h"
 
 uint32 GetTargetFlagMask(SpellTargetObjectTypes objType)
@@ -1601,14 +1600,7 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
     if (unitTarget->HasUnitState(UNIT_STATE_IN_FLIGHT))
         return SPELL_FAILED_BAD_TARGETS;
 
-    /* TARGET_UNIT_MASTER gets blocked here for passengers, because the whole idea of this check is to
-    not allow passengers to be implicitly hit by spells, however this target type should be an exception,
-    if this is left it kills spells that award kill credit from vehicle to master (few spells),
-    the use of these 2 covers passenger target check, logically, if vehicle cast this to master it should always hit
-    him, because it would be it's passenger, there's no such case where this gets to fail legitimacy, this problem
-    cannot be solved from within the check in other way since target type cannot be called for the spell currently
-    Spell examples: [ID - 52864 Devour Water, ID - 52862 Devour Wind, ID - 49370 Wyrmrest Defender: Destabilize Azure Dragonshrine Effect] */
-    if (!caster->IsVehicle() && !(caster->GetCharmerOrOwner() == target))
+    if (!(caster->GetCharmerOrOwner() == target))
     {
         if (TargetAuraState && !unitTarget->HasAuraState(AuraStateType(TargetAuraState), this, caster))
             return SPELL_FAILED_TARGET_AURASTATE;
@@ -1655,56 +1647,6 @@ SpellCastResult SpellInfo::CheckExplicitTarget(Unit const* caster, WorldObject c
             return SPELL_FAILED_BAD_TARGETS;
         }
     }
-    return SPELL_CAST_OK;
-}
-
-SpellCastResult SpellInfo::CheckVehicle(Unit const* caster) const
-{
-    // All creatures should be able to cast as passengers freely, restriction and attribute are only for players
-    if (caster->GetTypeId() != TYPEID_PLAYER)
-        return SPELL_CAST_OK;
-
-    Vehicle* vehicle = caster->GetVehicle();
-    if (vehicle)
-    {
-        uint16 checkMask = 0;
-        for (uint8 effIndex = EFFECT_0; effIndex < MAX_SPELL_EFFECTS; ++effIndex)
-        {
-            if (Effects[effIndex].ApplyAuraName == SPELL_AURA_MOD_SHAPESHIFT)
-            {
-                SpellShapeshiftEntry const* shapeShiftEntry = sSpellShapeshiftStore.LookupEntry(Effects[effIndex].MiscValue);
-                if (shapeShiftEntry && (shapeShiftEntry->flags1 & 1) == 0)  // unk flag
-                    checkMask |= VEHICLE_SEAT_FLAG_UNCONTROLLED;
-                break;
-            }
-        }
-
-        if (HasAura(SPELL_AURA_MOUNTED))
-            checkMask |= VEHICLE_SEAT_FLAG_CAN_CAST_MOUNT_SPELL;
-
-        if (!checkMask)
-            checkMask = VEHICLE_SEAT_FLAG_CAN_ATTACK;
-
-        VehicleSeatEntry const* vehicleSeat = vehicle->GetSeatForPassenger(caster);
-        if (!(AttributesEx6 & SPELL_ATTR6_CASTABLE_WHILE_ON_VEHICLE) && !(Attributes & SPELL_ATTR0_CASTABLE_WHILE_MOUNTED)
-            && (vehicleSeat->m_flags & checkMask) != checkMask)
-            return SPELL_FAILED_NOT_READY;
-
-        // Can only summon uncontrolled minions/guardians when on controlled vehicle
-        if (vehicleSeat->m_flags & (VEHICLE_SEAT_FLAG_CAN_CONTROL | VEHICLE_SEAT_FLAG_UNK2))
-        {
-            for (uint32 i = EFFECT_0; i < MAX_SPELL_EFFECTS; ++i)
-            {
-                if (Effects[i].Effect != SPELL_EFFECT_SUMMON)
-                    continue;
-
-                SummonPropertiesEntry const* props = sSummonPropertiesStore.LookupEntry(Effects[i].MiscValueB);
-                if (props && props->Category != SUMMON_CATEGORY_WILD)
-                    return SPELL_FAILED_NOT_READY;
-            }
-        }
-    }
-
     return SPELL_CAST_OK;
 }
 

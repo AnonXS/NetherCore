@@ -26,7 +26,6 @@
 #include "DBCStores.h"
 #include "World.h"
 #include "GameObjectAI.h"
-#include "Vehicle.h"
 #include "MapReference.h"
 #include "Player.h"
 #include "Cell.h"
@@ -355,7 +354,7 @@ GameObject* Transport::CreateGOPassenger(uint32 guid, GameObjectData const* data
     return go;
 }
 
-TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, uint32 spellId /*= 0*/, uint32 vehId /*= 0*/)
+TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties /*= NULL*/, uint32 duration /*= 0*/, Unit* summoner /*= NULL*/, uint32 spellId /*= 0*/)
 {
     Map* map = FindMap();
     if (!map)
@@ -372,12 +371,8 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
             case SUMMON_CATEGORY_PUPPET:
                 mask = UNIT_MASK_PUPPET;
                 break;
-            case SUMMON_CATEGORY_VEHICLE:
-                mask = UNIT_MASK_MINION;
-                break;
             case SUMMON_CATEGORY_WILD:
             case SUMMON_CATEGORY_ALLY:
-            case SUMMON_CATEGORY_UNK:
             {
                 switch (properties->Type)
                 {
@@ -389,10 +384,6 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
                     case SUMMON_TYPE_TOTEM:
                     case SUMMON_TYPE_LIGHTWELL:
                         mask = UNIT_MASK_TOTEM;
-                        break;
-                    case SUMMON_TYPE_VEHICLE:
-                    case SUMMON_TYPE_VEHICLE2:
-                        mask = UNIT_MASK_SUMMON;
                         break;
                     case SUMMON_TYPE_MINIPET:
                         mask = UNIT_MASK_MINION;
@@ -437,7 +428,7 @@ TempSummon* Transport::SummonPassenger(uint32 entry, Position const& pos, TempSu
     pos.GetPosition(x, y, z, o);
     CalculatePassengerPosition(x, y, z, &o);
 
-    if (!summon->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, phase, entry, x, y, z, o, nullptr, vehId))
+    if (!summon->Create(sObjectMgr->GenerateLowGuid(HIGHGUID_UNIT), map, phase, entry, x, y, z, o, nullptr))
     {
         delete summon;
         return NULL;
@@ -659,12 +650,6 @@ void Transport::UpdatePassengerPositions(PassengerSet& passengers)
         if (passenger->GetMap() != GetMap())
             continue;
 
-        // if passenger is on vehicle we have to assume the vehicle is also on transport
-        // and its the vehicle that will be updating its passengers
-        if (Unit* unit = passenger->ToUnit())
-            if (unit->GetVehicle())
-                continue;
-
         // Do not use Unit::UpdatePosition here, we don't want to remove auras
         // as if regular movement occurred
         float x, y, z, o;
@@ -695,10 +680,6 @@ void Transport::UpdatePassengerPositions(PassengerSet& passengers)
             default:
                 break;
         }
-
-        if (Unit* unit = passenger->ToUnit())
-            if (Vehicle* vehicle = unit->GetVehicleKit())
-                vehicle->RelocatePassengers();
     }
 }
 

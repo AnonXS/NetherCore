@@ -49,9 +49,7 @@ inline uint16 PAIR32_LOPART(uint32 x);
 inline bool IS_EMPTY_GUID(uint64 guid);
 inline bool IS_CREATURE_GUID(uint64 guid);
 inline bool IS_PET_GUID(uint64 guid);
-inline bool IS_VEHICLE_GUID(uint64 guid);
-inline bool IS_CRE_OR_VEH_GUID(uint64 guid);
-inline bool IS_CRE_OR_VEH_OR_PET_GUID(uint64 guid);
+inline bool IS_CRE_OR_PET_GUID(uint64 guid);
 inline bool IS_PLAYER_GUID(uint64 guid);
 inline bool IS_UNIT_GUID(uint64 guid);
 inline bool IS_ITEM_GUID(uint64 guid);
@@ -125,19 +123,9 @@ bool IS_PET_GUID(uint64 guid)
     return GUID_HIPART(guid) == HIGHGUID_PET;
 }
 
-bool IS_VEHICLE_GUID(uint64 guid)
+bool IS_CRE_OR_PET_GUID(uint64 guid)
 {
-    return GUID_HIPART(guid) == HIGHGUID_VEHICLE;
-}
-
-bool IS_CRE_OR_VEH_GUID(uint64 guid)
-{
-    return IS_CREATURE_GUID(guid) || IS_VEHICLE_GUID(guid);
-}
-
-bool IS_CRE_OR_VEH_OR_PET_GUID(uint64 guid)
-{
-    return IS_CRE_OR_VEH_GUID(guid) || IS_PET_GUID(guid);
+    return IS_CREATURE_GUID(guid) || IS_PET_GUID(guid);
 }
 
 bool IS_PLAYER_GUID(uint64 guid)
@@ -147,7 +135,7 @@ bool IS_PLAYER_GUID(uint64 guid)
 
 bool IS_UNIT_GUID(uint64 guid)
 {
-    return IS_CRE_OR_VEH_OR_PET_GUID(guid) || IS_PLAYER_GUID(guid);
+    return IS_CRE_OR_PET_GUID(guid) || IS_PLAYER_GUID(guid);
 }
 
 bool IS_ITEM_GUID(uint64 guid)

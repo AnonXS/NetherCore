@@ -26,7 +26,6 @@
 #include "ScriptedCreature.h"
 #include "SpellScript.h"
 #include "SpellAuraEffects.h"
-#include "Vehicle.h"
 #include "GridNotifiers.h"
 #include "GridNotifiersImpl.h"
 #include "CellImpl.h"
@@ -990,46 +989,6 @@ class spell_q12805_lifeblood_dummy : public SpellScriptLoader
         };
 };
 
-/*
- http://www.wowhead.com/quest=13283 King of the Mountain
- http://www.wowhead.com/quest=13280 King of the Mountain
- 59643 Plant Horde Battle Standard
- 4338 Plant Alliance Battle Standard
- */
-enum BattleStandard
-{
-    NPC_KING_OF_THE_MOUNTAINT_KC                    = 31766,
-};
-
-class spell_q13280_13283_plant_battle_standard: public SpellScriptLoader
-{
-    public:
-        spell_q13280_13283_plant_battle_standard() : SpellScriptLoader("spell_q13280_13283_plant_battle_standard") { }
-
-        class spell_q13280_13283_plant_battle_standard_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_q13280_13283_plant_battle_standard_SpellScript);
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (caster->IsVehicle())
-                    if (Unit* player = caster->GetVehicleKit()->GetPassenger(0))
-                         player->ToPlayer()->KilledMonsterCredit(NPC_KING_OF_THE_MOUNTAINT_KC, 0);
-            }
-
-            void Register() override
-            {
-                OnEffectHit += SpellEffectFn(spell_q13280_13283_plant_battle_standard_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_q13280_13283_plant_battle_standard_SpellScript();
-        }
-};
-
 enum ChumTheWaterSummons
 {
     SUMMON_ANGRY_KVALDIR = 66737,
@@ -1323,75 +1282,6 @@ class spell_q12372_cast_from_gossip_trigger : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_q12372_cast_from_gossip_trigger_SpellScript();
-        }
-};
-
-// http://www.wowhead.com/quest=12372 Defending Wyrmrest Temple
-// 49370 - Wyrmrest Defender: Destabilize Azure Dragonshrine Effect
-enum Quest12372Data
-{
-    // NPCs
-    NPC_WYRMREST_TEMPLE_CREDIT       = 27698,
-    // Spells
-    WHISPER_ON_HIT_BY_FORCE_WHISPER       = 1
-};
-
-class spell_q12372_destabilize_azure_dragonshrine_dummy : public SpellScriptLoader
-{
-    public:
-        spell_q12372_destabilize_azure_dragonshrine_dummy() : SpellScriptLoader("spell_q12372_destabilize_azure_dragonshrine_dummy") { }
-
-        class spell_q12372_destabilize_azure_dragonshrine_dummy_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_q12372_destabilize_azure_dragonshrine_dummy_SpellScript);
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                if (GetHitCreature())
-                    if (Unit* caster = GetOriginalCaster())
-                        if (Vehicle* vehicle = caster->GetVehicleKit())
-                            if (Unit* passenger = vehicle->GetPassenger(0))
-                                if (Player* player = passenger->ToPlayer())
-                                    player->KilledMonsterCredit(NPC_WYRMREST_TEMPLE_CREDIT, 0);
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_q12372_destabilize_azure_dragonshrine_dummy_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_q12372_destabilize_azure_dragonshrine_dummy_SpellScript();
-        }
-};
-
-// ID - 50287 Azure Dragon: On Death Force Cast Wyrmrest Defender to Whisper to Controller - Random (cast from Azure Dragons and Azure Drakes on death)
-class spell_q12372_azure_on_death_force_whisper : public SpellScriptLoader
-{
-    public:
-        spell_q12372_azure_on_death_force_whisper() : SpellScriptLoader("spell_q12372_azure_on_death_force_whisper") { }
-
-        class spell_q12372_azure_on_death_force_whisper_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_q12372_azure_on_death_force_whisper_SpellScript);
-
-            void HandleScript(SpellEffIndex /*effIndex*/)
-            {
-                if (Creature* defender = GetHitCreature())
-                    defender->AI()->Talk(WHISPER_ON_HIT_BY_FORCE_WHISPER, defender->GetCharmerOrOwner());
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_q12372_azure_on_death_force_whisper_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_q12372_azure_on_death_force_whisper_SpellScript();
         }
 };
 
@@ -2197,84 +2087,6 @@ class spell_q12919_gymers_grab : public SpellScriptLoader
         }
 };
 
-enum Quest_The_Storm_King_Throw
-{
-    SPELL_VARGUL_EXPLOSION      = 55569
-};
-
-class spell_q12919_gymers_throw : public SpellScriptLoader
-{
-    public:
-        spell_q12919_gymers_throw() : SpellScriptLoader("spell_q12919_gymers_throw") { }
-
-        class spell_q12919_gymers_throw_SpellScript : public SpellScript
-        {
-           PrepareSpellScript(spell_q12919_gymers_throw_SpellScript);
-
-            void HandleScript(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (caster->IsVehicle())
-                    if (Unit* passenger = caster->GetVehicleKit()->GetPassenger(1))
-                    {
-                         passenger->ExitVehicle();
-                         caster->CastSpell(passenger, SPELL_VARGUL_EXPLOSION, true);
-                    }
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_q12919_gymers_throw_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_q12919_gymers_throw_SpellScript();
-        }
-};
-
-enum Quest_The_Hunter_And_The_Prince
-{
-    SPELL_ILLIDAN_KILL_CREDIT      = 61748
-};
-
-class spell_q13400_illidan_kill_master : public SpellScriptLoader
-{
-    public:
-        spell_q13400_illidan_kill_master() : SpellScriptLoader("spell_q13400_illidan_kill_master") { }
-
-        class spell_q13400_illidan_kill_master_SpellScript : public SpellScript
-        {
-           PrepareSpellScript(spell_q13400_illidan_kill_master_SpellScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_ILLIDAN_KILL_CREDIT))
-                    return false;
-                return true;
-            }
-
-            void HandleDummy(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (caster->IsVehicle())
-                    if (Unit* passenger = caster->GetVehicleKit()->GetPassenger(0))
-                         passenger->CastSpell(passenger, SPELL_ILLIDAN_KILL_CREDIT, true);
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_q13400_illidan_kill_master_SpellScript::HandleDummy, EFFECT_0, SPELL_EFFECT_DUMMY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_q13400_illidan_kill_master_SpellScript();
-        }
-};
-
 enum RelicOfTheEarthenRing
 {
     SPELL_TOTEM_OF_THE_EARTHEN_RING = 66747
@@ -2338,7 +2150,6 @@ void AddSC_quest_spell_scripts()
     new spell_q12659_ahunaes_knife();
     new spell_q9874_liquid_fire();
     new spell_q12805_lifeblood_dummy();
-    new spell_q13280_13283_plant_battle_standard();
     new spell_q14112_14145_chum_the_water();
     new spell_q9452_cast_net();
     new spell_q12987_read_pronouncement();
@@ -2346,13 +2157,11 @@ void AddSC_quest_spell_scripts()
     new spell_q12066_bunny_kill_credit();
     new spell_q12735_song_of_cleansing();
     new spell_q12372_cast_from_gossip_trigger();
-    new spell_q12372_destabilize_azure_dragonshrine_dummy();
     new spell_q11010_q11102_q11023_aggro_check_aura();
     new spell_q11010_q11102_q11023_aggro_check();
     new spell_q11010_q11102_q11023_aggro_burst();
     new spell_q11010_q11102_q11023_choose_loc();
     new spell_q11010_q11102_q11023_q11008_check_fly_mount();
-    new spell_q12372_azure_on_death_force_whisper();
     new spell_q12527_zuldrak_rat();
     new spell_q12661_q12669_q12676_q12677_q12713_summon_stefan();
     new spell_q12730_quenching_mist();
@@ -2368,7 +2177,5 @@ void AddSC_quest_spell_scripts()
     new spell_q12619_emblazon_runeblade();
     new spell_q12619_emblazon_runeblade_effect();
     new spell_q12919_gymers_grab();
-    new spell_q12919_gymers_throw();
-    new spell_q13400_illidan_kill_master();
     new spell_q14100_q14111_make_player_destroy_totems();
 }

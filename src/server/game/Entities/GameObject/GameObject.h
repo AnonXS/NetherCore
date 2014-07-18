@@ -83,7 +83,7 @@ struct GameObjectTemplate
             uint32 noDamageImmune;                          //5
             uint32 openTextID;                              //6 can be used to replace castBarCaption?
             uint32 losOK;                                   //7
-            uint32 allowMounted;                            //8 Is usable while on mount/vehicle. (0/1)
+            uint32 allowMounted;                            //8 Is usable while on mount. (0/1)
             uint32 large;                                   //9
         } questgiver;
         //3 GAMEOBJECT_TYPE_CHEST
@@ -162,7 +162,7 @@ struct GameObjectTemplate
             uint32 pageID;                                  //0
             uint32 language;                                //1
             uint32 pageMaterial;                            //2
-            uint32 allowMounted;                            //3 Is usable while on mount/vehicle. (0/1)
+            uint32 allowMounted;                            //3 Is usable while on mount. (0/1)
         } text;
         //10 GAMEOBJECT_TYPE_GOOBER
         struct
@@ -184,7 +184,7 @@ struct GameObjectTemplate
             uint32 openTextID;                              //14 can be used to replace castBarCaption?
             uint32 closeTextID;                             //15
             uint32 losOK;                                   //16 isBattlegroundObject
-            uint32 allowMounted;                            //17 Is usable while on mount/vehicle. (0/1)
+            uint32 allowMounted;                            //17 Is usable while on mount. (0/1)
             uint32 floatingTooltip;                         //18
             uint32 gossipID;                                //19
             uint32 WorldStateSetsState;                     //20
@@ -260,7 +260,7 @@ struct GameObjectTemplate
             uint32 spellId;                                 //0
             uint32 charges;                                 //1
             uint32 partyOnly;                               //2
-            uint32 allowMounted;                            //3 Is usable while on mount/vehicle. (0/1)
+            uint32 allowMounted;                            //3 Is usable while on mount. (0/1)
             uint32 large;                                   //4
         } spellcaster;
         //23 GAMEOBJECT_TYPE_MEETINGSTONE

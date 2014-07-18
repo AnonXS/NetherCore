@@ -47,7 +47,6 @@
 #include "SpellMgr.h"
 #include "TemporarySummon.h"
 #include "Util.h"
-#include "Vehicle.h"
 #include "WaypointMovementGenerator.h"
 #include "World.h"
 #include "WorldPacket.h"
@@ -188,8 +187,6 @@ void Creature::AddToWorld()
         Unit::AddToWorld();
         SearchFormation();
         AIM_Initialize();
-        if (IsVehicle())
-            GetVehicleKit()->Install();
     }
 }
 
@@ -416,16 +413,6 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
             SetPvP(false);
     }
 
-    // updates spell bars for vehicles and set player's faction - should be called here, to overwrite faction that is set from the new template
-    if (IsVehicle())
-    {
-        if (Player* owner = Creature::GetCharmerOrOwnerPlayerOrPlayerItself()) // this check comes in case we don't have a player
-        {
-            setFaction(owner->getFaction()); // vehicles should have same as owner faction
-            owner->VehicleSpellInitialize();
-        }
-    }
-
     // trigger creature is always not selectable and can not be attacked
     if (IsTrigger())
         SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
@@ -448,8 +435,6 @@ void Creature::Update(uint32 diff)
     {
         TriggerJustRespawned = false;
         AI()->JustRespawned();
-        if (m_vehicleKit)
-            m_vehicleKit->Reset();
     }
 
     UpdateMovementFlags();
@@ -727,9 +712,6 @@ bool Creature::AIM_Initialize(CreatureAI* ai)
     delete oldAI;
     IsAIEnabled = true;
     i_AI->InitializeAI();
-    // Initialize vehicle
-    if (GetVehicleKit())
-        GetVehicleKit()->Reset();
     return true;
 }
 
@@ -748,7 +730,7 @@ void Creature::Motion_Initialize()
         GetMotionMaster()->Initialize();
 }
 
-bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, CreatureData const* data /*= nullptr*/, uint32 vehId /*= 0*/)
+bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, CreatureData const* data /*= nullptr*/)
 {
     ASSERT(map);
     SetMap(map);
@@ -765,7 +747,7 @@ bool Creature::Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, 
     //! returning correct zone id for selecting OutdoorPvP/Battlefield script
     Relocate(x, y, z, ang);
 
-    if (!CreateFromProto(guidlow, entry, data, vehId))
+    if (!CreateFromProto(guidlow, entry, data))
         return false;
 
     if (!IsPositionValid())
@@ -903,7 +885,7 @@ void Creature::SetLootRecipient(Unit* unit)
         return;
     }
 
-    if (unit->GetTypeId() != TYPEID_PLAYER && !unit->IsVehicle())
+    if (unit->GetTypeId() != TYPEID_PLAYER)
         return;
 
     Player* player = unit->GetCharmerOrOwnerPlayerOrPlayerItself();
@@ -1165,7 +1147,7 @@ float Creature::GetSpellDamageMod(int32 Rank) const
     }
 }
 
-bool Creature::CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const* data /*= nullptr*/, uint32 vehId /*= 0*/)
+bool Creature::CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const* data /*= nullptr*/)
 {
     SetZoneScript();
     if (GetZoneScript() && data)
@@ -1184,24 +1166,10 @@ bool Creature::CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const*
 
     SetOriginalEntry(entry);
 
-    Object::_Create(guidlow, entry, (vehId || cinfo->VehicleId) ? HIGHGUID_VEHICLE : HIGHGUID_UNIT);
+    Object::_Create(guidlow, entry, HIGHGUID_UNIT);
 
     if (!UpdateEntry(entry, data))
         return false;
-
-    if (!vehId)
-    {
-        if (GetCreatureTemplate()->VehicleId)
-        {
-            vehId = GetCreatureTemplate()->VehicleId;
-            entry = GetCreatureTemplate()->Entry;
-        }
-        else
-            vehId = cinfo->VehicleId;
-    }
-
-    if (vehId)
-        CreateVehicleKit(vehId, entry);
 
     return true;
 }
@@ -1966,9 +1934,7 @@ bool Creature::_IsTargetAcceptable(const Unit* target) const
     ASSERT(target);
 
     // if the target cannot be attacked, the target is not acceptable
-    if (IsFriendlyTo(target)
-        || !target->isTargetableForAttack(false)
-        || (m_vehicle && (IsOnVehicle(target) || m_vehicle->GetBase()->IsOnVehicle(target))))
+    if (IsFriendlyTo(target) || !target->isTargetableForAttack(false))
         return false;
 
     if (target->HasUnitState(UNIT_STATE_DIED))
@@ -2479,8 +2445,6 @@ void Creature::SetPosition(float x, float y, float z, float o)
     }
 
     GetMap()->CreatureRelocation(this, x, y, z, o);
-    if (IsVehicle())
-        GetVehicleKit()->RelocatePassengers();
 }
 
 bool Creature::IsDungeonBoss() const
@@ -2661,7 +2625,7 @@ Unit* Creature::SelectNearestHostileUnitInAggroRange(bool useLOS) const
 
 void Creature::UpdateMovementFlags()
 {
-    // Do not update movement flags if creature is controlled by a player (charm/vehicle)
+    // Do not update movement flags if creature is controlled by a player (charm)
     if (m_movedPlayer)
         return;
 

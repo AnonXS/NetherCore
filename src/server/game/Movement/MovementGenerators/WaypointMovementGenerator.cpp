@@ -126,7 +126,6 @@ bool WaypointMovementGenerator<Creature>::StartMove(Creature* creature)
                 }
                 else
                     transportPath = false;
-                // else if (vehicle) - this should never happen, vehicle offsets are const
             }
 
             creature->GetMotionMaster()->Initialize();

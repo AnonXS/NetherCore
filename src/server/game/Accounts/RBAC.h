@@ -208,7 +208,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_DEBUG_AREATRIGGERS                     = 302,
     RBAC_PERM_COMMAND_DEBUG_ARENA                            = 303,
     RBAC_PERM_COMMAND_DEBUG_BG                               = 304,
-    RBAC_PERM_COMMAND_DEBUG_ENTERVEHICLE                     = 305,
+    // 305 - reuse
     RBAC_PERM_COMMAND_DEBUG_GETITEMSTATE                     = 306,
     RBAC_PERM_COMMAND_DEBUG_GETITEMVALUE                     = 307,
     RBAC_PERM_COMMAND_DEBUG_GETVALUE                         = 308,
@@ -239,7 +239,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_DEBUG_SETITEMVALUE                     = 333,
     RBAC_PERM_COMMAND_DEBUG_SETVALUE                         = 334,
     RBAC_PERM_COMMAND_DEBUG_SETVID                           = 335,
-    RBAC_PERM_COMMAND_DEBUG_SPAWNVEHICLE                     = 336,
+    // 336 - reuse
     RBAC_PERM_COMMAND_DEBUG_THREAT                           = 337,
     RBAC_PERM_COMMAND_DEBUG_UPDATE                           = 338,
     RBAC_PERM_COMMAND_DEBUG_UWS                              = 339,
@@ -608,8 +608,8 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_RELOAD_SPELL_THREATS                   = 702,
     RBAC_PERM_COMMAND_RELOAD_SPILLOVER_TEMPLATE              = 703,
     RBAC_PERM_COMMAND_RELOAD_TRINITY_STRING                  = 704,
-    RBAC_PERM_COMMAND_RELOAD_VEHICLE_ACCESORY                = 705,
-    RBAC_PERM_COMMAND_RELOAD_VEHICLE_TEMPLATE_ACCESSORY      = 706,
+    // 705 - reuse
+    // 206 - reuse
     RBAC_PERM_COMMAND_RELOAD_WARDEN_ACTION                   = 707,
     RBAC_PERM_COMMAND_RELOAD_WAYPOINT_DATA                   = 708,
     RBAC_PERM_COMMAND_RELOAD_WAYPOINT_SCRIPTS                = 709,

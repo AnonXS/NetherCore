@@ -436,9 +436,9 @@ KillRewarder::KillRewarder(Player* killer, Unit* victim, bool isBattleGround) :
     // mark the credit as pvp if victim is player
     if (victim->GetTypeId() == TYPEID_PLAYER)
         _isPvP = true;
-    // or if its owned by player and its not a vehicle
+    // or if its owned by player
     else if (IS_PLAYER_GUID(victim->GetCharmerOrOwnerGUID()))
-        _isPvP = !victim->IsVehicle();
+        _isPvP = true;
 
     _InitGroupData();
 }
@@ -480,8 +480,7 @@ inline void KillRewarder::_InitXP(Player* player)
     // XP is given:
     // * on battlegrounds;
     // * otherwise, not in PvP;
-    // * not if killer is on vehicle.
-    if (_isBattleGround || (!_isPvP && !_killer->GetVehicle()))
+    if (_isBattleGround || !_isPvP)
         _xp = Trinity::XP::Gain(player, _victim);
 }
 
@@ -2110,9 +2109,6 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     else
         TC_LOG_DEBUG("maps", "Player %s is being teleported to map %u", GetName().c_str(), mapid);
 
-    if (m_vehicle)
-        ExitVehicle();
-
     // reset movement flags at teleport, because player will continue move with these flags after teleport
     SetUnitMovementFlags(GetUnitMovementFlags() & MOVEMENTFLAG_MASK_HAS_PLAYER_STATUS_OPCODE);
     DisableSpline();
@@ -2657,7 +2653,7 @@ Creature* Player::GetNPCIfCanInteractWith(uint64 guid, uint32 npcflagmask)
         return NULL;
 
     // exist (we need look pets also for some interaction (quest/etc)
-    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    Creature* creature = ObjectAccessor::GetCreatureOrPet(*this, guid);
     if (!creature)
         return NULL;
 
@@ -14287,7 +14283,7 @@ void Player::PrepareQuestMenu(uint64 guid)
     QuestRelationBounds objectQIR;
 
     // pets also can have quests
-    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    Creature* creature = ObjectAccessor::GetCreatureOrPet(*this, guid);
     if (creature)
     {
         objectQR  = sObjectMgr->GetCreatureQuestRelationBounds(creature->GetEntry());
@@ -14388,7 +14384,7 @@ void Player::SendPreparedQuest(uint64 guid)
         std::string title = "";
 
         // need pet case for some quests
-        Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+        Creature* creature = ObjectAccessor::GetCreatureOrPet(*this, guid);
         if (creature)
         {
             uint32 textid = GetGossipTextId(creature);
@@ -14436,7 +14432,7 @@ Quest const* Player::GetNextQuest(uint64 guid, Quest const* quest)
 {
     QuestRelationBounds objectQR;
 
-    Creature* creature = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, guid);
+    Creature* creature = ObjectAccessor::GetCreatureOrPet(*this, guid);
     if (creature)
         objectQR  = sObjectMgr->GetCreatureQuestRelationBounds(creature->GetEntry());
     else
@@ -20105,8 +20101,6 @@ void Player::StopCastingCharm()
     {
         if (charm->ToCreature()->HasUnitTypeMask(UNIT_MASK_PUPPET))
             ((Puppet*)charm)->UnSummon();
-        else if (charm->IsVehicle())
-            ExitVehicle();
     }
     if (GetCharmGUID())
         charm->RemoveCharmAuras();
@@ -20885,7 +20879,6 @@ bool Player::ActivateTaxiPathTo(std::vector<uint32> const& nodes, Creature* npc 
 
     StopCastingCharm();
     StopCastingBindSight();
-    ExitVehicle();
 
     // stop trade (client cancel trade at taxi map open but cheating tools can be used for reopen it)
     TradeCancel(true);
@@ -22230,7 +22223,7 @@ void Player::UpdateVisibilityOf(T* target, UpdateData& data, std::set<Unit*>& vi
             #endif
         }
     }
-    else //if (visibleNow.size() < 30 || target->GetTypeId() == TYPEID_UNIT && target->ToCreature()->IsVehicle())
+    else
     {
         if (CanSeeOrDetect(target, false, true))
         {
@@ -23235,9 +23228,9 @@ void Player::UpdateForQuestWorldObjects()
             if (GameObject* obj = HashMapHolder<GameObject>::Find(*itr))
                 obj->BuildValuesUpdateBlockForPlayer(&udata, this);
         }
-        else if (IS_CRE_OR_VEH_GUID(*itr))
+        else if (IS_CREATURE_GUID(*itr))
         {
-            Creature* obj = ObjectAccessor::GetCreatureOrPetOrVehicle(*this, *itr);
+            Creature* obj = ObjectAccessor::GetCreatureOrPet(*this, *itr);
             if (!obj)
                 continue;
 
@@ -23720,18 +23713,6 @@ void Player::UpdateAreaDependentAuras(uint32 newArea)
         if (itr->second->autocast && itr->second->IsFitToRequirements(this, m_zoneUpdateId, newArea))
             if (!HasAura(itr->second->spellId))
                 CastSpell(this, itr->second->spellId, true);
-
-    if (newArea == 4273 && GetVehicleCreatureBase() && GetPositionX() > 400) // Ulduar
-    {
-        switch (GetVehicleBase()->GetEntry())
-        {
-            case 33062:
-            case 33109:
-            case 33060:
-                GetVehicleCreatureBase()->DespawnOrUnsummon();
-                break;
-        }
-    }
 }
 
 uint32 Player::GetCorpseReclaimDelay(bool pvp) const
@@ -24026,7 +24007,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
         // farsight dynobj or puppet may be very far away
         UpdateVisibilityOf(target);
 
-        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
+        if (target->isType(TYPEMASK_UNIT))
             ((Unit*)target)->AddPlayerToVision(this);
     }
     else
@@ -24039,7 +24020,7 @@ void Player::SetViewpoint(WorldObject* target, bool apply)
             return;
         }
 
-        if (target->isType(TYPEMASK_UNIT) && !GetVehicle())
+        if (target->isType(TYPEMASK_UNIT))
             ((Unit*)target)->RemovePlayerFromVision(this);
 
         //must immediately set seer back otherwise may crash
@@ -25552,14 +25533,12 @@ void Player::ActivateSpec(uint8 spec)
     ClearComboPointHolders();
     ClearAllReactives();
     UnsummonAllTotems();
-    ExitVehicle();
     RemoveAllControlled();
     /*RemoveAllAurasOnDeath();
     if (GetPet())
         GetPet()->RemoveAllAurasOnDeath();*/
 
     //RemoveAllAuras(GetGUID(), NULL, false, true); // removes too many auras
-    //ExitVehicle(); // should be impossible to switch specs from inside a vehicle..
 
     // Let client clear his current Actions
     SendActionButtons(2);

@@ -28,7 +28,6 @@
 #include "SocialMgr.h"
 #include "SpellAuras.h"
 #include "Util.h"
-#include "Vehicle.h"
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
@@ -913,9 +912,6 @@ void WorldSession::HandleRequestPartyMemberStatsOpcode(WorldPacket &recvData)
     if (pet)
         updateFlags |= GROUP_UPDATE_FLAG_PET_GUID | GROUP_UPDATE_FLAG_PET_CUR_HP | GROUP_UPDATE_FLAG_PET_MAX_HP
                     | GROUP_UPDATE_FLAG_PET_POWER_TYPE | GROUP_UPDATE_FLAG_PET_CUR_POWER | GROUP_UPDATE_FLAG_PET_MAX_POWER;
-
-    if (player->GetVehicle())
-        updateFlags |= GROUP_UPDATE_FLAG_VEHICLE_SEAT;
 
     uint16 playerStatus = MEMBER_STATUS_ONLINE;
     if (player->IsPvP())

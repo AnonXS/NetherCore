@@ -764,7 +764,7 @@ Creature* ChatHandler::getSelectedCreature()
     if (!m_session)
         return NULL;
 
-    return ObjectAccessor::GetCreatureOrPetOrVehicle(*m_session->GetPlayer(), m_session->GetPlayer()->GetTarget());
+    return ObjectAccessor::GetCreatureOrPet(*m_session->GetPlayer(), m_session->GetPlayer()->GetTarget());
 }
 
 Player* ChatHandler::getSelectedPlayerOrSelf()

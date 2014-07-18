@@ -44,7 +44,7 @@ bool WorldSession::CanOpenMailBox(uint64 guid)
         if (!_player->GetGameObjectIfCanInteractWith(guid, GAMEOBJECT_TYPE_MAILBOX))
             return false;
     }
-    else if (IS_CRE_OR_VEH_OR_PET_GUID(guid))
+    else if (IS_CRE_OR_PET_GUID(guid))
     {
         if (!_player->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_MAILBOX))
             return false;

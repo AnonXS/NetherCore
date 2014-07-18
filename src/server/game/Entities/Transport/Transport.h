@@ -61,11 +61,10 @@ class Transport : public GameObject, public TransportBase
         * @param duration Determines how long the creauture will exist in world depending on @summonType (in milliseconds)
         * @param summoner Summoner of the creature (for AI purposes)
         * @param spellId
-        * @param vehId If set, this value overrides vehicle id from creature_template that the creature will use
         *
         * @return Summoned creature.
         */
-        TempSummon* SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties = NULL, uint32 duration = 0, Unit* summoner = NULL, uint32 spellId = 0, uint32 vehId = 0);
+        TempSummon* SummonPassenger(uint32 entry, Position const& pos, TempSummonType summonType, SummonPropertiesEntry const* properties = NULL, uint32 duration = 0, Unit* summoner = NULL, uint32 spellId = 0);
 
         /// This method transforms supplied transport offsets into global coordinates
         void CalculatePassengerPosition(float& x, float& y, float& z, float* o = NULL) const override

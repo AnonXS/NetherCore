@@ -45,7 +45,6 @@
 #include "Battleground.h"
 #include "Util.h"
 #include "TemporarySummon.h"
-#include "Vehicle.h"
 #include "SpellAuraEffects.h"
 #include "ScriptMgr.h"
 #include "ConditionMgr.h"
@@ -207,7 +206,6 @@ uint64 SpellCastTargets::GetUnitTargetGUID() const
     switch (GUID_HIPART(m_objectTargetGUID))
     {
         case HIGHGUID_PLAYER:
-        case HIGHGUID_VEHICLE:
         case HIGHGUID_UNIT:
         case HIGHGUID_PET:
             return m_objectTargetGUID;
@@ -1387,20 +1385,6 @@ void Spell::SelectImplicitCasterObjectTargets(SpellEffIndex effIndex, SpellImpli
             if (m_caster->IsSummon())
                 target = m_caster->ToTempSummon()->GetSummoner();
             break;
-        case TARGET_UNIT_VEHICLE:
-            target = m_caster->GetVehicleBase();
-            break;
-        case TARGET_UNIT_PASSENGER_0:
-        case TARGET_UNIT_PASSENGER_1:
-        case TARGET_UNIT_PASSENGER_2:
-        case TARGET_UNIT_PASSENGER_3:
-        case TARGET_UNIT_PASSENGER_4:
-        case TARGET_UNIT_PASSENGER_5:
-        case TARGET_UNIT_PASSENGER_6:
-        case TARGET_UNIT_PASSENGER_7:
-            if (m_caster->GetTypeId() == TYPEID_UNIT && m_caster->ToCreature()->IsVehicle())
-                target = m_caster->GetVehicleKit()->GetPassenger(targetType.GetTarget() - TARGET_UNIT_PASSENGER_0);
-            break;
         default:
             break;
     }
@@ -1513,7 +1497,7 @@ void Spell::SelectImplicitTrajTargets(SpellEffIndex effIndex)
 
         if (Unit* unitTarget = (*itr)->ToUnit())
         {
-            if (m_caster == *itr || m_caster->IsOnVehicle(unitTarget) || unitTarget->GetVehicle())
+            if (m_caster == *itr)
                 continue;
 
             if (Creature* creatureTarget = unitTarget->ToCreature())
@@ -4498,14 +4482,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_FAILED_MOVING;
     }
 
-    // Check vehicle flags
-    if (!(_triggeredCastFlags & TRIGGERED_IGNORE_CASTER_MOUNTED_OR_ON_VEHICLE))
-    {
-        SpellCastResult vehicleCheck = m_spellInfo->CheckVehicle(m_caster);
-        if (vehicleCheck != SPELL_CAST_OK)
-            return vehicleCheck;
-    }
-
     // check spell cast conditions from database
     {
         ConditionSourceInfo condInfo = ConditionSourceInfo(m_caster);
@@ -5085,9 +5061,6 @@ SpellCastResult Spell::CheckCast(bool strict)
 
                 if (Unit* target = m_targets.GetUnitTarget())
                 {
-                    if (target->GetTypeId() == TYPEID_UNIT && target->ToCreature()->IsVehicle())
-                        return SPELL_FAILED_BAD_IMPLICIT_TARGETS;
-
                     if (target->IsMounted())
                         return SPELL_FAILED_CANT_BE_CHARMED;
 
@@ -6069,8 +6042,6 @@ bool Spell::CheckEffectTarget(Unit const* target, uint32 eff) const
         case SPELL_AURA_MOD_CHARM:
         case SPELL_AURA_MOD_POSSESS_PET:
         case SPELL_AURA_AOE_CHARM:
-            if (target->GetTypeId() == TYPEID_UNIT && target->IsVehicle())
-                return false;
             if (target->IsMounted())
                 return false;
             if (target->GetCharmerGUID())

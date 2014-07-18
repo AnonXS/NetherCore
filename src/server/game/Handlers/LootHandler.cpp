@@ -145,7 +145,6 @@ void WorldSession::HandleLootMoneyOpcode(WorldPacket& /*recvData*/)
             break;
         }
         case HIGHGUID_UNIT:
-        case HIGHGUID_VEHICLE:
         {
             Creature* creature = player->GetMap()->GetCreature(guid);
             bool lootAllowed = creature && creature->IsAlive() == (player->getClass() == CLASS_ROGUE && creature->loot.loot_type == LOOT_PICKPOCKETING);
@@ -223,7 +222,7 @@ void WorldSession::HandleLootOpcode(WorldPacket& recvData)
     recvData >> guid;
 
     // Check possible cheat
-    if (!GetPlayer()->IsAlive() || !IS_CRE_OR_VEH_GUID(guid))
+    if (!GetPlayer()->IsAlive() || !IS_CREATURE_GUID(guid))
         return;
 
     GetPlayer()->SendLoot(guid, LOOT_CORPSE);
@@ -415,7 +414,7 @@ void WorldSession::HandleLootMasterGiveOpcode(WorldPacket& recvData)
 
     Loot* loot = NULL;
 
-    if (IS_CRE_OR_VEH_GUID(GetPlayer()->GetLootGUID()))
+    if (IS_CREATURE_GUID(GetPlayer()->GetLootGUID()))
     {
         Creature* creature = GetPlayer()->GetMap()->GetCreature(lootguid);
         if (!creature)

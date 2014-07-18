@@ -154,8 +154,6 @@ public:
             { "warden_action",                 rbac::RBAC_PERM_COMMAND_RELOAD_WARDEN_ACTION,                    true,  &HandleReloadWardenactionCommand,               "", NULL },
             { "waypoint_scripts",              rbac::RBAC_PERM_COMMAND_RELOAD_WAYPOINT_SCRIPTS,                 true,  &HandleReloadWpScriptsCommand,                  "", NULL },
             { "waypoint_data",                 rbac::RBAC_PERM_COMMAND_RELOAD_WAYPOINT_DATA,                    true,  &HandleReloadWpCommand,                         "", NULL },
-            { "vehicle_accessory",             rbac::RBAC_PERM_COMMAND_RELOAD_VEHICLE_ACCESORY,                 true,  &HandleReloadVehicleAccessoryCommand,           "", NULL },
-            { "vehicle_template_accessory",    rbac::RBAC_PERM_COMMAND_RELOAD_VEHICLE_TEMPLATE_ACCESSORY,       true,  &HandleReloadVehicleTemplateAccessoryCommand,   "", NULL },
             { NULL,                            0,                                                               false, NULL,                                           "", NULL }
         };
         static ChatCommand commandTable[] =
@@ -195,9 +193,6 @@ public:
         HandleReloadGameTeleCommand(handler, "");
 
         HandleReloadCreatureSummonGroupsCommand(handler, "");
-
-        HandleReloadVehicleAccessoryCommand(handler, "");
-        HandleReloadVehicleTemplateAccessoryCommand(handler, "");
 
         HandleReloadAutobroadcastCommand(handler, "");
         HandleReloadBattlegroundTemplate(handler, "");
@@ -508,7 +503,7 @@ public:
             cInfo->spells[6]          = fields[58].GetUInt32();
             cInfo->spells[7]          = fields[59].GetUInt32();
             cInfo->PetSpellDataId     = fields[60].GetUInt32();
-            cInfo->VehicleId          = fields[61].GetUInt32();
+            //cInfo->VehicleId          = fields[61].GetUInt32();
             cInfo->mingold            = fields[62].GetUInt32();
             cInfo->maxgold            = fields[63].GetUInt32();
             cInfo->AIName             = fields[64].GetString();
@@ -1207,22 +1202,6 @@ public:
         TC_LOG_INFO("misc", "Re-Loading Smart Scripts...");
         sSmartScriptMgr->LoadSmartAIFromDB();
         handler->SendGlobalGMSysMessage("Smart Scripts reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadVehicleAccessoryCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        TC_LOG_INFO("misc", "Reloading vehicle_accessory table...");
-        sObjectMgr->LoadVehicleAccessories();
-        handler->SendGlobalGMSysMessage("Vehicle accessories reloaded.");
-        return true;
-    }
-
-    static bool HandleReloadVehicleTemplateAccessoryCommand(ChatHandler* handler, const char* /*args*/)
-    {
-        TC_LOG_INFO("misc", "Reloading vehicle_template_accessory table...");
-        sObjectMgr->LoadVehicleTemplateAccessories();
-        handler->SendGlobalGMSysMessage("Vehicle template accessories reloaded.");
         return true;
     }
 

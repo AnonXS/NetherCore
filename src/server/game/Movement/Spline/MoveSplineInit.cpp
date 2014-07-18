@@ -21,7 +21,6 @@
 #include "MovementPacketBuilder.h"
 #include "Unit.h"
 #include "Transport.h"
-#include "Vehicle.h"
 #include "WorldPacket.h"
 #include "Opcodes.h"
 
@@ -192,9 +191,7 @@ namespace Movement
     {
         if (args.TransformForTransport)
         {
-            if (Unit* vehicle = unit->GetVehicleBase())
-                angle -= vehicle->GetOrientation();
-            else if (Transport* transport = unit->GetTransport())
+            if (Transport* transport = unit->GetTransport())
                 angle -= transport->GetOrientation();
         }
 

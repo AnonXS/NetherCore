@@ -456,7 +456,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         void DisappearAndDie();
 
-        bool Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, CreatureData const* data = nullptr, uint32 vehId = 0);
+        bool Create(uint32 guidlow, Map* map, uint32 phaseMask, uint32 entry, float x, float y, float z, float ang, CreatureData const* data = nullptr);
         bool LoadCreaturesAddon(bool reload = false);
         void SelectLevel();
         void LoadEquipment(int8 id = 1, bool force = false);
@@ -703,7 +703,7 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void ReleaseFocus(Spell const* focusSpell);
 
     protected:
-        bool CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const* data = nullptr, uint32 vehId = 0);
+        bool CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const* data = nullptr);
         bool InitEntry(uint32 entry, CreatureData const* data = nullptr);
 
         // vendor items
