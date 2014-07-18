@@ -324,10 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_ALLOW_ONLY_ABILITY                           = 263,
-    SPELL_AURA_264                                          = 264,
-    SPELL_AURA_265                                          = 265,
-    SPELL_AURA_266                                          = 266,
     SPELL_AURA_MOD_IMMUNE_AURA_APPLY_SCHOOL                 = 267,
     SPELL_AURA_MOD_ATTACK_POWER_OF_STAT_PERCENT = 268,
     SPELL_AURA_MOD_IGNORE_TARGET_RESIST                     = 269,
