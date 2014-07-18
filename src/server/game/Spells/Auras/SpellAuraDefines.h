@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_INITIALIZE_IMAGES                            = 279,
     SPELL_AURA_MOD_ARMOR_PENETRATION_PCT = 280,
     SPELL_AURA_MOD_HONOR_GAIN_PCT                           = 281,
     SPELL_AURA_MOD_BASE_HEALTH_PCT                          = 282,
