@@ -10340,18 +10340,6 @@ uint32 Unit::SpellHealingBonusTaken(Unit* caster, SpellInfo const* spellProto, u
             TakenTotalMod *= 1.2f;
     }
 
-    if (damagetype == DOT)
-    {
-        // Healing over time taken percent
-        float minval_hot = float(GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HOT_PCT));
-        if (minval_hot)
-            AddPct(TakenTotalMod, minval_hot);
-
-        float maxval_hot = float(GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HOT_PCT));
-        if (maxval_hot)
-            AddPct(TakenTotalMod, maxval_hot);
-    }
-
     // Check for table values
     SpellBonusEntry const* bonus = sSpellMgr->GetSpellBonusData(spellProto->Id);
     float coeff = 0;

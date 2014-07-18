@@ -319,7 +319,6 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
 
     /* FOR REMOVE
     &AuraEffect::HandleNULL,                                      //258 SPELL_AURA_MOD_SPELL_VISUAL
-    &AuraEffect::HandleNoImmediateEffect,                         //259 SPELL_AURA_MOD_HOT_PCT implemented in Unit::SpellHealingBonus
     &AuraEffect::HandleNoImmediateEffect,                         //260 SPELL_AURA_SCREEN_EFFECT (miscvalue = id in ScreenEffect.dbc) not required any code
     &AuraEffect::HandleNoImmediateEffect,                         //262 SPELL_AURA_ABILITY_IGNORE_AURASTATE implemented in spell::cancast
     &AuraEffect::HandleAuraAllowOnlyAbility,                      //263 SPELL_AURA_ALLOW_ONLY_ABILITY player can use only abilities set in SpellClassMask
@@ -5891,15 +5890,6 @@ void AuraEffect::HandlePeriodicHealAurasTick(Unit* target, Unit* caster) const
         float maxval = (float)target->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HEALING_PCT);
         if (maxval)
             AddPct(TakenTotalMod, maxval);
-
-        // Healing over time taken percent
-        float minval_hot = (float)target->GetMaxNegativeAuraModifier(SPELL_AURA_MOD_HOT_PCT);
-        if (minval_hot)
-            AddPct(TakenTotalMod, minval_hot);
-
-        float maxval_hot = (float)target->GetMaxPositiveAuraModifier(SPELL_AURA_MOD_HOT_PCT);
-        if (maxval_hot)
-            AddPct(TakenTotalMod, maxval_hot);
 
         TakenTotalMod = std::max(TakenTotalMod, 0.0f);
 
