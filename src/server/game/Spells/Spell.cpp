@@ -3520,17 +3520,7 @@ void Spell::finish(bool ok)
 
     if (IsAutoActionResetSpell())
     {
-        bool found = false;
-        Unit::AuraEffectList const& vIgnoreReset = m_caster->GetAuraEffectsByType(SPELL_AURA_IGNORE_MELEE_RESET);
-        for (Unit::AuraEffectList::const_iterator i = vIgnoreReset.begin(); i != vIgnoreReset.end(); ++i)
-        {
-            if ((*i)->IsAffectedOnSpell(m_spellInfo))
-            {
-                found = true;
-                break;
-            }
-        }
-        if (!found && !(m_spellInfo->AttributesEx2 & SPELL_ATTR2_NOT_RESET_AUTO_ACTIONS))
+        if (!(m_spellInfo->AttributesEx2 & SPELL_ATTR2_NOT_RESET_AUTO_ACTIONS))
         {
             m_caster->resetAttackTimer(BASE_ATTACK);
             if (m_caster->haveOffhandWeapon())
