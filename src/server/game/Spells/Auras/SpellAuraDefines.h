@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_PREVENT_REGENERATE_POWER                     = 294,
     SPELL_AURA_295                                          = 295,
     SPELL_AURA_SET_VEHICLE_ID                               = 296,
     SPELL_AURA_BLOCK_SPELL_FAMILY                           = 297,
