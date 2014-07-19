@@ -318,7 +318,6 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandlePhase                                      //261 SPELL_AURA_PHASE
 
     /* FOR REMOVE
-    &AuraEffect::HandleAuraOverrideSpells,                        //293 SPELL_AURA_OVERRIDE_SPELLS auras which probably add set of abilities to their target based on it's miscvalue
     &AuraEffect::HandleNoImmediateEffect,                         //294 SPELL_AURA_PREVENT_REGENERATE_POWER implemented in Player::Regenerate(Powers power)
     &AuraEffect::HandleUnused,                                    //295 0 spells in 3.3.5
     &AuraEffect::HandleNULL,                                      //297 Spirit Burst spells
@@ -4973,36 +4972,6 @@ void AuraEffect::HandleAuraModFakeInebriation(AuraApplication const* aurApp, uin
 
     // call functions which may have additional effects after chainging state of unit
     target->UpdateObjectVisibility();
-}
-
-void AuraEffect::HandleAuraOverrideSpells(AuraApplication const* aurApp, uint8 mode, bool apply) const
-{
-    if (!(mode & AURA_EFFECT_HANDLE_REAL))
-        return;
-
-    Player* target = aurApp->GetTarget()->ToPlayer();
-
-    if (!target || !target->IsInWorld())
-        return;
-
-    uint32 overrideId = uint32(GetMiscValue());
-
-    if (apply)
-    {
-        target->SetUInt16Value(PLAYER_FIELD_BYTES2, 0, overrideId);
-        if (OverrideSpellDataEntry const* overrideSpells = sOverrideSpellDataStore.LookupEntry(overrideId))
-            for (uint8 i = 0; i < MAX_OVERRIDE_SPELL; ++i)
-                if (uint32 spellId = overrideSpells->spellId[i])
-                    target->AddTemporarySpell(spellId);
-    }
-    else
-    {
-        target->SetUInt16Value(PLAYER_FIELD_BYTES2, 0, 0);
-        if (OverrideSpellDataEntry const* overrideSpells = sOverrideSpellDataStore.LookupEntry(overrideId))
-            for (uint8 i = 0; i < MAX_OVERRIDE_SPELL; ++i)
-                if (uint32 spellId = overrideSpells->spellId[i])
-                    target->RemoveTemporarySpell(spellId);
-    }
 }
 
 void AuraEffect::HandlePreventResurrection(AuraApplication const* aurApp, uint8 mode, bool apply) const
