@@ -322,10 +322,7 @@ enum AuraType
     SPELL_AURA_259                                          = 259,
     SPELL_AURA_260                                          = 260,
     SPELL_AURA_PHASE                                        = 261,
-
-    // FOR REMOVE
-    SPELL_AURA_PERIODIC_HASTE                               = 316,
-    TOTAL_AURAS                                             = 317
+    TOTAL_AURAS                                             = 262
 };
 
 enum AuraObjectType
