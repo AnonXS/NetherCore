@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_SCHOOL_HEAL_ABSORB                           = 301,
     SPELL_AURA_302                                          = 302,
     SPELL_AURA_MOD_DAMAGE_DONE_VERSUS_AURASTATE             = 303,
     SPELL_AURA_MOD_FAKE_INEBRIATE                           = 304,
