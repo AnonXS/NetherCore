@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_MOD_CRIT_PCT                                 = 290,
     SPELL_AURA_MOD_XP_QUEST_PCT                             = 291,
     SPELL_AURA_OPEN_STABLE                                  = 292,
     SPELL_AURA_OVERRIDE_SPELLS                              = 293,

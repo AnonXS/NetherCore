@@ -101,8 +101,6 @@ class spell_gen_pet_calculate : public SpellScriptLoader
                     CritSpell += owner->GetSpellCritFromIntellect();
                     // Increase crit from SPELL_AURA_MOD_SPELL_CRIT_CHANCE
                     CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
-                    // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                    CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                     // Increase crit spell from spell crit ratings
                     CritSpell += owner->GetRatingBonusValue(CR_CRIT_SPELL);
 
@@ -120,8 +118,6 @@ class spell_gen_pet_calculate : public SpellScriptLoader
                     CritMelee += owner->GetMeleeCritFromAgility();
                     // Increase crit from SPELL_AURA_MOD_WEAPON_CRIT_PERCENT
                     CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
-                    // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                    CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                     // Increase crit melee from melee crit ratings
                     CritMelee += owner->GetRatingBonusValue(CR_CRIT_MELEE);
 
@@ -662,8 +658,6 @@ public:
                 CritSpell += owner->GetSpellCritFromIntellect();
                 // Increase crit from SPELL_AURA_MOD_SPELL_CRIT_CHANCE
                 CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
-                // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                 // Increase crit spell from spell crit ratings
                 CritSpell += owner->GetRatingBonusValue(CR_CRIT_SPELL);
 
@@ -684,8 +678,6 @@ public:
                 CritMelee += owner->GetMeleeCritFromAgility();
                 // Increase crit from SPELL_AURA_MOD_WEAPON_CRIT_PERCENT
                 CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
-                // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                 // Increase crit melee from melee crit ratings
                 CritMelee += owner->GetRatingBonusValue(CR_CRIT_MELEE);
 
@@ -1266,8 +1258,6 @@ public:
                 // CritSpell += owner->GetSpellCritFromIntellect();
                 // Increase crit from SPELL_AURA_MOD_SPELL_CRIT_CHANCE
                 // CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_CRIT_CHANCE);
-                // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                // CritSpell += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                 // Increase crit spell from spell crit ratings
                 // CritSpell += owner->GetRatingBonusValue(CR_CRIT_SPELL);
 
@@ -1287,8 +1277,6 @@ public:
                 // CritMelee += owner->GetMeleeCritFromAgility();
                 // Increase crit from SPELL_AURA_MOD_WEAPON_CRIT_PERCENT
                 // CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_WEAPON_CRIT_PERCENT);
-                // Increase crit from SPELL_AURA_MOD_CRIT_PCT
-                // CritMelee += owner->GetTotalAuraModifier(SPELL_AURA_MOD_CRIT_PCT);
                 // Increase crit melee from melee crit ratings
                 // CritMelee += owner->GetRatingBonusValue(CR_CRIT_MELEE);
 

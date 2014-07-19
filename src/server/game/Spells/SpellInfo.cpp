@@ -2396,7 +2396,6 @@ bool SpellInfo::_IsPositiveEffect(uint8 effIndex, bool deep) const
                     if (Effects[effIndex].CalcValue() > 0)
                         return false;
                     break;
-                case SPELL_AURA_MOD_CRIT_PCT:
                 case SPELL_AURA_MOD_SPELL_CRIT_CHANCE:
                     if (Effects[effIndex].CalcValue() > 0)
                         return true;                        // some expected positive spells have SPELL_ATTR1_NEGATIVE
