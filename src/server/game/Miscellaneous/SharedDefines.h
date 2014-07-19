@@ -2779,7 +2779,7 @@ enum SkillType
     SKILL_COMPANIONS               = 778,
     //SKILL_PET_EXOTIC_CHIMAERA      = 780,
     //SKILL_PET_EXOTIC_DEVILSAUR     = 781,
-    SKILL_PET_GHOUL                = 782,
+    //SKILL_PET_GHOUL                = 782,
     //SKILL_PET_EXOTIC_SILITHID      = 783,
     //SKILL_PET_EXOTIC_WORM          = 784,
     SKILL_PET_WASP                 = 785,

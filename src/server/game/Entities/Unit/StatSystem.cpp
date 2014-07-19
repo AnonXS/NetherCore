@@ -1051,7 +1051,6 @@ void Creature::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, 
 #define ENTRY_WATER_ELEMENTAL   510
 #define ENTRY_TREANT            1964
 #define ENTRY_FIRE_ELEMENTAL    15438
-#define ENTRY_GHOUL             26125
 #define ENTRY_BLOODWORM         28017
 
 bool Guardian::UpdateStats(Stats stat)
