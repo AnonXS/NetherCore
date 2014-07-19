@@ -324,7 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_UNDERWATER_WALKING                           = 315,
     SPELL_AURA_PERIODIC_HASTE                               = 316,
     TOTAL_AURAS                                             = 317
 };
