@@ -1357,7 +1357,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case MSG_GUILD_BANK_LOG_QUERY:                  //   0               2
         case CMSG_LOGOUT_CANCEL:                        //   0               2
         case CMSG_REALM_SPLIT:                          //   0               2
-        case CMSG_ALTER_APPEARANCE:                     //   0               2
         case CMSG_QUEST_CONFIRM_ACCEPT:                 //   0               2
         case MSG_GUILD_EVENT_LOG_QUERY:                 //   0               2.5
         case CMSG_READY_FOR_ACCOUNT_DATA_TIMES:         //   0               2.5

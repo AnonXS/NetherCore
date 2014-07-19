@@ -349,11 +349,6 @@ struct GameObjectTemplate
             uint32 difficulty;                              //1
         } dungeonDifficulty;
         //32 GAMEOBJECT_TYPE_BARBER_CHAIR
-        struct
-        {
-            uint32 chairheight;                             //0
-            uint32 heightOffset;                            //1
-        } barberChair;
         //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
         struct
         {

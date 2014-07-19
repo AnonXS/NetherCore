@@ -605,20 +605,6 @@ struct BannedAddOnsEntry
     // uint32 State;
 };
 
-struct BarberShopStyleEntry
-{
-    uint32  Id;                                             // 0
-    uint32  type;                                           // 1 value 0 -> hair, value 2 -> facialhair
-    //char*   name[16];                                     // 2-17 name of hair style
-    //uint32  name_flags;                                   // 18
-    //uint32  unk_name[16];                                 // 19-34, all empty
-    //uint32  unk_flags;                                    // 35
-    //float   CostMultiplier;                               // 36 values 1 and 0.75
-    uint32  race;                                           // 37 race
-    uint32  gender;                                         // 38 0 -> male, 1 -> female
-    uint32  hair_id;                                        // 39 real ID to hair/facial hair
-};
-
 struct BattlemasterListEntry
 {
     uint32  id;                                             // 0
@@ -1013,11 +999,6 @@ struct GemPropertiesEntry
 #define GT_MAX_LEVEL    100
 // gtOCTClassCombatRatingScalar.dbc stores data for 32 ratings, look at MAX_COMBAT_RATING for real used amount
 #define GT_MAX_RATING   32
-
-struct GtBarberShopCostBaseEntry
-{
-    float   cost;
-};
 
 struct GtCombatRatingsEntry
 {
