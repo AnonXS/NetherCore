@@ -144,7 +144,7 @@ class spell_pri_divine_aegis : public SpellScriptLoader
 
             bool CheckProc(ProcEventInfo& eventInfo)
             {
-                return eventInfo.GetProcTarget();
+                return eventInfo.GetProcTarget() != nullptr;
             }
 
             void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
@@ -419,7 +419,7 @@ class spell_pri_mana_leech : public SpellScriptLoader
             bool CheckProc(ProcEventInfo& /*eventInfo*/)
             {
                 _procTarget = GetTarget()->GetOwner();
-                return _procTarget;
+                return _procTarget != nullptr;
             }
 
             void HandleProc(AuraEffect const* aurEff, ProcEventInfo& /*eventInfo*/)

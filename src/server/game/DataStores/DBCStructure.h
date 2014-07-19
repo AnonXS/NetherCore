@@ -535,7 +535,7 @@ struct AreaTableEntry
     {
         if (mapid == 609)
             return true;
-        return (flags & AREA_FLAG_SANCTUARY);
+        return (flags & AREA_FLAG_SANCTUARY) != 0;
     }
 };
 
@@ -609,7 +609,7 @@ struct BattlemasterListEntry
 {
     uint32  id;                                             // 0
     int32   mapid[8];                                       // 1-8 mapid
-    uint32  type;                                           // 9 (3 - BG, 4 - arena)
+    uint32  type;                                           // 9 map type (3 - BG, 4 - arena)
     //uint32 canJoinAsGroup;                                // 10 (0 or 1)
     char*   name[16];                                       // 11-26
     //uint32 nameFlags                                      // 27 string flag, unused
@@ -1310,7 +1310,7 @@ struct MapEntry
         return MapID == 0 || MapID == 1 || MapID == 530 || MapID == 571;
     }
 
-    bool IsDynamicDifficultyMap() const { return Flags & MAP_FLAG_DYNAMIC_DIFFICULTY; }
+    bool IsDynamicDifficultyMap() const { return (Flags & MAP_FLAG_DYNAMIC_DIFFICULTY) != 0; }
 };
 
 struct MapDifficultyEntry

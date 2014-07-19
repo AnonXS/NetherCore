@@ -2064,7 +2064,7 @@ bool Group::IsFull() const
 
 bool Group::isRaidGroup() const
 {
-    return m_groupType & GROUPTYPE_RAID;
+    return (m_groupType & GROUPTYPE_RAID) != 0;
 }
 
 bool Group::isBGGroup() const

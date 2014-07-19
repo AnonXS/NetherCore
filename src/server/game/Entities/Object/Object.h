@@ -140,7 +140,7 @@ class Object
         virtual void SetObjectScale(float scale) { SetFloatValue(OBJECT_FIELD_SCALE_X, scale); }
 
         TypeID GetTypeId() const { return m_objectTypeId; }
-        bool isType(uint16 mask) const { return (mask & m_objectType); }
+        bool isType(uint16 mask) const { return (mask & m_objectType) != 0; }
 
         virtual void BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) const;
         void SendUpdateToPlayer(Player* player);
@@ -412,7 +412,7 @@ struct MovementInfo
     // common
     uint64 guid;
     uint32 flags;
-    uint8 flags2;
+    uint16 flags2;
     Position pos;
     uint32 time;
 
@@ -423,12 +423,16 @@ struct MovementInfo
         {
             guid = 0;
             pos.Relocate(0.0f, 0.0f, 0.0f, 0.0f);
+            seat = -1;
             time = 0;
+            time2 = 0;
         }
 
         uint64 guid;
         Position pos;
+        int8 seat;
         uint32 time;
+        uint32 time2;
     } transport;
 
     // swimming/flying
@@ -437,7 +441,7 @@ struct MovementInfo
     // falling
     uint32 fallTime;
 
-    // jumping
+        // jumping
     struct JumpInfo
     {
         void Reset()
@@ -464,11 +468,11 @@ struct MovementInfo
     void SetMovementFlags(uint32 flag) { flags = flag; }
     void AddMovementFlag(uint32 flag) { flags |= flag; }
     void RemoveMovementFlag(uint32 flag) { flags &= ~flag; }
-    bool HasMovementFlag(uint32 flag) const { return flags & flag; }
+    bool HasMovementFlag(uint32 flag) const { return (flags & flag) != 0; }
 
     uint16 GetExtraMovementFlags() const { return flags2; }
-    void AddExtraMovementFlag(uint8 flag) { flags2 |= flag; }
-    bool HasExtraMovementFlag(uint8 flag) const { return flags2 & flag; }
+    void AddExtraMovementFlag(uint16 flag) { flags2 |= flag; }
+    bool HasExtraMovementFlag(uint16 flag) const { return (flags2 & flag) != 0; }
 
     void SetFallTime(uint32 time) { fallTime = time; }
 
@@ -600,7 +604,7 @@ class WorldObject : public Object, public WorldLocation
         virtual void SetPhaseMask(uint32 newPhaseMask, bool update);
         uint32 GetPhaseMask() const { return m_phaseMask; }
         bool InSamePhase(WorldObject const* obj) const;
-        bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask); }
+        bool InSamePhase(uint32 phasemask) const { return (GetPhaseMask() & phasemask) != 0; }
 
         uint32 GetZoneId() const;
         uint32 GetAreaId() const;
@@ -694,7 +698,7 @@ class WorldObject : public Object, public WorldLocation
         void SetZoneScript();
         ZoneScript* GetZoneScript() const { return m_zoneScript; }
 
-        TempSummon* SummonCreature(uint32 id, Position const &pos, TempSummonType spwtype = TEMPSUMMON_MANUAL_DESPAWN, uint32 despwtime = 0) const;
+        TempSummon* SummonCreature(uint32 id, Position const &pos, TempSummonType spwtype = TEMPSUMMON_MANUAL_DESPAWN, uint32 despwtime = 0, uint32 vehId = 0) const;
         TempSummon* SummonCreature(uint32 id, float x, float y, float z, float ang = 0, TempSummonType spwtype = TEMPSUMMON_MANUAL_DESPAWN, uint32 despwtime = 0) const;
         GameObject* SummonGameObject(uint32 entry, float x, float y, float z, float ang, float rotation0, float rotation1, float rotation2, float rotation3, uint32 respawnTime);
         Creature*   SummonTrigger(float x, float y, float z, float ang, uint32 dur, CreatureAI* (*GetAI)(Creature*) = NULL);
@@ -713,9 +717,9 @@ class WorldObject : public Object, public WorldLocation
 
         //relocation and visibility system functions
         void AddToNotify(uint16 f) { m_notifyflags |= f;}
-        bool isNeedNotify(uint16 f) const { return m_notifyflags & f;}
+        bool isNeedNotify(uint16 f) const { return (m_notifyflags & f) != 0; }
         uint16 GetNotifyFlags() const { return m_notifyflags; }
-        bool NotifyExecuted(uint16 f) const { return m_executed_notifies & f;}
+        bool NotifyExecuted(uint16 f) const { return (m_executed_notifies & f) != 0; }
         void SetNotified(uint16 f) { m_executed_notifies |= f;}
         void ResetAllNotifies() { m_notifyflags = 0; m_executed_notifies = 0; }
 
@@ -746,6 +750,7 @@ class WorldObject : public Object, public WorldLocation
         float GetTransOffsetZ() const { return m_movementInfo.transport.pos.GetPositionZ(); }
         float GetTransOffsetO() const { return m_movementInfo.transport.pos.GetOrientation(); }
         uint32 GetTransTime()   const { return m_movementInfo.transport.time; }
+        int8 GetTransSeat()     const { return m_movementInfo.transport.seat; }
         virtual uint64 GetTransGUID()   const;
         void SetTransport(Transport* t) { m_transport = t; }
 

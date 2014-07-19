@@ -29,8 +29,6 @@ typedef std::map<uint64, LfgPlayerData> LfgPlayerDataContainer;
 
 class LFGMgr
 {
-    friend class ACE_Singleton<LFGMgr, ACE_Null_Mutex>;
-
     private:
         LFGMgr();
         ~LFGMgr();
@@ -66,5 +64,5 @@ class LFGMgr
 
 } // namespace lfg
 
-#define sLFGMgr ACE_Singleton<lfg::LFGMgr, ACE_Null_Mutex>::instance()
+#define sLFGMgr lfg::LFGMgr
 #endif
