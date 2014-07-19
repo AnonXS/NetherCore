@@ -324,9 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_STRANGULATE                                  = 298,
-    SPELL_AURA_299                                          = 299,
-    SPELL_AURA_SHARE_DAMAGE_PCT                             = 300,
     SPELL_AURA_SCHOOL_HEAL_ABSORB                           = 301,
     SPELL_AURA_302                                          = 302,
     SPELL_AURA_MOD_DAMAGE_DONE_VERSUS_AURASTATE             = 303,

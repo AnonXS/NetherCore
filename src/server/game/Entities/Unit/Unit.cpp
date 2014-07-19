@@ -590,31 +590,6 @@ uint32 Unit::DealDamage(Unit* victim, uint32 damage, CleanDamage const* cleanDam
         }
         else
             victim->RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_TAKE_DAMAGE, 0);
-
-        // We're going to call functions which can modify content of the list during iteration over it's elements
-        // Let's copy the list so we can prevent iterator invalidation
-        AuraEffectList vCopyDamageCopy(victim->GetAuraEffectsByType(SPELL_AURA_SHARE_DAMAGE_PCT));
-        // copy damage to casters of this aura
-        for (AuraEffectList::iterator i = vCopyDamageCopy.begin(); i != vCopyDamageCopy.end(); ++i)
-        {
-            // Check if aura was removed during iteration - we don't need to work on such auras
-            if (!((*i)->GetBase()->IsAppliedOnTarget(victim->GetGUID())))
-                continue;
-            // check damage school mask
-            if (((*i)->GetMiscValue() & damageSchoolMask) == 0)
-                continue;
-
-            Unit* shareDamageTarget = (*i)->GetCaster();
-            if (!shareDamageTarget)
-                continue;
-            SpellInfo const* spell = (*i)->GetSpellInfo();
-
-            uint32 share = CalculatePct(damage, (*i)->GetAmount());
-
-            /// @todo check packets if damage is done by victim, or by attacker of victim
-            DealDamageMods(shareDamageTarget, share, NULL);
-            DealDamage(shareDamageTarget, share, NULL, NODAMAGE, spell->GetSchoolMask(), spell, false);
-        }
     }
 
     // Rage from Damage made (only from direct weapon damage)
