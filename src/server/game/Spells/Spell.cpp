@@ -4400,11 +4400,6 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_FAILED_ONLY_STEALTHED;
     }
 
-    Unit::AuraEffectList const& blockSpells = m_caster->GetAuraEffectsByType(SPELL_AURA_BLOCK_SPELL_FAMILY);
-    for (Unit::AuraEffectList::const_iterator blockItr = blockSpells.begin(); blockItr != blockSpells.end(); ++blockItr)
-        if (uint32((*blockItr)->GetMiscValue()) == m_spellInfo->SpellFamilyName)
-            return SPELL_FAILED_SPELL_UNAVAILABLE;
-
     bool reqCombat = true;
 
     // caster state requirements

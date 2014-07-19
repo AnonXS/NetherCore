@@ -324,9 +324,6 @@ enum AuraType
     SPELL_AURA_PHASE                                        = 261,
 
     // FOR REMOVE
-    SPELL_AURA_295                                          = 295,
-    SPELL_AURA_SET_VEHICLE_ID                               = 296,
-    SPELL_AURA_BLOCK_SPELL_FAMILY                           = 297,
     SPELL_AURA_STRANGULATE                                  = 298,
     SPELL_AURA_299                                          = 299,
     SPELL_AURA_SHARE_DAMAGE_PCT                             = 300,
