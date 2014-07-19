@@ -983,10 +983,6 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
             spellId  = 40122;
             spellId2 = 40121;
             break;
-        case FORM_METAMORPHOSIS:
-            spellId  = 54817;
-            spellId2 = 54879;
-            break;
         case FORM_SPIRITOFREDEMPTION:
             spellId  = 27792;
             spellId2 = 27795;                               // must be second, this important at aura remove to prevent to early iterator invalidation.
@@ -1481,35 +1477,22 @@ void AuraEffect::HandleAuraModShapeshift(AuraApplication const* aurApp, uint8 mo
         case FORM_GHOUL:                                    // 0x07
             PowerType = POWER_ENERGY;
             break;
-
         case FORM_BEAR:                                     // 0x05
         case FORM_DIREBEAR:                                 // 0x08
-
         case FORM_BATTLESTANCE:                             // 0x11
         case FORM_DEFENSIVESTANCE:                          // 0x12
         case FORM_BERSERKERSTANCE:                          // 0x13
             PowerType = POWER_RAGE;
             break;
-
         case FORM_TREE:                                     // 0x02
         case FORM_TRAVEL:                                   // 0x03
         case FORM_AQUA:                                     // 0x04
         case FORM_AMBIENT:                                  // 0x06
-
-        case FORM_STEVES_GHOUL:                             // 0x09
-        case FORM_THARONJA_SKELETON:                        // 0x0A
-        case FORM_TEST_OF_STRENGTH:                         // 0x0B
-        case FORM_BLB_PLAYER:                               // 0x0C
-        case FORM_SHADOW_DANCE:                             // 0x0D
         case FORM_CREATUREBEAR:                             // 0x0E
         case FORM_CREATURECAT:                              // 0x0F
         case FORM_GHOSTWOLF:                                // 0x10
-
         case FORM_TEST:                                     // 0x14
         case FORM_ZOMBIE:                                   // 0x15
-        case FORM_METAMORPHOSIS:                            // 0x16
-        case FORM_UNDEAD:                                   // 0x19
-        case FORM_MASTER_ANGLER:                            // 0x1A
         case FORM_FLIGHT_EPIC:                              // 0x1B
         case FORM_SHADOW:                                   // 0x1C
         case FORM_FLIGHT:                                   // 0x1D
