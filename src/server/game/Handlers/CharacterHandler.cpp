@@ -162,10 +162,6 @@ bool LoginQueryHolder::Initialize()
     stmt->setUInt32(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS, stmt);
 
-    stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_EQUIPMENTSETS);
-    stmt->setUInt32(0, lowGuid);
-    res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS, stmt);
-
     stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHARACTER_BGDATA);
     stmt->setUInt32(0, lowGuid);
     res &= SetPreparedQuery(PLAYER_LOGIN_QUERY_LOAD_BG_DATA, stmt);
@@ -1340,124 +1336,6 @@ void WorldSession::HandleCharCustomize(WorldPacket& recvData)
     data << uint8(hairStyle);
     data << uint8(hairColor);
     data << uint8(facialHair);
-    SendPacket(&data);
-}
-
-void WorldSession::HandleEquipmentSetSave(WorldPacket &recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_EQUIPMENT_SET_SAVE");
-
-    uint64 setGuid;
-    recvData.readPackGUID(setGuid);
-
-    uint32 index;
-    recvData >> index;
-    if (index >= MAX_EQUIPMENT_SET_INDEX)                    // client set slots amount
-        return;
-
-    std::string name;
-    recvData >> name;
-
-    std::string iconName;
-    recvData >> iconName;
-
-    EquipmentSet eqSet;
-
-    eqSet.Guid      = setGuid;
-    eqSet.Name      = name;
-    eqSet.IconName  = iconName;
-    eqSet.state     = EQUIPMENT_SET_NEW;
-
-    for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        uint64 itemGuid;
-        recvData.readPackGUID(itemGuid);
-
-        // equipment manager sends "1" (as raw GUID) for slots set to "ignore" (don't touch slot at equip set)
-        if (itemGuid == 1)
-        {
-            // ignored slots saved as bit mask because we have no free special values for Items[i]
-            eqSet.IgnoreMask |= 1 << i;
-            continue;
-        }
-
-        Item* item = _player->GetItemByPos(INVENTORY_SLOT_BAG_0, i);
-
-        if (!item && itemGuid)                               // cheating check 1
-            return;
-
-        if (item && item->GetGUID() != itemGuid)             // cheating check 2
-            return;
-
-        eqSet.Items[i] = GUID_LOPART(itemGuid);
-    }
-
-    _player->SetEquipmentSet(index, eqSet);
-}
-
-void WorldSession::HandleEquipmentSetDelete(WorldPacket &recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_EQUIPMENT_SET_DELETE");
-
-    uint64 setGuid;
-    recvData.readPackGUID(setGuid);
-
-    _player->DeleteEquipmentSet(setGuid);
-}
-
-void WorldSession::HandleEquipmentSetUse(WorldPacket &recvData)
-{
-    TC_LOG_DEBUG("network", "CMSG_EQUIPMENT_SET_USE");
-
-    for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-    {
-        uint64 itemGuid;
-        recvData.readPackGUID(itemGuid);
-
-        uint8 srcbag, srcslot;
-        recvData >> srcbag >> srcslot;
-
-        TC_LOG_DEBUG("entities.player.items", "Item " UI64FMTD ": srcbag %u, srcslot %u", itemGuid, srcbag, srcslot);
-
-        // check if item slot is set to "ignored" (raw value == 1), must not be unequipped then
-        if (itemGuid == 1)
-            continue;
-
-        // Only equip weapons in combat
-        if (_player->IsInCombat() && i != EQUIPMENT_SLOT_MAINHAND && i != EQUIPMENT_SLOT_OFFHAND && i != EQUIPMENT_SLOT_RANGED)
-            continue;
-
-        Item* item = _player->GetItemByGuid(itemGuid);
-
-        uint16 dstpos = i | (INVENTORY_SLOT_BAG_0 << 8);
-
-        if (!item)
-        {
-            Item* uItem = _player->GetItemByPos(INVENTORY_SLOT_BAG_0, i);
-            if (!uItem)
-                continue;
-
-            ItemPosCountVec sDest;
-            InventoryResult msg = _player->CanStoreItem(NULL_BAG, NULL_SLOT, sDest, uItem, false);
-            if (msg == EQUIP_ERR_OK)
-            {
-                _player->RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
-                _player->StoreItem(sDest, uItem, true);
-            }
-            else
-                _player->SendEquipError(msg, uItem, NULL);
-
-            continue;
-        }
-
-        if (item->GetPos() == dstpos)
-            continue;
-
-        _player->SwapItem(item->GetPos(), dstpos);
-    }
-
-    WorldPacket data(SMSG_EQUIPMENT_SET_USE_RESULT, 1);
-    data << uint8(0);                                       // 4 - equipment swap failed - inventory is full
     SendPacket(&data);
 }
 

@@ -1099,8 +1099,8 @@ enum Opcodes
     CMSG_MOVE_CHARM_PORT_CHEAT                      = 0x706,
     CMSG_UNCLAIM_LICENSE                            = 0x707,
     SMSG_INSPECT_RESULTS_UPDATE                     = 0x708,
-    SMSG_EQUIPMENT_SET_SAVED                        = 0x709,
-    CMSG_DELETEEQUIPMENT_SET                        = 0x710,
+    //SMSG_EQUIPMENT_SET_SAVED                        = 0x709,
+    //CMSG_DELETEEQUIPMENT_SET                        = 0x710,
     CMSG_INSTANCE_LOCK_RESPONSE                     = 0x711,
     CMSG_DEBUG_PASSIVE_AURA                         = 0x712,
     SMSG_INSTANCE_LOCK_WARNING_QUERY                = 0x713,
@@ -1313,8 +1313,8 @@ enum Opcodes
     CMSG_UNUSED6                                    = 0x920,
     //CMSG_CALENDAR_EVENT_SIGNUP                      = 0x921, // uint64
     //SMSG_CALENDAR_CLEAR_PENDING_ACTION              = 0x922,
-    SMSG_EQUIPMENT_SET_LIST                         = 0x923, // equipment manager list?
-    CMSG_EQUIPMENT_SET_SAVE                         = 0x924,
+    //SMSG_EQUIPMENT_SET_LIST                         = 0x923, // equipment manager list?
+    //CMSG_EQUIPMENT_SET_SAVE                         = 0x924,
     CMSG_UPDATE_PROJECTILE_POSITION                 = 0x925,
     SMSG_SET_PROJECTILE_POSITION                    = 0x926,
     SMSG_TALENTS_INFO                               = 0x927,
@@ -1338,8 +1338,8 @@ enum Opcodes
     MSG_MOVE_GRAVITY_CHNG                           = 0x945,
     SMSG_SPLINE_MOVE_GRAVITY_DISABLE                = 0x946,
     SMSG_SPLINE_MOVE_GRAVITY_ENABLE                 = 0x947,
-    CMSG_EQUIPMENT_SET_USE                          = 0x948,
-    SMSG_EQUIPMENT_SET_USE_RESULT                   = 0x949,
+    //CMSG_EQUIPMENT_SET_USE                          = 0x948,
+    //SMSG_EQUIPMENT_SET_USE_RESULT                   = 0x949,
     CMSG_FORCE_ANIM                                 = 0x950,
     SMSG_FORCE_ANIM                                 = 0x951,
     CMSG_CHAR_FACTION_CHANGE                        = 0x952,

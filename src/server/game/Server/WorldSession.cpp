@@ -1342,8 +1342,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_ACTIVATETAXI:                         //   0               1.5
         case CMSG_SELF_RES:                             //   0               1.5
         case CMSG_UNLEARN_SKILL:                        //   0               1.5
-        case CMSG_EQUIPMENT_SET_SAVE:                   //   0               1.5
-        case CMSG_DELETEEQUIPMENT_SET:                  //   0               1.5
         case CMSG_DISMISS_CRITTER:                      //   0               1.5
         case CMSG_REPOP_REQUEST:                        //   0               1.5
         case CMSG_GROUP_INVITE:                         //   0               1.5

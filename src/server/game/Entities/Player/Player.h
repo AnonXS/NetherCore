@@ -601,34 +601,6 @@ enum KeyRingSlots                                           // 32 slots
     KEYRING_SLOT_END            = 118
 };
 
-enum EquipmentSetUpdateState
-{
-    EQUIPMENT_SET_UNCHANGED = 0,
-    EQUIPMENT_SET_CHANGED   = 1,
-    EQUIPMENT_SET_NEW       = 2,
-    EQUIPMENT_SET_DELETED   = 3
-};
-
-struct EquipmentSet
-{
-    EquipmentSet() : Guid(0), IgnoreMask(0), state(EQUIPMENT_SET_NEW)
-    {
-        for (uint8 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-            Items[i] = 0;
-    }
-
-    uint64 Guid;
-    std::string Name;
-    std::string IconName;
-    uint32 IgnoreMask;
-    uint32 Items[EQUIPMENT_SLOT_END];
-    EquipmentSetUpdateState state;
-};
-
-#define MAX_EQUIPMENT_SET_INDEX 10                          // client limit
-
-typedef std::map<uint32, EquipmentSet> EquipmentSets;
-
 struct ItemPosCount
 {
     ItemPosCount(uint16 _pos, uint32 _count) : pos(_pos), count(_count) { }
@@ -760,7 +732,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_ARENA_INFO              = 17,
     PLAYER_LOGIN_QUERY_LOAD_ACHIEVEMENTS            = 18,
     PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS       = 19,
-    PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS          = 20,
+    //PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS          = 20,
     PLAYER_LOGIN_QUERY_LOAD_BG_DATA                 = 21,
     //PLAYER_LOGIN_QUERY_LOAD_GLYPHS                  = 22,
     PLAYER_LOGIN_QUERY_LOAD_TALENTS                 = 23,
@@ -1944,10 +1916,6 @@ class Player : public Unit, public GridObject<Player>
         void CastItemUseSpell(Item* item, SpellCastTargets const& targets, uint8 castCount);
         void CastItemCombatSpell(Unit* target, WeaponAttackType attType, uint32 procVictim, uint32 procEx, Item* item, ItemTemplate const* proto);
 
-        void SendEquipmentSetList();
-        void SetEquipmentSet(uint32 index, EquipmentSet eqset);
-        void DeleteEquipmentSet(uint64 setGuid);
-
         void SendInitWorldStates(uint32 zone, uint32 area);
         void SendUpdateWorldState(uint32 Field, uint32 Value);
         void SendDirectMessage(WorldPacket* data);
@@ -2482,7 +2450,6 @@ class Player : public Unit, public GridObject<Player>
         float  m_summon_z;
 
         DeclinedName *m_declinedname;
-        EquipmentSets m_EquipmentSets;
 
         bool CanAlwaysSee(WorldObject const* obj) const;
 

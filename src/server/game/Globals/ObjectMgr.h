@@ -1033,7 +1033,6 @@ class ObjectMgr
         void SetHighestGuids();
         uint32 GenerateLowGuid(HighGuid guidhigh);
         uint32 GenerateAuctionID();
-        uint64 GenerateEquipmentSetGuid();
         uint32 GenerateMailID();
         uint32 GeneratePetNumber();
 
@@ -1293,7 +1292,6 @@ class ObjectMgr
     private:
         // first free id for selected id type
         uint32 _auctionId;
-        uint64 _equipmentSetGuid;
         uint32 _itemTextId;
         uint32 _mailId;
         uint32 _hiPetNumber;

@@ -4839,10 +4839,6 @@ void Player::DeleteFromDB(uint64 playerguid, uint32 accountId, bool updateRealmC
             stmt->setUInt32(0, guid);
             trans->Append(stmt);
 
-            stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_CHAR_EQUIPMENTSETS);
-            stmt->setUInt32(0, guid);
-            trans->Append(stmt);
-
             stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_GUILD_EVENTLOG_BY_PLAYER);
             stmt->setUInt32(0, guid);
             stmt->setUInt32(1, guid);
@@ -16574,38 +16570,6 @@ void Player::_LoadArenaTeamInfo(PreparedQueryResult result)
     }
 }
 
-void Player::_LoadEquipmentSets(PreparedQueryResult result)
-{
-    // SetPQuery(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS,   "SELECT setguid, setindex, name, iconname, item0, item1, item2, item3, item4, item5, item6, item7, item8, item9, item10, item11, item12, item13, item14, item15, item16, item17, item18 FROM character_equipmentsets WHERE guid = '%u' ORDER BY setindex", GUID_LOPART(m_guid));
-    if (!result)
-        return;
-
-    uint32 count = 0;
-    do
-    {
-        Field* fields = result->Fetch();
-        EquipmentSet eqSet;
-
-        eqSet.Guid      = fields[0].GetUInt64();
-        uint8 index    = fields[1].GetUInt8();
-        eqSet.Name      = fields[2].GetString();
-        eqSet.IconName  = fields[3].GetString();
-        eqSet.IgnoreMask = fields[4].GetUInt32();
-        eqSet.state     = EQUIPMENT_SET_UNCHANGED;
-
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-            eqSet.Items[i] = fields[5+i].GetUInt32();
-
-        m_EquipmentSets[index] = eqSet;
-
-        ++count;
-
-        if (count >= MAX_EQUIPMENT_SET_INDEX)                // client limit
-            break;
-    }
-    while (result->NextRow());
-}
-
 void Player::_LoadBGData(PreparedQueryResult result)
 {
     if (!result)
@@ -17351,8 +17315,6 @@ bool Player::LoadFromDB(uint32 guid, SQLQueryHolder *holder)
     _LoadDeclinedNames(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_DECLINED_NAMES));
 
     m_achievementMgr->CheckAllAchievementCriteria();
-
-    _LoadEquipmentSets(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS));
 
     return true;
 }
@@ -18961,7 +18923,6 @@ void Player::SaveToDB(bool create /*=false*/)
     _SaveSkills(trans);
     m_achievementMgr->SaveToDB(trans);
     m_reputationMgr->SaveToDB(trans);
-    _SaveEquipmentSets(trans);
     GetSession()->SaveTutorialsData(trans);                 // changed only while character in game
     _SaveInstanceTimeRestrictions(trans);
 
@@ -22310,10 +22271,6 @@ void Player::SendInitialPacketsBeforeAddToMap()
     m_reputationMgr->SendInitialReputations();
     m_achievementMgr->SendAllAchievementData();
 
-    /* Not implemented in 2.4.3
-    SendEquipmentSetList();
-    */
-
     data.Initialize(SMSG_LOGIN_SETTIMESPEED, 4 + 4);
     data.AppendPackedTime(sWorld->GetGameTime());
     data << float(0.01666667f);                             // game speed
@@ -24937,127 +24894,6 @@ void Player::BuildEnchantmentsInfoData(WorldPacket* data)
     data->put<uint32>(slotUsedMaskPos, slotUsedMask);
 }
 
-void Player::SendEquipmentSetList()
-{
-    uint32 count = 0;
-    WorldPacket data(SMSG_EQUIPMENT_SET_LIST, 4);
-    size_t count_pos = data.wpos();
-    data << uint32(count);                                  // count placeholder
-    for (EquipmentSets::iterator itr = m_EquipmentSets.begin(); itr != m_EquipmentSets.end(); ++itr)
-    {
-        if (itr->second.state == EQUIPMENT_SET_DELETED)
-            continue;
-        data.appendPackGUID(itr->second.Guid);
-        data << uint32(itr->first);
-        data << itr->second.Name;
-        data << itr->second.IconName;
-        for (uint32 i = 0; i < EQUIPMENT_SLOT_END; ++i)
-        {
-            // ignored slots stored in IgnoreMask, client wants "1" as raw GUID, so no HIGHGUID_ITEM
-            if (itr->second.IgnoreMask & (1 << i))
-                data.appendPackGUID(uint64(1));
-            else
-                data.appendPackGUID(MAKE_NEW_GUID(itr->second.Items[i], 0, HIGHGUID_ITEM));
-        }
-
-        ++count;                                            // client have limit but it checked at loading and set
-    }
-    data.put<uint32>(count_pos, count);
-    GetSession()->SendPacket(&data);
-}
-
-void Player::SetEquipmentSet(uint32 index, EquipmentSet eqset)
-{
-    if (eqset.Guid != 0)
-    {
-        bool found = false;
-
-        for (EquipmentSets::iterator itr = m_EquipmentSets.begin(); itr != m_EquipmentSets.end(); ++itr)
-        {
-            if ((itr->second.Guid == eqset.Guid) && (itr->first == index))
-            {
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)                                          // something wrong...
-        {
-            TC_LOG_ERROR("entities.player", "Player %s tried to save equipment set " UI64FMTD " (index %u), but that equipment set not found!", GetName().c_str(), eqset.Guid, index);
-            return;
-        }
-    }
-
-    EquipmentSet& eqslot = m_EquipmentSets[index];
-
-    EquipmentSetUpdateState old_state = eqslot.state;
-
-    eqslot = eqset;
-
-    if (eqset.Guid == 0)
-    {
-        eqslot.Guid = sObjectMgr->GenerateEquipmentSetGuid();
-
-        WorldPacket data(SMSG_EQUIPMENT_SET_SAVED, 4 + 1);
-        data << uint32(index);
-        data.appendPackGUID(eqslot.Guid);
-        GetSession()->SendPacket(&data);
-    }
-
-    eqslot.state = old_state == EQUIPMENT_SET_NEW ? EQUIPMENT_SET_NEW : EQUIPMENT_SET_CHANGED;
-}
-
-void Player::_SaveEquipmentSets(SQLTransaction& trans)
-{
-    for (EquipmentSets::iterator itr = m_EquipmentSets.begin(); itr != m_EquipmentSets.end();)
-    {
-        uint32 index = itr->first;
-        EquipmentSet& eqset = itr->second;
-        PreparedStatement* stmt = NULL;
-        uint8 j = 0;
-        switch (eqset.state)
-        {
-            case EQUIPMENT_SET_UNCHANGED:
-                ++itr;
-                break;                                      // nothing do
-            case EQUIPMENT_SET_CHANGED:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_UPD_EQUIP_SET);
-                stmt->setString(j++, eqset.Name.c_str());
-                stmt->setString(j++, eqset.IconName.c_str());
-                stmt->setUInt32(j++, eqset.IgnoreMask);
-                for (uint8 i=0; i<EQUIPMENT_SLOT_END; ++i)
-                    stmt->setUInt32(j++, eqset.Items[i]);
-                stmt->setUInt32(j++, GetGUIDLow());
-                stmt->setUInt64(j++, eqset.Guid);
-                stmt->setUInt32(j, index);
-                trans->Append(stmt);
-                eqset.state = EQUIPMENT_SET_UNCHANGED;
-                ++itr;
-                break;
-            case EQUIPMENT_SET_NEW:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_INS_EQUIP_SET);
-                stmt->setUInt32(j++, GetGUIDLow());
-                stmt->setUInt64(j++, eqset.Guid);
-                stmt->setUInt32(j++, index);
-                stmt->setString(j++, eqset.Name.c_str());
-                stmt->setString(j++, eqset.IconName.c_str());
-                stmt->setUInt32(j++, eqset.IgnoreMask);
-                for (uint8 i=0; i<EQUIPMENT_SLOT_END; ++i)
-                    stmt->setUInt32(j++, eqset.Items[i]);
-                trans->Append(stmt);
-                eqset.state = EQUIPMENT_SET_UNCHANGED;
-                ++itr;
-                break;
-            case EQUIPMENT_SET_DELETED:
-                stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_EQUIP_SET);
-                stmt->setUInt64(0, eqset.Guid);
-                trans->Append(stmt);
-                m_EquipmentSets.erase(itr++);
-                break;
-        }
-    }
-}
-
 void Player::_SaveBGData(SQLTransaction& trans)
 {
     PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_DEL_PLAYER_BGDATA);
@@ -25077,21 +24913,6 @@ void Player::_SaveBGData(SQLTransaction& trans)
     stmt->setUInt16(9, m_bgData.taxiPath[1]);
     stmt->setUInt16(10, m_bgData.mountSpell);
     trans->Append(stmt);
-}
-
-void Player::DeleteEquipmentSet(uint64 setGuid)
-{
-    for (EquipmentSets::iterator itr = m_EquipmentSets.begin(); itr != m_EquipmentSets.end(); ++itr)
-    {
-        if (itr->second.Guid == setGuid)
-        {
-            if (itr->second.state == EQUIPMENT_SET_NEW)
-                m_EquipmentSets.erase(itr);
-            else
-                itr->second.state = EQUIPMENT_SET_DELETED;
-            break;
-        }
-    }
 }
 
 void Player::RemoveAtLoginFlag(AtLoginFlags flags, bool persist /*= false*/)

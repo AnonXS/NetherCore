@@ -40,7 +40,6 @@ static DumpTable dumpTables[DUMP_TABLE_COUNT] =
     { "character_action",                 DTT_CHAR_TABLE },
     { "character_aura",                   DTT_CHAR_TABLE },
     { "character_declinedname",           DTT_CHAR_TABLE },
-    { "character_equipmentsets",          DTT_EQSET_TABLE},
     { "character_homebind",               DTT_CHAR_TABLE },
     { "character_inventory",              DTT_INVENTORY  },
     { "character_pet",                    DTT_PET        },
@@ -561,17 +560,6 @@ DumpReturn PlayerDumpReader::LoadDump(std::string const& file, uint32 account, s
             {
                 if (!changenth(line, 1, newguid))           // character_*.guid update
                     ROLLBACK(DUMP_FILE_BROKEN);
-                break;
-            }
-            case DTT_EQSET_TABLE:
-            {
-                if (!changenth(line, 1, newguid))
-                    ROLLBACK(DUMP_FILE_BROKEN);             // character_equipmentsets.guid
-
-                char newSetGuid[24];
-                snprintf(newSetGuid, 24, UI64FMTD, sObjectMgr->GenerateEquipmentSetGuid());
-                if (!changenth(line, 2, newSetGuid))
-                    ROLLBACK(DUMP_FILE_BROKEN);             // character_equipmentsets.setguid
                 break;
             }
             case DTT_INVENTORY:
