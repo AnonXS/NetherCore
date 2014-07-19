@@ -43,17 +43,8 @@ void WorldSocket::Start()
 
 void WorldSocket::HandleSendAuthSession()
 {
-    WorldPacket packet(SMSG_AUTH_CHALLENGE, 37);
-    packet << uint32(1);                                    // 1...31
+    WorldPacket packet(SMSG_AUTH_CHALLENGE, 4);
     packet << uint32(_authSeed);
-
-    BigNumber seed1;
-    seed1.SetRand(16 * 8);
-    packet.append(seed1.AsByteArray(16).get(), 16);               // new encryption seeds
-
-    BigNumber seed2;
-    seed2.SetRand(16 * 8);
-    packet.append(seed2.AsByteArray(16).get(), 16);               // new encryption seeds
 
     AsyncWrite(packet);
 }
@@ -200,8 +191,8 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     std::string account;
     SHA1Hash sha;
     uint32 clientBuild;
-    uint32 unk2, unk3, unk5, unk6, unk7;
-    uint64 unk4;
+    Builds expectedClientBuild = BUILD_THE_BURNING_CRUSADE;
+    uint32 unk2;
     WorldPacket packet, SendAddonPacked;
     BigNumber k;
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
@@ -217,18 +208,22 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     recvPacket >> clientBuild;
     recvPacket >> unk2;
     recvPacket >> account;
-    recvPacket >> unk3;
     recvPacket >> clientSeed;
-    recvPacket >> unk5 >> unk6 >> unk7;
-    recvPacket >> unk4;
     recvPacket.read(digest, 20);
 
-    TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: client %u, unk2 %u, account %s, unk3 %u, clientseed %u",
+    TC_LOG_DEBUG("network", "WorldSocket::HandleAuthSession: client %u, unk2 %u, account %s, clientseed %u",
         clientBuild,
         unk2,
         account.c_str(),
-        unk3,
         clientSeed);
+
+    // Check the version of client trying to connect
+    if (clientBuild != expectedClientBuild)
+    {
+        SendAuthResponseError(AUTH_VERSION_MISMATCH);
+        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Sent Auth Response (version mismatch).");
+        return;
+    }
 
     // Get the account information from the realmd database
     //         0           1        2       3          4         5       6          7   8
