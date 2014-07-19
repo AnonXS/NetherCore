@@ -1314,31 +1314,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             case SPELLFAMILY_MAGE:
                 if (!caster)
                     break;
-                if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00000001 && GetSpellInfo()->SpellFamilyFlags[2] & 0x00000008)
-                {
-                    // Glyph of Fireball
-                    if (caster->HasAura(56368))
-                        SetDuration(0);
-                }
-                else if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00000020 && GetSpellInfo()->SpellVisual[0] == 13)
-                {
-                    // Glyph of Frostbolt
-                    if (caster->HasAura(56370))
-                        SetDuration(0);
-                }
-                /// @todo This should be moved to similar function in spell::hit
-                else if (GetSpellInfo()->SpellFamilyFlags[0] & 0x01000000)
-                {
-                    // Polymorph Sound - Sheep && Penguin
-                    if (GetSpellInfo()->SpellIconID == 82 && GetSpellInfo()->SpellVisual[0] == 12978)
-                    {
-                        // Glyph of the Penguin
-                        if (caster->HasAura(52648))
-                            caster->CastSpell(target, 61635, true);
-                        else
-                            caster->CastSpell(target, 61634, true);
-                    }
-                }
+
                 switch (GetId())
                 {
                     case 12536: // Clearcasting
@@ -1393,24 +1369,8 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                         caster->CastCustomSpell(caster, 75999, &heal, NULL, NULL, true, NULL, GetEffect(0));
                     }
                 }
-                // Power Word: Shield
-                else if (m_spellInfo->SpellFamilyFlags[0] & 0x1 && m_spellInfo->SpellFamilyFlags[2] & 0x400 && GetEffect(0))
-                {
-                    // Glyph of Power Word: Shield
-                    if (AuraEffect* glyph = caster->GetAuraEffect(55672, 0))
-                    {
-                        // instantly heal m_amount% of the absorb-value
-                        int32 heal = glyph->GetAmount() * GetEffect(0)->GetAmount()/100;
-                        caster->CastCustomSpell(GetUnitOwner(), 56160, &heal, NULL, NULL, true, 0, GetEffect(0));
-                    }
-                }
                 break;
             case SPELLFAMILY_ROGUE:
-                // Sprint (skip non player cast spells by category)
-                if (GetSpellInfo()->SpellFamilyFlags[0] & 0x40 && GetSpellInfo()->GetCategory() == 44)
-                    // in official maybe there is only one icon?
-                    if (target->HasAura(58039)) // Glyph of Blurred Speed
-                        target->CastSpell(target, 61922, true); // Sprint (waterwalk)
                 break;
         }
     }
@@ -1589,19 +1549,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                             break;
 
                         Player* player = caster->ToPlayer();
-                        // Glyph of Guardian Spirit
-                        if (AuraEffect* aurEff = player->GetAuraEffect(63231, 0))
-                        {
-                            if (!player->HasSpellCooldown(47788))
-                                break;
-
-                            player->RemoveSpellCooldown(GetSpellInfo()->Id, true);
-                            player->AddSpellCooldown(GetSpellInfo()->Id, 0, uint32(time(NULL) + aurEff->GetAmount()));
-
-                            WorldPacket data;
-                            player->BuildCooldownPacket(data, SPELL_COOLDOWN_FLAG_NONE, GetSpellInfo()->Id, aurEff->GetAmount()*IN_MILLISECONDS);
-                            player->SendDirectMessage(&data);
-                        }
                         break;
                 }
                 break;
@@ -1616,10 +1563,6 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     target->RemoveAura(61988);
                 break;
             case SPELLFAMILY_HUNTER:
-                // Glyph of Freezing Trap
-                if (GetSpellInfo()->SpellFamilyFlags[0] & 0x00000008)
-                    if (caster && caster->HasAura(56845))
-                        target->CastSpell(target, 61394, true);
                 break;
         }
     }

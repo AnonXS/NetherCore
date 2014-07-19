@@ -588,7 +588,6 @@ enum SpellAttr7
 #define MAX_TALENT_SPEC         1
 #define MIN_TALENT_SPECS        1
 #define MAX_TALENT_SPECS        2
-#define MAX_GLYPH_SLOT_INDEX    6
 
 // Custom values
 enum SpellClickUserTypes
@@ -2962,8 +2961,7 @@ enum ChatLinkColors
     CHAT_LINK_COLOR_TALENT      = 0xff4e96f7,   // blue
     CHAT_LINK_COLOR_SPELL       = 0xff71d5ff,   // bright blue
     CHAT_LINK_COLOR_ENCHANT     = 0xffffd000,   // orange
-    CHAT_LINK_COLOR_ACHIEVEMENT = 0xffffff00,
-    CHAT_LINK_COLOR_GLYPH       = 0xff66bbff
+    CHAT_LINK_COLOR_ACHIEVEMENT = 0xffffff00
 };
 
 // Values from ItemPetFood (power of (value-1) used for compare with CreatureFamilyEntry.petDietMask

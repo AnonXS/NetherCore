@@ -485,7 +485,6 @@ Valid examples:
 |cff71d5ff|Hspell:21563|h[Command]|h|r
 |cffffd000|Henchant:3919|h[Engineering: Rough Dynamite]|h|r
 |cffffff00|Hachievement:546:0000000000000001:0:0:0:-1:0:0:0:0|h[Safe Deposit]|h|r
-|cff66bbff|Hglyph:21:762|h[Glyph of Bladestorm]|h|r
 
 | will be escaped to ||
 */
@@ -940,8 +939,7 @@ enum SpellLinkType
     SPELL_LINK_SPELL   = 0,
     SPELL_LINK_TALENT  = 1,
     SPELL_LINK_ENCHANT = 2,
-    SPELL_LINK_TRADE   = 3,
-    SPELL_LINK_GLYPH   = 4
+    SPELL_LINK_TRADE   = 3
 };
 
 static char const* const spellKeys[] =
@@ -950,14 +948,12 @@ static char const* const spellKeys[] =
     "Htalent",                                              // talent spell
     "Henchant",                                             // enchanting recipe spell
     "Htrade",                                               // profession/skill spell
-    "Hglyph",                                               // glyph
     0
 };
 
 uint32 ChatHandler::extractSpellIdFromLink(char* text)
 {
     // number or [name] Shift-click form |color|Henchant:recipe_spell_id|h[prof_name: recipe_name]|h|r
-    // number or [name] Shift-click form |color|Hglyph:glyph_slot_id:glyph_prop_id|h[%s]|h|r
     // number or [name] Shift-click form |color|Hspell:spell_id|h[name]|h|r
     // number or [name] Shift-click form |color|Htalent:talent_id, rank|h[name]|h|r
     // number or [name] Shift-click form |color|Htrade:spell_id, skill_id, max_value, cur_value|h[name]|h|r
@@ -992,16 +988,6 @@ uint32 ChatHandler::extractSpellIdFromLink(char* text)
         case SPELL_LINK_ENCHANT:
         case SPELL_LINK_TRADE:
             return id;
-        case SPELL_LINK_GLYPH:
-        {
-            uint32 glyph_prop_id = param1_str ? (uint32)atol(param1_str) : 0;
-
-            GlyphPropertiesEntry const* glyphPropEntry = sGlyphPropertiesStore.LookupEntry(glyph_prop_id);
-            if (!glyphPropEntry)
-                return 0;
-
-            return glyphPropEntry->SpellId;
-        }
     }
 
     // unknown type?

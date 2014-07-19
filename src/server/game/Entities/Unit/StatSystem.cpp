@@ -1065,7 +1065,6 @@ bool Guardian::UpdateStats(Stats stat)
     float ownersBonus = 0.0f;
 
     Unit* owner = GetOwner();
-    // Handle Death Knight Glyphs and Talents
     float mod = 0.75f;
     if (stat == STAT_STAMINA)
     {
@@ -1258,8 +1257,6 @@ void Guardian::UpdateAttackPowerAndDamage(bool ranged)
         else if (IsSpiritWolf()) //wolf benefit from shaman's attack power
         {
             float dmg_multiplier = 0.31f;
-            if (m_owner->GetAuraEffect(63271, 0)) // Glyph of Feral Spirit
-                dmg_multiplier = 0.61f;
             bonusAP = owner->GetTotalAttackPowerValue(BASE_ATTACK) * dmg_multiplier;
             SetBonusDamage(int32(owner->GetTotalAttackPowerValue(BASE_ATTACK) * dmg_multiplier));
         }

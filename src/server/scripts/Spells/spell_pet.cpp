@@ -56,7 +56,6 @@ enum WarlockPetCalculate
      ENTRY_FELHUNTER                    = 417,
      ENTRY_SUCCUBUS                     = 1863,
      ENTRY_IMP                          = 416,
-     SPELL_WARLOCK_GLYPH_OF_VOIDWALKER  = 56247,
 };
 
 enum ShamanPetCalculate
@@ -286,16 +285,6 @@ public:
                     float bonusAP = maximum * 0.57f;
 
                     amount += bonusAP;
-
-                    // Glyph of felguard
-                    if (pet->GetEntry() == ENTRY_FELGUARD)
-                    {
-                        if (AuraEffect* /* aurEff */ect = owner->GetAuraEffect(56246, EFFECT_0))
-                        {
-                            float base_attPower = pet->GetModifierValue(UNIT_MOD_ATTACK_POWER, BASE_VALUE) * pet->GetModifierValue(UNIT_MOD_ATTACK_POWER, BASE_PCT);
-                            amount += CalculatePct(amount+base_attPower, /* aurEff */ect->GetAmount());
-                        }
-                    }
                 }
         }
 
@@ -770,11 +759,7 @@ public:
 
         void CalculateAmount(AuraEffect const* /* aurEff */, int32& amount, bool& /*canBeRecalculated*/)
         {
-            if (Unit* pet = GetUnitOwner())
-                if (pet->IsPet())
-                    if (Unit* owner = pet->ToPet()->GetOwner())
-                        if (AuraEffect* /* aurEff */ect = owner->GetAuraEffect(SPELL_WARLOCK_GLYPH_OF_VOIDWALKER, EFFECT_0))
-                            amount += /* aurEff */ect->GetAmount();
+
         }
 
         void Register() override

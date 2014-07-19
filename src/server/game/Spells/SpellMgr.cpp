@@ -2931,7 +2931,6 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 20337:
             case 53228: // Rapid Killing (Rank 1)
             case 53232: // Rapid Killing (Rank 2)
-            case 63320: // Glyph of Life Tap
                 // Entries were not updated after spell effect change, we have to do that manually :/
                 spellInfo->AttributesEx3 |= SPELL_ATTR3_CAN_PROC_WITH_TRIGGERED;
                 break;

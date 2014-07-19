@@ -438,10 +438,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         m_spellValue->EffectBasePoints[1] = m_spellInfo->Effects[EFFECT_1].CalcBaseValue(int32(CalculatePct(pdamage * baseTotalTicks, pct_dot)));
 
                         apply_direct_bonus = false;
-                        // Glyph of Conflagrate
-                        if (!m_caster->HasAura(56235))
-                            unitTarget->RemoveAurasDueToSpell(aura->GetId(), m_caster->GetGUID());
-
                         break;
                     }
                 }
@@ -720,15 +716,6 @@ void Spell::EffectTriggerSpell(SpellEffIndex effIndex)
         // special cases
         switch (triggered_spell_id)
         {
-            // Mirror Image
-            case 58832:
-            {
-                // Glyph of Mirror Image
-                if (m_caster->HasAura(63093))
-                   m_caster->CastSpell(m_caster, 65047, true); // Mirror Image
-
-                break;
-            }
             // Vanish (not exist)
             case 18461:
             {
@@ -1397,29 +1384,12 @@ void Spell::EffectHeal(SpellEffIndex /*effIndex*/)
 
             addhealth += tickheal * tickcount;
 
-            // Glyph of Swiftmend
-            if (!caster->HasAura(54824))
-                unitTarget->RemoveAura(targetAura->GetId(), targetAura->GetCasterGUID());
-
             //addhealth += tickheal * tickcount;
             //addhealth = caster->SpellHealingBonus(m_spellInfo, addhealth, HEAL, unitTarget);
         }
         // Nourish
         else if (m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_spellInfo->SpellFamilyFlags[1] & 0x2000000)
-        {
             addhealth = caster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL);
-
-            // Glyph of Nourish
-            if (AuraEffect const* aurEff = m_caster->GetAuraEffect(62971, 0))
-            {
-                Unit::AuraEffectList const& Periodic = unitTarget->GetAuraEffectsByType(SPELL_AURA_PERIODIC_HEAL);
-                for (Unit::AuraEffectList::const_iterator i = Periodic.begin(); i != Periodic.end(); ++i)
-                {
-                    if (m_caster->GetGUID() == (*i)->GetCasterGUID())
-                        AddPct(addhealth, aurEff->GetAmount());
-                }
-            }
-        }
         else
             addhealth = caster->SpellHealingBonusDone(unitTarget, m_spellInfo, addhealth, HEAL);
 
@@ -1702,7 +1672,6 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
             break;
         case 31930:                                         // Judgements of the Wise
         case 63375:                                         // Improved Stormstrike
-        case 68082:                                         // Glyph of Seal of Command
             damage = int32(CalculatePct(unitTarget->GetCreateMana(), damage));
             break;
         case 48542:                                         // Revitalize
@@ -1715,9 +1684,6 @@ void Spell::EffectEnergize(SpellEffIndex effIndex)
                     AddPct(damage, 25);
             break;
         }
-        case 71132:                                         // Glyph of Shadow Word: Pain
-            damage = int32(CalculatePct(unitTarget->GetCreateMana(), 1));  // set 1 as value, missing in dbc
-            break;
         default:
             break;
     }
@@ -2380,10 +2346,6 @@ void Spell::EffectDispel(SpellEffIndex effIndex)
     {
         int32 heal_amount = m_spellInfo->Effects[EFFECT_1].CalcValue();
         m_caster->CastCustomSpell(m_caster, 19658, &heal_amount, NULL, NULL, true);
-        // Glyph of Felhunter
-        if (Unit* owner = m_caster->GetOwner())
-            if (owner->GetAura(56249))
-                owner->CastCustomSpell(owner, 19658, &heal_amount, NULL, NULL, true);
     }
 }
 
@@ -3000,12 +2962,7 @@ void Spell::EffectWeaponDmg(SpellEffIndex effIndex)
                     m_caster->CastSpell(unitTarget, 58567, true);
 
                 if (Aura* aur = unitTarget->GetAura(58567, m_caster->GetGUID()))
-                {
-                    // 58388 - Glyph of Devastate dummy aura.
-                    if (int32 num = (needCast ? 0 : 1) + (m_caster->HasAura(58388) ? 1 : 0))
-                        aur->ModStackAmount(num);
                     fixed_bonus += (aur->GetStackAmount() - 1) * CalculateDamage(2, unitTarget);
-                }
             }
             if (m_spellInfo->SpellFamilyFlags[0] & 0x8000000) // Mocking Blow
             {
@@ -3331,25 +3288,6 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
         {
             switch (m_spellInfo->Id)
             {
-                // Glyph of Backstab
-                case 63975:
-                {
-                    // search our Rupture aura on target
-                    if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x00100000, 0, 0, m_caster->GetGUID()))
-                    {
-                        uint32 countMin = aurEff->GetBase()->GetMaxDuration();
-                        uint32 countMax = 12000; // this can be wrong, duration should be based on combo-points
-                        countMax += m_caster->HasAura(56801) ? 4000 : 0;
-
-                        if (countMin < countMax)
-                        {
-                            aurEff->GetBase()->SetDuration(uint32(aurEff->GetBase()->GetDuration() + 3000));
-                            aurEff->GetBase()->SetMaxDuration(countMin + 2000);
-                        }
-
-                    }
-                    return;
-                }
                 case 55693:                                 // Remove Collapsing Cave Aura
                     if (!unitTarget)
                         return;
@@ -3721,12 +3659,6 @@ void Spell::EffectScriptEffect(SpellEffIndex effIndex)
                         {
                             m_caster->CastCustomSpell(totem, 55277, &basepoints0, NULL, NULL, true);
                         }
-                    }
-                    // Glyph of Stoneclaw Totem
-                    if (AuraEffect* aur=unitTarget->GetAuraEffect(63298, 0))
-                    {
-                        basepoints0 *= aur->GetAmount();
-                        m_caster->CastCustomSpell(unitTarget, 55277, &basepoints0, NULL, NULL, true);
                     }
                     break;
                 }

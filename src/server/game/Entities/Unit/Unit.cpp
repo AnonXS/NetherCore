@@ -2608,12 +2608,7 @@ float Unit::GetUnitCriticalChance(WeaponAttackType attackType, const Unit* victi
 
     // reduce crit chance from Rating for players
     if (attackType != RANGED_ATTACK)
-    {
         ApplyResilience(victim, &crit, NULL, false, CR_CRIT_TAKEN_MELEE);
-        // Glyph of barkskin
-        if (victim->HasAura(63057) && victim->HasAura(22812))
-            crit -= 25.0f;
-    }
     else
         ApplyResilience(victim, &crit, NULL, false, CR_CRIT_TAKEN_RANGED);
 
@@ -5144,16 +5139,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     break;
                 }
-                // Shadowfiend Death (Gain mana if pet dies with Glyph of Shadowfiend)
-                case 57989:
-                {
-                    Unit* owner = GetOwner();
-                    if (!owner || owner->GetTypeId() != TYPEID_PLAYER)
-                        return false;
-                    // Glyph of Shadowfiend (need cast as self cast for owner, no hidden cooldown)
-                    owner->CastSpell(owner, 58227, true, castItem, triggeredByAura);
-                    return true;
-                }
                 // Divine purpose
                 case 31871:
                 case 31872:
@@ -5165,18 +5150,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     // Remove any stun effect on target
                     victim->RemoveAurasWithMechanic(1<<MECHANIC_STUN, AURA_REMOVE_BY_ENEMY_SPELL);
                     return true;
-                }
-                // Glyph of Scourge Strike
-                case 58642:
-                {
-                    triggered_spell_id = 69961; // Glyph of Scourge Strike
-                    break;
-                }
-                // Glyph of Life Tap
-                case 63320:
-                {
-                    triggered_spell_id = 63321; // Life Tap
-                    break;
                 }
                 // Purified Shard of the Scale - Onyxia 10 Caster Trinket
                 case 69755:
@@ -5350,45 +5323,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 triggered_spell_id = 37436;
                 break;
             }
-            switch (dummySpell->Id)
-            {
-                // Glyph of Polymorph
-                case 56375:
-                {
-                    if (!target)
-                        return false;
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE, 0, target->GetAura(32409)); // SW:D shall not be removed.
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
-                    return true;
-                }
-                // Glyph of Icy Veins
-                case 56374:
-                {
-                    RemoveAurasByType(SPELL_AURA_HASTE_SPELLS, 0, 0, true, false);
-                    RemoveAurasByType(SPELL_AURA_MOD_DECREASE_SPEED);
-                    return true;
-                }
-                // Glyph of Ice Block
-                case 56372:
-                {
-                    Player* player = ToPlayer();
-                    if (!player)
-                        return false;
-
-                    SpellCooldowns const cooldowns = player->GetSpellCooldowns();
-                    // remove cooldowns on all ranks of Frost Nova
-                    for (SpellCooldowns::const_iterator itr = cooldowns.begin(); itr != cooldowns.end(); ++itr)
-                    {
-                        SpellInfo const* cdSpell = sSpellMgr->GetSpellInfo(itr->first);
-                        // Frost Nova
-                        if (cdSpell && cdSpell->SpellFamilyName == SPELLFAMILY_MAGE
-                            && cdSpell->SpellFamilyFlags[0] & 0x00000040)
-                            player->RemoveSpellCooldown(cdSpell->Id, true);
-                    }
-                    break;
-                }
-            }
             break;
         }
         case SPELLFAMILY_WARRIOR:
@@ -5431,12 +5365,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 }
 
                 target = this;
-                break;
-            }
-            // Glyph of Blocking
-            if (dummySpell->Id == 58375)
-            {
-                triggered_spell_id = 58374;
                 break;
             }
             break;
@@ -5495,8 +5423,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 // Nightfall
                 case 18094:
                 case 18095:
-                // Glyph of corruption
-                case 56218:
                 {
                     target = this;
                     triggered_spell_id = 17941;
@@ -5563,16 +5489,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 {
                     triggered_spell_id = 37378;
                     break;
-                }
-                // Glyph of Succubus
-                case 56250:
-                {
-                    if (!target)
-                        return false;
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE, 0, target->GetAura(32409)); // SW:D shall not be removed.
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_DAMAGE_PERCENT);
-                    target->RemoveAurasByType(SPELL_AURA_PERIODIC_LEECH);
-                    return true;
                 }
             }
             break;
@@ -5646,19 +5562,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     RemoveMovementImpairingAuras();
                     break;
                 }
-                // Glyph of Dispel Magic
-                case 55677:
-                {
-                    // Dispel Magic shares spellfamilyflag with abolish disease
-                    if (procSpell->SpellIconID != 74)
-                        return false;
-                    if (!target || !target->IsFriendlyTo(this))
-                        return false;
-
-                    basepoints0 = int32(target->CountPctFromMaxHealth(triggerAmount));
-                    triggered_spell_id = 56131;
-                    break;
-                }
                 // Oracle Healing Bonus ("Garments of the Oracle" set)
                 case 26169:
                 {
@@ -5705,69 +5608,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
         {
             switch (dummySpell->Id)
             {
-                // Glyph of Innervate
-                case 54832:
-                {
-                    if (procSpell->SpellIconID != 62)
-                        return false;
-
-                    int32 mana_perc = triggeredByAura->GetSpellInfo()->Effects[triggeredByAura->GetEffIndex()].CalcValue();
-                    basepoints0 = int32(CalculatePct(GetCreatePowers(POWER_MANA), mana_perc) / 10);
-                    triggered_spell_id = 54833;
-                    target = this;
-                    break;
-                }
-                // Glyph of Starfire
-                case 54845:
-                {
-                    triggered_spell_id = 54846;
-                    break;
-                }
-                // Glyph of Shred
-                case 54815:
-                {
-                    if (!target)
-                        return false;
-
-                    // try to find spell Rip on the target
-                    if (AuraEffect const* AurEff = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00800000, 0x0, 0x0, GetGUID()))
-                    {
-                        // Rip's max duration, note: spells which modifies Rip's duration also counted like Glyph of Rip
-                        uint32 CountMin = AurEff->GetBase()->GetMaxDuration();
-
-                        // just Rip's max duration without other spells
-                        uint32 CountMax = AurEff->GetSpellInfo()->GetMaxDuration();
-
-                        // add possible auras' and Glyph of Shred's max duration
-                        CountMax += 3 * triggerAmount * IN_MILLISECONDS;      // Glyph of Shred               -> +6 seconds
-                        CountMax += HasAura(54818) ? 4 * IN_MILLISECONDS : 0; // Glyph of Rip                 -> +4 seconds
-                        CountMax += HasAura(60141) ? 4 * IN_MILLISECONDS : 0; // Rip Duration/Lacerate Damage -> +4 seconds
-
-                        // if min < max -> that means caster didn't cast 3 shred yet
-                        // so set Rip's duration and max duration
-                        if (CountMin < CountMax)
-                        {
-                            AurEff->GetBase()->SetDuration(AurEff->GetBase()->GetDuration() + triggerAmount * IN_MILLISECONDS);
-                            AurEff->GetBase()->SetMaxDuration(CountMin + triggerAmount * IN_MILLISECONDS);
-                            return true;
-                        }
-                    }
-                    // if not found Rip
-                    return false;
-                }
-                // Glyph of Rake
-                case 54821:
-                {
-                    if (procSpell->SpellVisual[0] == 750 && procSpell->Effects[1].ApplyAuraName == 3)
-                    {
-                        if (target && target->GetTypeId() == TYPEID_UNIT)
-                        {
-                            triggered_spell_id = 54820;
-                            break;
-                        }
-                    }
-                    return false;
-                }
                 // Leader of the Pack
                 case 24932:
                 {
@@ -5792,15 +5632,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     basepoints0 = int32(CalculatePct(procSpell->ManaCost, 30));
                     target = this;
                     triggered_spell_id = 28742;
-                    break;
-                }
-                // Glyph of Rejuvenation
-                case 54754:
-                {
-                    if (!victim || !victim->HealthBelowPct(uint32(triggerAmount)))
-                        return false;
-                    basepoints0 = CalculatePct(int32(damage), triggerAmount);
-                    triggered_spell_id = 54755;
                     break;
                 }
                 // Healing Touch Refund (Idol of Longevity trinket)
@@ -5914,11 +5745,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
         {
             switch (dummySpell->Id)
             {
-                case 56800: // Glyph of Backstab
-                {
-                    triggered_spell_id = 63975;
-                    break;
-                }
                 case 32748: // Deadly Throw Interrupt
                 {
                     // Prevent cast Deadly Throw Interrupt on self from last effect (apply dummy) of Deadly Throw
@@ -6032,15 +5858,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     triggered_spell_id = 56453;
                     target = this;
                     break;
-                }
-            }
-
-            switch (dummySpell->Id)
-            {
-                case 57870: // Glyph of Mend Pet
-                {
-                    victim->CastSpell(victim, 57894, true, NULL, NULL, GetGUID());
-                    return true;
                 }
             }
             break;
@@ -6312,13 +6129,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
 
                     break;
                 }
-                // Glyph of Holy Light
-                case 54937:
-                {
-                    triggered_spell_id = 54968;
-                    basepoints0 = CalculatePct(int32(damage), triggerAmount);
-                    break;
-                }
                 // Item - Paladin T8 Holy 2P Bonus
                 case 64890:
                 {
@@ -6551,17 +6361,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     target = this;
                     break;
                 }
-                // Glyph of Healing Wave
-                case 55440:
-                {
-                    // Not proc from self heals
-                    if (this == victim)
-                        return false;
-                    basepoints0 = CalculatePct(int32(damage), triggerAmount);
-                    target = this;
-                    triggered_spell_id = 55533;
-                    break;
-                }
                 // Spirit Hunt
                 case 58877:
                 {
@@ -6632,23 +6431,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                         return true;
                     }
                     // if not found Flame Shock
-                    return false;
-                }
-                case 63280: // Glyph of Totem of Wrath
-                {
-                    if (procSpell->SpellIconID != 2019)
-                        return false;
-
-                    if (Creature* totem = GetMap()->GetCreature(m_SummonSlot[1]))   // Fire totem summon slot
-                    {
-                        if (SpellInfo const* totemSpell = sSpellMgr->GetSpellInfo(totem->m_spells[0]))
-                        {
-                            int32 bp0 = CalculatePct(totemSpell->Effects[EFFECT_0].CalcValue(), triggerAmount);
-                            int32 bp1 = CalculatePct(totemSpell->Effects[EFFECT_1].CalcValue(), triggerAmount);
-                            CastCustomSpell(this, 63283, &bp0, &bp1, NULL, true);
-                            return true;
-                        }
-                    }
                     return false;
                 }
                 break;
@@ -7006,27 +6788,6 @@ bool Unit::HandleAuraProc(Unit* victim, uint32 damage, Aura* triggeredByAura, Sp
             {
                 *handled = true;
                 CastSpell(victim, 68055, true);
-                return true;
-            }
-            // Glyph of Divinity
-            else if (dummySpell->Id == 54939)
-            {
-                if (!procSpell)
-                    return false;
-                *handled = true;
-                // Check if we are the target and prevent mana gain
-                if (victim && triggeredByAura->GetCasterGUID() == victim->GetGUID())
-                    return false;
-                // Lookup base amount mana restore
-                for (uint8 i = 0; i < MAX_SPELL_EFFECTS; i++)
-                {
-                    if (procSpell->Effects[i].Effect == SPELL_EFFECT_ENERGIZE)
-                    {
-                        // value multiplied by 2 because you should get twice amount
-                        int32 mana = procSpell->Effects[i].CalcValue() * 2;
-                        CastCustomSpell(this, 54986, 0, &mana, NULL, true);
-                    }
-                }
                 return true;
             }
             break;
@@ -9431,16 +9192,8 @@ float Unit::SpellDamagePctDone(Unit* victim, SpellInfo const* spellProto, Damage
         case SPELLFAMILY_MAGE:
             // Ice Lance
             if (spellProto->SpellIconID == 186)
-            {
                 if (victim->HasAuraState(AURA_STATE_FROZEN, spellProto, this))
-                {
-                    // Glyph of Ice Lance
-                    if (owner->HasAura(56377) && victim->getLevel() > owner->getLevel())
-                        DoneTotalMod *= 4.0f;
-                    else
-                        DoneTotalMod *= 3.0f;
-                }
-            }
+                    DoneTotalMod *= 3.0f;
 
             // Torment the weak
             if (spellProto->SpellFamilyFlags[0] & 0x20600021 || spellProto->SpellFamilyFlags[1] & 0x9000)
@@ -9458,35 +9211,11 @@ float Unit::SpellDamagePctDone(Unit* victim, SpellInfo const* spellProto, Damage
         case SPELLFAMILY_PRIEST:
             // Mind Flay
             if (spellProto->SpellFamilyFlags[0] & 0x800000)
-            {
-                // Glyph of Shadow Word: Pain
-                if (AuraEffect* aurEff = GetAuraEffect(55687, 0))
-                    // Increase Mind Flay damage if Shadow Word: Pain present on target
-                    if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, 0, GetGUID()))
-                        AddPct(DoneTotalMod, aurEff->GetAmount());
-
                 // Twisted Faith - Mind Flay part
                 if (AuraEffect* aurEff = GetAuraEffect(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS, SPELLFAMILY_PRIEST, 2848, 1))
                     // Increase Mind Flay damage if Shadow Word: Pain present on target
                     if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, 0, GetGUID()))
                         AddPct(DoneTotalMod, aurEff->GetAmount());
-            }
-            // Smite
-            else if (spellProto->SpellFamilyFlags[0] & 0x80)
-            {
-                // Glyph of Smite
-                if (AuraEffect* aurEff = GetAuraEffect(55692, 0))
-                    if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x100000, 0, 0, GetGUID()))
-                        AddPct(DoneTotalMod, aurEff->GetAmount());
-            }
-            // Shadow Word: Death
-            else if (spellProto->SpellFamilyFlags[1] & 0x2)
-            {
-                // Glyph of Shadow Word: Death
-                if (AuraEffect* aurEff = GetAuraEffect(55682, 1))
-                    if (victim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT))
-                        AddPct(DoneTotalMod, aurEff->GetAmount());
-            }
             break;
         case SPELLFAMILY_PALADIN:
             // Judgement of Vengeance/Judgement of Corruption
@@ -9538,11 +9267,6 @@ float Unit::SpellDamagePctDone(Unit* victim, SpellInfo const* spellProto, Damage
                 DoneTotalMod *= 4;
             break;
         case SPELLFAMILY_HUNTER:
-            // Steady Shot
-            if (spellProto->SpellFamilyFlags[1] & 0x1)
-                if (AuraEffect* aurEff = GetAuraEffect(56826, 0))  // Glyph of Steady Shot
-                    if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_HUNTER, 0x00004000, 0, 0, GetGUID()))
-                        AddPct(DoneTotalMod, aurEff->GetAmount());
             break;
     }
 
@@ -9758,10 +9482,6 @@ float Unit::GetUnitSpellCriticalChance(Unit* victim, SpellInfo const* spellProto
                             if (victim->HasAuraState(AURA_STATE_FROZEN, spellProto, this))
                                 crit_chance += 50;
                              break;
-                        case 7917: // Glyph of Shadowburn
-                            if (victim->HasAuraState(AURA_STATE_HEALTHLESS_35_PERCENT, spellProto, this))
-                                crit_chance+=(*i)->GetAmount();
-                            break;
                         case 7997: // Renewed Hope
                         case 7998:
                             if (victim->HasAura(6788))
@@ -9775,11 +9495,6 @@ float Unit::GetUnitSpellCriticalChance(Unit* victim, SpellInfo const* spellProto
                 switch (spellProto->SpellFamilyName)
                 {
                     case SPELLFAMILY_MAGE:
-                        // Glyph of Fire Blast
-                        if (spellProto->SpellFamilyFlags[0] == 0x2 && spellProto->SpellIconID == 12)
-                            if (victim->HasAuraWithMechanic((1 << MECHANIC_STUN) | (1 << MECHANIC_KNOCKOUT)))
-                                if (AuraEffect const* aurEff = GetAuraEffect(56369, EFFECT_0))
-                                    crit_chance += aurEff->GetAmount();
                         break;
                     case SPELLFAMILY_DRUID:
                         // Improved Faerie Fire
@@ -9853,14 +9568,6 @@ float Unit::GetUnitSpellCriticalChance(Unit* victim, SpellInfo const* spellProto
                         }
                         break;
                     case SPELLFAMILY_WARRIOR:
-                        // Victory Rush
-                        if (spellProto->SpellFamilyFlags[1] & 0x100)
-                        {
-                            // Glyph of Victory Rush
-                            if (AuraEffect const* aurEff = GetAuraEffect(58382, 0))
-                                crit_chance += aurEff->GetAmount();
-                            break;
-                        }
                         break;
                 }
             }
@@ -10093,12 +9800,6 @@ float Unit::SpellHealingPctDone(Unit* victim, SpellInfo const* spellProto) const
                 if (victim->HealthBelowPct(50))
                     AddPct(DoneTotalMod, (*i)->GetAmount());
                 break;
-            case 7798: // Glyph of Regrowth
-            {
-                if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_DRUID, 0x40, 0, 0))
-                    AddPct(DoneTotalMod, (*i)->GetAmount());
-                break;
-            }
             case 8477: // Nourish Heal Boost
             {
                 int32 stepPercent = (*i)->GetAmount();
@@ -10116,12 +9817,6 @@ float Unit::SpellHealingPctDone(Unit* victim, SpellInfo const* spellProto) const
                     modPercent += stepPercent * aura->GetStackAmount();
                 }
                 AddPct(DoneTotalMod, modPercent);
-                break;
-            }
-            case 7871: // Glyph of Lesser Healing Wave
-            {
-                if (victim->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, 0, 0x00000400, 0, GetGUID()))
-                    AddPct(DoneTotalMod, (*i)->GetAmount());
                 break;
             }
             default:
@@ -11960,35 +11655,6 @@ int32 Unit::ModSpellDuration(SpellInfo const* spellProto, Unit const* target, in
         }
     }
 
-    // Glyphs which increase duration of selfcast buffs
-    if (target == this)
-    {
-        switch (spellProto->SpellFamilyName)
-        {
-            case SPELLFAMILY_DRUID:
-                if (spellProto->SpellFamilyFlags[0] & 0x100)
-                {
-                    // Glyph of Thorns
-                    if (AuraEffect* aurEff = GetAuraEffect(57862, 0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                break;
-            case SPELLFAMILY_PALADIN:
-                if ((spellProto->SpellFamilyFlags[0] & 0x00000002) && spellProto->SpellIconID == 298)
-                {
-                    // Glyph of Blessing of Might
-                    if (AuraEffect* aurEff = GetAuraEffect(57958, 0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                else if ((spellProto->SpellFamilyFlags[0] & 0x00010000) && spellProto->SpellIconID == 306)
-                {
-                    // Glyph of Blessing of Wisdom
-                    if (AuraEffect* aurEff = GetAuraEffect(57979, 0))
-                        duration += aurEff->GetAmount() * MINUTE * IN_MILLISECONDS;
-                }
-                break;
-        }
-    }
     return std::max(duration, 0);
 }
 

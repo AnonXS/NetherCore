@@ -1419,53 +1419,6 @@ class spell_item_create_heart_candy : public SpellScriptLoader
         }
 };
 
-class spell_item_book_of_glyph_mastery : public SpellScriptLoader
-{
-    public:
-        spell_item_book_of_glyph_mastery() : SpellScriptLoader("spell_item_book_of_glyph_mastery") { }
-
-        class spell_item_book_of_glyph_mastery_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_item_book_of_glyph_mastery_SpellScript);
-
-            bool Load() override
-            {
-                return GetCaster()->GetTypeId() == TYPEID_PLAYER;
-            }
-
-            SpellCastResult CheckRequirement()
-            {
-                if (HasDiscoveredAllSpells(GetSpellInfo()->Id, GetCaster()->ToPlayer()))
-                {
-                    return SPELL_FAILED_UNKNOWN;
-                }
-
-                return SPELL_CAST_OK;
-            }
-
-            void HandleScript(SpellEffIndex /*effIndex*/)
-            {
-                Player* caster = GetCaster()->ToPlayer();
-                uint32 spellId = GetSpellInfo()->Id;
-
-                // learn random explicit discovery recipe (if any)
-                if (uint32 discoveredSpellId = GetExplicitDiscoverySpell(spellId, caster))
-                    caster->LearnSpell(discoveredSpellId, false);
-            }
-
-            void Register() override
-            {
-                OnCheckCast += SpellCheckCastFn(spell_item_book_of_glyph_mastery_SpellScript::CheckRequirement);
-                OnEffectHitTarget += SpellEffectFn(spell_item_book_of_glyph_mastery_SpellScript::HandleScript, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_item_book_of_glyph_mastery_SpellScript();
-        }
-};
-
 enum GiftOfTheHarvester
 {
     NPC_GHOUL   = 28845,
@@ -2663,7 +2616,6 @@ void AddSC_item_spell_scripts()
     new spell_item_red_rider_air_rifle();
 
     new spell_item_create_heart_candy();
-    new spell_item_book_of_glyph_mastery();
     new spell_item_gift_of_the_harvester();
     new spell_item_map_of_the_geyser_fields();
     new spell_item_vanquished_clutches();

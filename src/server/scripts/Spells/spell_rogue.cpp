@@ -31,7 +31,6 @@ enum RogueSpells
 {
     SPELL_ROGUE_BLADE_FLURRY_EXTRA_ATTACK       = 22482,
     SPELL_ROGUE_CHEAT_DEATH_COOLDOWN            = 31231,
-    SPELL_ROGUE_GLYPH_OF_PREPARATION            = 56819,
     SPELL_ROGUE_KILLING_SPREE                   = 51690,
     SPELL_ROGUE_KILLING_SPREE_TELEPORT          = 57840,
     SPELL_ROGUE_KILLING_SPREE_WEAPON_DMG        = 57841,
@@ -415,9 +414,7 @@ class spell_rog_preparation : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_ROGUE_GLYPH_OF_PREPARATION))
-                    return false;
-                return true;
+                return false;
             }
 
             void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -435,16 +432,7 @@ class spell_rog_preparation : public SpellScriptLoader
                         if (spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_ROGUE_COLDB_SHADOWSTEP ||      // Cold Blood, Shadowstep
                             spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_VAN_EVAS_SPRINT)           // Vanish, Evasion, Sprint
                             caster->RemoveSpellCooldown((itr++)->first, true);
-                        else if (caster->HasAura(SPELL_ROGUE_GLYPH_OF_PREPARATION))
-                        {
-                            if (spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_ROGUE_DISMANTLE ||         // Dismantle
-                                spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_KICK ||               // Kick
-                                (spellInfo->SpellFamilyFlags[0] & SPELLFAMILYFLAG_ROGUE_BLADE_FLURRY &&     // Blade Flurry
-                                spellInfo->SpellFamilyFlags[1] & SPELLFAMILYFLAG1_ROGUE_BLADE_FLURRY))
-                                caster->RemoveSpellCooldown((itr++)->first, true);
-                            else
-                                ++itr;
-                        }
+
                         else
                             ++itr;
                     }

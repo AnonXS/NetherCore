@@ -31,9 +31,6 @@ enum PriestSpells
 {
     SPELL_PRIEST_DIVINE_AEGIS                       = 47753,
     SPELL_PRIEST_EMPOWERED_RENEW                    = 63544,
-    SPELL_PRIEST_GLYPH_OF_CIRCLE_OF_HEALING         = 55675,
-    SPELL_PRIEST_GLYPH_OF_LIGHTWELL                 = 55673,
-    SPELL_PRIEST_GLYPH_OF_PRAYER_OF_HEALING_HEAL    = 56161,
     SPELL_PRIEST_GUARDIAN_SPIRIT_HEAL               = 48153,
     SPELL_PRIEST_ITEM_EFFICIENCY                    = 37595,
     SPELL_PRIEST_MANA_LEECH_PROC                    = 34650,
@@ -100,16 +97,14 @@ class spell_pri_circle_of_healing : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_GLYPH_OF_CIRCLE_OF_HEALING))
-                    return false;
-                return true;
+                return false;
             }
 
             void FilterTargets(std::list<WorldObject*>& targets)
             {
                 targets.remove_if(RaidCheck(GetCaster()));
 
-                uint32 const maxTargets = GetCaster()->HasAura(SPELL_PRIEST_GLYPH_OF_CIRCLE_OF_HEALING) ? 6 : 5; // Glyph of Circle of Healing
+                uint32 const maxTargets = 5;
 
                 if (targets.size() > maxTargets)
                 {
@@ -212,44 +207,6 @@ class spell_pri_divine_hymn : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_pri_divine_hymn_SpellScript();
-        }
-};
-
-// 55680 - Glyph of Prayer of Healing
-class spell_pri_glyph_of_prayer_of_healing : public SpellScriptLoader
-{
-    public:
-        spell_pri_glyph_of_prayer_of_healing() : SpellScriptLoader("spell_pri_glyph_of_prayer_of_healing") { }
-
-        class spell_pri_glyph_of_prayer_of_healing_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_pri_glyph_of_prayer_of_healing_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_GLYPH_OF_PRAYER_OF_HEALING_HEAL))
-                    return false;
-                return true;
-            }
-
-            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-
-                SpellInfo const* triggeredSpellInfo = sSpellMgr->EnsureSpellInfo(SPELL_PRIEST_GLYPH_OF_PRAYER_OF_HEALING_HEAL);
-                int32 heal = int32(CalculatePct(int32(eventInfo.GetHealInfo()->GetHeal()), aurEff->GetAmount()) / triggeredSpellInfo->GetMaxTicks());
-                GetTarget()->CastCustomSpell(SPELL_PRIEST_GLYPH_OF_PRAYER_OF_HEALING_HEAL, SPELLVALUE_BASE_POINT0, heal, eventInfo.GetProcTarget(), true, NULL, aurEff);
-            }
-
-            void Register() override
-            {
-                OnEffectProc += AuraEffectProcFn(spell_pri_glyph_of_prayer_of_healing_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_pri_glyph_of_prayer_of_healing_AuraScript();
         }
 };
 
@@ -393,12 +350,7 @@ class spell_pri_lightwell_renew : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
             {
-                if (Unit* caster = GetCaster())
-                {
-                    // Bonus from Glyph of Lightwell
-                    if (AuraEffect* modHealing = caster->GetAuraEffect(SPELL_PRIEST_GLYPH_OF_LIGHTWELL, EFFECT_0))
-                        AddPct(amount, modHealing->GetAmount());
-                }
+
             }
 
             void Register() override
@@ -861,7 +813,6 @@ void AddSC_priest_spell_scripts()
     new spell_pri_circle_of_healing();
     new spell_pri_divine_aegis();
     new spell_pri_divine_hymn();
-    new spell_pri_glyph_of_prayer_of_healing();
     new spell_pri_guardian_spirit();
     new spell_pri_hymn_of_hope();
     new spell_pri_item_greater_heal_refund();

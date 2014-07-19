@@ -137,7 +137,6 @@ public:
         target->SetLevel(startLevel);
         target->InitStatsForLevel(true);
         target->InitTaxiNodesForLevel();
-        target->InitGlyphsForLevel();
         target->InitTalentForLevel();
         target->SetUInt32Value(PLAYER_XP, 0);
 
@@ -192,7 +191,6 @@ public:
 
         target->InitStatsForLevel(true);
         target->InitTaxiNodesForLevel();
-        target->InitGlyphsForLevel();
         target->InitTalentForLevel();
 
         return true;

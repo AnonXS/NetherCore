@@ -38,10 +38,6 @@ enum ShamanSpells
     SPELL_SHAMAN_EXHAUSTION                     = 57723,
     SPELL_SHAMAN_FIRE_NOVA_R1                   = 1535,
     SPELL_SHAMAN_FIRE_NOVA_TRIGGERED_R1         = 8349,
-    SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD          = 63279,
-    SPELL_SHAMAN_GLYPH_OF_HEALING_STREAM_TOTEM  = 55456,
-    SPELL_SHAMAN_GLYPH_OF_MANA_TIDE             = 55441,
-    SPELL_SHAMAN_GLYPH_OF_THUNDERSTORM          = 62132,
     SPELL_SHAMAN_ITEM_LIGHTNING_SHIELD          = 23552,
     SPELL_SHAMAN_ITEM_LIGHTNING_SHIELD_DAMAGE   = 27635,
     SPELL_SHAMAN_ITEM_MANA_SURGE                = 23571,
@@ -297,11 +293,7 @@ class spell_sha_earth_shield : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_EARTH_SHIELD_HEAL))
-                    return false;
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD))
-                    return false;
-                return true;
+                return false;
             }
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool & /*canBeRecalculated*/)
@@ -310,12 +302,6 @@ class spell_sha_earth_shield : public SpellScriptLoader
                 {
                     amount = caster->SpellHealingBonusDone(GetUnitOwner(), GetSpellInfo(), amount, HEAL);
                     amount = GetUnitOwner()->SpellHealingBonusTaken(caster, GetSpellInfo(), amount, HEAL);
-
-                    // Glyph of Earth Shield
-                    //! WORKAROUND
-                    //! this glyph is a proc
-                    if (AuraEffect* glyph = caster->GetAuraEffect(SPELL_SHAMAN_GLYPH_OF_EARTH_SHIELD, EFFECT_0))
-                        AddPct(amount, glyph->GetAmount());
                 }
             }
 
@@ -567,9 +553,7 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_GLYPH_OF_HEALING_STREAM_TOTEM) || !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_TOTEM_HEALING_STREAM_HEAL))
-                    return false;
-                return true;
+                return false;
             }
 
             void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -587,10 +571,6 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
                             // Restorative Totems
                             if (AuraEffect* dummy = owner->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, SHAMAN_ICON_ID_RESTORATIVE_TOTEMS, 1))
                                 AddPct(damage, dummy->GetAmount());
-
-                            // Glyph of Healing Stream Totem
-                            if (AuraEffect const* aurEff = owner->GetAuraEffect(SPELL_SHAMAN_GLYPH_OF_HEALING_STREAM_TOTEM, EFFECT_0))
-                                AddPct(damage, aurEff->GetAmount());
 
                             damage = int32(target->SpellHealingBonusTaken(owner, triggeringSpell, damage, HEAL));
                         }
@@ -898,9 +878,7 @@ class spell_sha_mana_tide_totem : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_SHAMAN_GLYPH_OF_MANA_TIDE) || !sSpellMgr->GetSpellInfo(SPELL_SHAMAN_MANA_TIDE_TOTEM))
-                    return false;
-                return true;
+                return false;
             }
 
             void HandleDummy(SpellEffIndex /*effIndex*/)
@@ -911,10 +889,7 @@ class spell_sha_mana_tide_totem : public SpellScriptLoader
                         if (unitTarget->getPowerType() == POWER_MANA)
                         {
                             int32 effValue = GetEffectValue();
-                            // Glyph of Mana Tide
-                            if (Unit* owner = caster->GetOwner())
-                                if (AuraEffect* dummy = owner->GetAuraEffect(SPELL_SHAMAN_GLYPH_OF_MANA_TIDE, 0))
-                                    effValue += dummy->GetAmount();
+     
                             // Regenerate 6% of Total Mana Every 3 secs
                             int32 effBasePoints0 = int32(CalculatePct(unitTarget->GetMaxPower(POWER_MANA), effValue));
                             caster->CastCustomSpell(unitTarget, SPELL_SHAMAN_MANA_TIDE_TOTEM, &effBasePoints0, NULL, NULL, true, NULL, NULL, GetOriginalCaster()->GetGUID());
@@ -991,9 +966,7 @@ class spell_sha_thunderstorm : public SpellScriptLoader
 
             void HandleKnockBack(SpellEffIndex effIndex)
             {
-                // Glyph of Thunderstorm
-                if (GetCaster()->HasAura(SPELL_SHAMAN_GLYPH_OF_THUNDERSTORM))
-                    PreventHitDefaultEffect(effIndex);
+                PreventHitDefaultEffect(effIndex);
             }
 
             void Register() override

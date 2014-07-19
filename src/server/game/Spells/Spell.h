@@ -257,7 +257,6 @@ class Spell
         void EffectStuck(SpellEffIndex effIndex);
         void EffectSummonPlayer(SpellEffIndex effIndex);
         void EffectActivateObject(SpellEffIndex effIndex);
-        void EffectApplyGlyph(SpellEffIndex effIndex);
         void EffectEnchantHeldItem(SpellEffIndex effIndex);
         void EffectSummonObject(SpellEffIndex effIndex);
         void EffectResurrect(SpellEffIndex effIndex);
@@ -428,7 +427,6 @@ class Spell
         uint64 m_castItemGUID;
         uint32 m_castItemEntry;
         uint8 m_cast_count;
-        uint32 m_glyphIndex;
         uint32 m_preCastSpell;
         SpellCastTargets m_targets;
         int8 m_comboPointGain;

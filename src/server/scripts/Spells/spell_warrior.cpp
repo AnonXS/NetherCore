@@ -38,8 +38,6 @@ enum WarriorSpells
     SPELL_WARRIOR_DEEP_WOUNDS_RANK_3                = 12868,
     SPELL_WARRIOR_DEEP_WOUNDS_PERIODIC              = 12721,
     SPELL_WARRIOR_EXECUTE                           = 20647,
-    SPELL_WARRIOR_GLYPH_OF_EXECUTION                = 58367,
-    SPELL_WARRIOR_GLYPH_OF_VIGILANCE                = 63326,
     SPELL_WARRIOR_JUGGERNAUT_CRIT_BONUS_BUFF        = 65156,
     SPELL_WARRIOR_JUGGERNAUT_CRIT_BONUS_TALENT      = 64976,
     SPELL_WARRIOR_LAST_STAND_TRIGGERED              = 12976,
@@ -307,9 +305,7 @@ class spell_warr_execute : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_EXECUTE) || !sSpellMgr->GetSpellInfo(SPELL_WARRIOR_GLYPH_OF_EXECUTION))
-                    return false;
-                return true;
+                return false;
             }
 
             void HandleEffect(SpellEffIndex effIndex)
@@ -329,10 +325,6 @@ class spell_warr_execute : public SpellScriptLoader
                     }
 
                     caster->SetPower(POWER_RAGE, uint32(newRage));
-                    // Glyph of Execution bonus
-                    if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_WARRIOR_GLYPH_OF_EXECUTION, EFFECT_0))
-                        rageUsed += aurEff->GetAmount() * 10;
-
 
                     int32 bp = GetEffectValue() + int32(rageUsed * spellInfo->Effects[effIndex].DamageMultiplier + caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.2f);
                     caster->CastCustomSpell(target, SPELL_WARRIOR_EXECUTE, &bp, NULL, NULL, true, NULL, NULL, GetOriginalCaster()->GetGUID());
@@ -348,42 +340,6 @@ class spell_warr_execute : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_warr_execute_SpellScript();
-        }
-};
-
-// 58387 - Glyph of Sunder Armor
-class spell_warr_glyph_of_sunder_armor : public SpellScriptLoader
-{
-    public:
-        spell_warr_glyph_of_sunder_armor() : SpellScriptLoader("spell_warr_glyph_of_sunder_armor") { }
-
-        class spell_warr_glyph_of_sunder_armor_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_warr_glyph_of_sunder_armor_AuraScript);
-
-            void HandleEffectCalcSpellMod(AuraEffect const* aurEff, SpellModifier*& spellMod)
-            {
-                if (!spellMod)
-                {
-                    spellMod = new SpellModifier(aurEff->GetBase());
-                    spellMod->op = SpellModOp(aurEff->GetMiscValue());
-                    spellMod->type = SPELLMOD_FLAT;
-                    spellMod->spellId = GetId();
-                    spellMod->mask = GetSpellInfo()->Effects[aurEff->GetEffIndex()].SpellClassMask;
-                }
-
-                spellMod->value = aurEff->GetAmount();
-            }
-
-            void Register() override
-            {
-                DoEffectCalcSpellMod += AuraEffectCalcSpellModFn(spell_warr_glyph_of_sunder_armor_AuraScript::HandleEffectCalcSpellMod, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_warr_glyph_of_sunder_armor_AuraScript();
         }
 };
 
@@ -747,8 +703,6 @@ class spell_warr_vigilance : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_GLYPH_OF_VIGILANCE))
-                    return false;
                 if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_VIGILANCE_PROC))
                     return false;
                 if (!sSpellMgr->GetSpellInfo(SPELL_WARRIOR_VIGILANCE_REDIRECT_THREAT))
@@ -775,13 +729,7 @@ class spell_warr_vigilance : public SpellScriptLoader
 
             void HandleAfterApply(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
             {
-                //! WORKAROUND
-                //! this glyph is a proc
-                if (Unit* caster = GetCaster())
-                {
-                    if (AuraEffect const* glyph = caster->GetAuraEffect(SPELL_WARRIOR_GLYPH_OF_VIGILANCE, EFFECT_0))
-                        GetTarget()->ModifyRedirectThreat(glyph->GetAmount());
-                }
+
             }
 
             void HandleRemove(AuraEffect const* /*aurEff*/, AuraEffectHandleModes /*mode*/)
@@ -869,7 +817,6 @@ void AddSC_warrior_spell_scripts()
     new spell_warr_damage_shield();
     new spell_warr_deep_wounds();
     new spell_warr_execute();
-    new spell_warr_glyph_of_sunder_armor();
     new spell_warr_improved_spell_reflection();
     new spell_warr_intimidating_shout();
     new spell_warr_last_stand();

@@ -1403,7 +1403,6 @@ uint32 WorldSession::DosProtection::GetMaxPacketCounterAllowed(uint16 opcode) co
         case CMSG_SPELLCLICK:                           // not profiled
         case CMSG_GAMEOBJ_USE:                          // not profiled
         case CMSG_GAMEOBJ_REPORT_USE:                   // not profiled
-        case CMSG_REMOVE_GLYPH:                         // not profiled
         {
             maxPacketCounterAllowed = 20;
             break;

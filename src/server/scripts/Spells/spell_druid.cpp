@@ -30,7 +30,6 @@
 enum DruidSpells
 {
     SPELL_DRUID_ENRAGE_MOD_DAMAGE           = 51185,
-    SPELL_DRUID_GLYPH_OF_TYPHOON            = 62135,
     SPELL_DRUID_IDOL_OF_FERAL_SHADOWS       = 34241,
     SPELL_DRUID_IDOL_OF_WORSHIP             = 60774,
     SPELL_DRUID_INCREASED_MOONFIRE_DURATION = 38414,
@@ -108,58 +107,6 @@ class spell_dru_enrage : public SpellScriptLoader
         SpellScript* GetSpellScript() const override
         {
             return new spell_dru_enrage_SpellScript();
-        }
-};
-
-// 54846 - Glyph of Starfire
-class spell_dru_glyph_of_starfire : public SpellScriptLoader
-{
-    public:
-        spell_dru_glyph_of_starfire() : SpellScriptLoader("spell_dru_glyph_of_starfire") { }
-
-        class spell_dru_glyph_of_starfire_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_dru_glyph_of_starfire_SpellScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_DRUID_INCREASED_MOONFIRE_DURATION) || !sSpellMgr->GetSpellInfo(SPELL_DRUID_NATURES_SPLENDOR))
-                    return false;
-                return true;
-            }
-
-            void HandleScriptEffect(SpellEffIndex /*effIndex*/)
-            {
-                Unit* caster = GetCaster();
-                if (Unit* unitTarget = GetHitUnit())
-                    if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_DRUID, 0x00000002, 0, 0, caster->GetGUID()))
-                    {
-                        Aura* aura = aurEff->GetBase();
-
-                        uint32 countMin = aura->GetMaxDuration();
-                        uint32 countMax = aura->GetSpellInfo()->GetMaxDuration() + 9000;
-                        if (caster->HasAura(SPELL_DRUID_INCREASED_MOONFIRE_DURATION))
-                            countMax += 3000;
-                        if (caster->HasAura(SPELL_DRUID_NATURES_SPLENDOR))
-                            countMax += 3000;
-
-                        if (countMin < countMax)
-                        {
-                            aura->SetDuration(uint32(aura->GetDuration() + 3000));
-                            aura->SetMaxDuration(countMin + 3000);
-                        }
-                    }
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_dru_glyph_of_starfire_SpellScript::HandleScriptEffect, EFFECT_0, SPELL_EFFECT_SCRIPT_EFFECT);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_dru_glyph_of_starfire_SpellScript();
         }
 };
 
@@ -909,35 +856,6 @@ class spell_dru_tiger_s_fury : public SpellScriptLoader
         }
 };
 
-// -61391 - Typhoon
-class spell_dru_typhoon : public SpellScriptLoader
-{
-    public:
-        spell_dru_typhoon() : SpellScriptLoader("spell_dru_typhoon") { }
-
-        class spell_dru_typhoon_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_dru_typhoon_SpellScript);
-
-            void HandleKnockBack(SpellEffIndex effIndex)
-            {
-                // Glyph of Typhoon
-                if (GetCaster()->HasAura(SPELL_DRUID_GLYPH_OF_TYPHOON))
-                    PreventHitDefaultEffect(effIndex);
-            }
-
-            void Register() override
-            {
-                OnEffectHitTarget += SpellEffectFn(spell_dru_typhoon_SpellScript::HandleKnockBack, EFFECT_0, SPELL_EFFECT_KNOCK_BACK);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_dru_typhoon_SpellScript();
-        }
-};
-
 // 70691 - Item T10 Restoration 4P Bonus
 class spell_dru_t10_restoration_4p_bonus : public SpellScriptLoader
 {
@@ -1067,7 +985,6 @@ void AddSC_druid_spell_scripts()
 {
     new spell_dru_dash();
     new spell_dru_enrage();
-    new spell_dru_glyph_of_starfire();
     new spell_dru_idol_lifebloom();
     new spell_dru_innervate();
     new spell_dru_insect_swarm();
@@ -1086,7 +1003,6 @@ void AddSC_druid_spell_scripts()
     new spell_dru_survival_instincts();
     new spell_dru_swift_flight_passive();
     new spell_dru_tiger_s_fury();
-    new spell_dru_typhoon();
     new spell_dru_t10_restoration_4p_bonus();
     new spell_dru_wild_growth();
 }

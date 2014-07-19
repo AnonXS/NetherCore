@@ -38,8 +38,6 @@ enum WarlockSpells
     SPELL_WARLOCK_DEMONIC_EMPOWERMENT_FELHUNTER     = 54509,
     SPELL_WARLOCK_DEMONIC_EMPOWERMENT_IMP           = 54444,
     SPELL_WARLOCK_FEL_SYNERGY_HEAL                  = 54181,
-    SPELL_WARLOCK_GLYPH_OF_SHADOWFLAME              = 63311,
-    SPELL_WARLOCK_GLYPH_OF_SIPHON_LIFE              = 63106,
     SPELL_WARLOCK_HAUNT                             = 48181,
     SPELL_WARLOCK_HAUNT_HEAL                        = 48210,
     SPELL_WARLOCK_IMPROVED_HEALTHSTONE_R1           = 18692,
@@ -473,41 +471,6 @@ class spell_warl_fel_synergy : public SpellScriptLoader
         }
 };
 
-// 63310 - Glyph of Shadowflame
-class spell_warl_glyph_of_shadowflame : public SpellScriptLoader
-{
-    public:
-        spell_warl_glyph_of_shadowflame() : SpellScriptLoader("spell_warl_glyph_of_shadowflame") { }
-
-        class spell_warl_glyph_of_shadowflame_AuraScript : public AuraScript
-        {
-            PrepareAuraScript(spell_warl_glyph_of_shadowflame_AuraScript);
-
-            bool Validate(SpellInfo const* /*spellInfo*/) override
-            {
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARLOCK_GLYPH_OF_SHADOWFLAME))
-                    return false;
-                return true;
-            }
-
-            void HandleProc(AuraEffect const* aurEff, ProcEventInfo& eventInfo)
-            {
-                PreventDefaultAction();
-                GetTarget()->CastSpell(eventInfo.GetProcTarget(), SPELL_WARLOCK_GLYPH_OF_SHADOWFLAME, true, NULL, aurEff);
-            }
-
-            void Register() override
-            {
-                OnEffectProc += AuraEffectProcFn(spell_warl_glyph_of_shadowflame_AuraScript::HandleProc, EFFECT_0, SPELL_AURA_DUMMY);
-            }
-        };
-
-        AuraScript* GetAuraScript() const override
-        {
-            return new spell_warl_glyph_of_shadowflame_AuraScript();
-        }
-};
-
 // -48181 - Haunt
 class spell_warl_haunt : public SpellScriptLoader
 {
@@ -788,11 +751,7 @@ class spell_warl_siphon_life : public SpellScriptLoader
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARLOCK_SIPHON_LIFE_HEAL))
-                    return false;
-                if (!sSpellMgr->GetSpellInfo(SPELL_WARLOCK_GLYPH_OF_SIPHON_LIFE))
-                    return false;
-                return true;
+                return false;
             }
 
             bool CheckProc(ProcEventInfo& eventInfo)
@@ -805,9 +764,6 @@ class spell_warl_siphon_life : public SpellScriptLoader
                 PreventDefaultAction();
 
                 int32 amount = int32(CalculatePct(eventInfo.GetDamageInfo()->GetDamage(), aurEff->GetAmount()));
-                // Glyph of Siphon Life
-                if (AuraEffect const* glyph = GetTarget()->GetAuraEffect(SPELL_WARLOCK_GLYPH_OF_SIPHON_LIFE, EFFECT_0))
-                    AddPct(amount, glyph->GetAmount());
 
                 GetTarget()->CastCustomSpell(SPELL_WARLOCK_SIPHON_LIFE_HEAL, SPELLVALUE_BASE_POINT0, amount, GetTarget(), true, NULL, aurEff);
             }
@@ -914,7 +870,6 @@ void AddSC_warlock_spell_scripts()
     new spell_warl_demonic_empowerment();
     new spell_warl_everlasting_affliction();
     new spell_warl_fel_synergy();
-    new spell_warl_glyph_of_shadowflame();
     new spell_warl_haunt();
     new spell_warl_health_funnel();
     new spell_warl_life_tap();

@@ -62,8 +62,6 @@ enum PaladinSpells
     SPELL_PALADIN_JUDGEMENT_OF_LIGHT             = 20185,
     SPELL_PALADIN_JUDGEMENT_OF_WISDOM            = 20186,
 
-    SPELL_PALADIN_GLYPH_OF_SALVATION             = 63225,
-
     SPELL_PALADIN_RIGHTEOUS_DEFENSE_TAUNT        = 31790,
 
     SPELL_PALADIN_SANCTIFIED_WRATH               = 57318,
@@ -617,39 +615,6 @@ class spell_pal_eye_for_an_eye : public SpellScriptLoader
         }
 };
 
-// 54968 - Glyph of Holy Light
-class spell_pal_glyph_of_holy_light : public SpellScriptLoader
-{
-    public:
-        spell_pal_glyph_of_holy_light() : SpellScriptLoader("spell_pal_glyph_of_holy_light") { }
-
-        class spell_pal_glyph_of_holy_light_SpellScript : public SpellScript
-        {
-            PrepareSpellScript(spell_pal_glyph_of_holy_light_SpellScript);
-
-            void FilterTargets(std::list<WorldObject*>& targets)
-            {
-                uint32 const maxTargets = GetSpellInfo()->MaxAffectedTargets;
-
-                if (targets.size() > maxTargets)
-                {
-                    targets.sort(Trinity::HealthPctOrderPred());
-                    targets.resize(maxTargets);
-                }
-            }
-
-            void Register() override
-            {
-                OnObjectAreaTargetSelect += SpellObjectAreaTargetSelectFn(spell_pal_glyph_of_holy_light_SpellScript::FilterTargets, EFFECT_0, TARGET_UNIT_DEST_AREA_ALLY);
-            }
-        };
-
-        SpellScript* GetSpellScript() const override
-        {
-            return new spell_pal_glyph_of_holy_light_SpellScript();
-        }
-};
-
 // 63521 - Guarded by The Light
 class spell_pal_guarded_by_the_light : public SpellScriptLoader
 {
@@ -742,13 +707,7 @@ class spell_pal_hand_of_salvation : public SpellScriptLoader
 
             void CalculateAmount(AuraEffect const* /*aurEff*/, int32& amount, bool& /*canBeRecalculated*/)
             {
-                if (Unit* caster = GetCaster())
-                {
-                    // Glyph of Salvation
-                    if (caster->GetGUID() == GetUnitOwner()->GetGUID())
-                        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_PALADIN_GLYPH_OF_SALVATION, EFFECT_0))
-                            amount -= aurEff->GetAmount();
-                }
+
             }
 
             void Register() override
@@ -1290,7 +1249,6 @@ void AddSC_paladin_spell_scripts()
     new spell_pal_divine_storm_dummy();
     new spell_pal_exorcism_and_holy_wrath_damage();
     new spell_pal_eye_for_an_eye();
-    new spell_pal_glyph_of_holy_light();
     new spell_pal_guarded_by_the_light();
     new spell_pal_hand_of_sacrifice();
     new spell_pal_hand_of_salvation();

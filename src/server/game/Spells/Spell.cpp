@@ -577,7 +577,6 @@ m_caster((info->AttributesEx6 & SPELL_ATTR6_CAST_BY_CHARMER && caster->GetCharme
     m_procEx = 0;
     focusObject = NULL;
     m_cast_count = 0;
-    m_glyphIndex = 0;
     m_preCastSpell = 0;
     m_triggeredByAuraSpell  = NULL;
     m_spellAura = NULL;
@@ -5185,11 +5184,6 @@ SpellCastResult Spell::CheckCasterAuras() const
     }
 
     bool usableInStun = m_spellInfo->AttributesEx5 & SPELL_ATTR5_USABLE_WHILE_STUNNED;
-
-    // Glyph of Pain Suppression
-    // there is no other way to handle it
-    if (m_spellInfo->Id == 33206 && !m_caster->HasAura(63248))
-        usableInStun = false;
 
     // Check whether the cast should be prevented by any state you might have.
     SpellCastResult prevented_reason = SPELL_CAST_OK;

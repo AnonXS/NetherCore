@@ -762,7 +762,7 @@ enum PlayerLoginQueryIndex
     PLAYER_LOGIN_QUERY_LOAD_CRITERIA_PROGRESS       = 19,
     PLAYER_LOGIN_QUERY_LOAD_EQUIPMENT_SETS          = 20,
     PLAYER_LOGIN_QUERY_LOAD_BG_DATA                 = 21,
-    PLAYER_LOGIN_QUERY_LOAD_GLYPHS                  = 22,
+    //PLAYER_LOGIN_QUERY_LOAD_GLYPHS                  = 22,
     PLAYER_LOGIN_QUERY_LOAD_TALENTS                 = 23,
     PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_DATA            = 24,
     PLAYER_LOGIN_QUERY_LOAD_SKILLS                  = 25,
@@ -1568,12 +1568,6 @@ class Player : public Unit, public GridObject<Player>
         void SetSpecsCount(uint8 count) { m_specsCount = count; }
         void ActivateSpec(uint8 spec);
 
-        void InitGlyphsForLevel();
-        void SetGlyphSlot(uint8 slot, uint32 slottype) { /* Not used in 2.4.3 --- SetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot, slottype); */ }
-        uint32 GetGlyphSlot(uint8 slot) { return 0; /* Not used in 2.4.3 --- GetUInt32Value(PLAYER_FIELD_GLYPH_SLOTS_1 + slot); */ }
-        void SetGlyph(uint8 slot, uint32 glyph);
-        uint32 GetGlyph(uint8 slot) { return m_Glyphs[m_activeSpec][slot]; }
-
         uint32 GetFreePrimaryProfessionPoints() const { return GetUInt32Value(PLAYER_CHARACTER_POINTS2); }
         void SetFreePrimaryProfessions(uint16 profs) { SetUInt32Value(PLAYER_CHARACTER_POINTS2, profs); }
         void InitPrimaryProfessions();
@@ -2291,7 +2285,6 @@ class Player : public Unit, public GridObject<Player>
 
         void _LoadActions(PreparedQueryResult result);
         void _LoadAuras(PreparedQueryResult result, uint32 timediff);
-        void _LoadGlyphAuras();
         void _LoadBoundInstances(PreparedQueryResult result);
         void _LoadInventory(PreparedQueryResult result, uint32 timeDiff);
         void _LoadMailInit(PreparedQueryResult resultUnread, PreparedQueryResult resultDelivery);
@@ -2313,7 +2306,6 @@ class Player : public Unit, public GridObject<Player>
         void _LoadArenaTeamInfo(PreparedQueryResult result);
         void _LoadEquipmentSets(PreparedQueryResult result);
         void _LoadBGData(PreparedQueryResult result);
-        void _LoadGlyphs(PreparedQueryResult result);
         void _LoadTalents(PreparedQueryResult result);
         void _LoadInstanceTimeRestrictions(PreparedQueryResult result);
 
@@ -2334,7 +2326,6 @@ class Player : public Unit, public GridObject<Player>
         void _SaveSpells(SQLTransaction& trans);
         void _SaveEquipmentSets(SQLTransaction& trans);
         void _SaveBGData(SQLTransaction& trans);
-        void _SaveGlyphs(SQLTransaction& trans);
         void _SaveTalents(SQLTransaction& trans);
         void _SaveStats(SQLTransaction& trans);
         void _SaveInstanceTimeRestrictions(SQLTransaction& trans);
@@ -2397,8 +2388,6 @@ class Player : public Unit, public GridObject<Player>
 
         uint8 m_activeSpec;
         uint8 m_specsCount;
-
-        uint32 m_Glyphs[MAX_TALENT_SPECS][MAX_GLYPH_SLOT_INDEX];
 
         ActionButtonList m_actionButtons;
 
