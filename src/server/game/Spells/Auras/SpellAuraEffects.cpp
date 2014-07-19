@@ -318,11 +318,6 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandlePhase                                      //261 SPELL_AURA_PHASE
 
     /* FOR REMOVE
-    &AuraEffect::HandleUnused,                                    //306 0 spells in 3.3.5
-    &AuraEffect::HandleUnused,                                    //307 0 spells in 3.3.5
-    &AuraEffect::HandleNULL,                                      //308 new aura for hunter traps
-    &AuraEffect::HandleUnused,                                    //309 0 spells in 3.3.5
-    &AuraEffect::HandleNoImmediateEffect,                         //310 SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE implemented in Spell::CalculateDamageDone
     &AuraEffect::HandleNULL,                                      //311 0 spells in 3.3.5
     &AuraEffect::HandleNULL,                                      //312 0 spells in 3.3.5
     &AuraEffect::HandleUnused,                                    //313 0 spells in 3.3.5
@@ -5479,11 +5474,7 @@ void AuraEffect::HandlePeriodicDamageAurasTick(Unit* target, Unit* caster) const
 
     if (!(m_spellInfo->AttributesEx4 & SPELL_ATTR4_FIXED_DAMAGE))
         if (m_spellInfo->Effects[m_effIndex].IsTargetingArea() || isAreaAura)
-        {
             damage = int32(float(damage) * target->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
-            if (caster->GetTypeId() != TYPEID_PLAYER)
-                damage = int32(float(damage) * target->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
-        }
 
     bool crit = false;
 
@@ -5566,11 +5557,7 @@ void AuraEffect::HandlePeriodicHealthLeechAuraTick(Unit* target, Unit* caster) c
 
     if (!(m_spellInfo->AttributesEx4 & SPELL_ATTR4_FIXED_DAMAGE))
         if (m_spellInfo->Effects[m_effIndex].IsTargetingArea() || isAreaAura)
-        {
             damage = int32(float(damage) * target->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
-            if (caster->GetTypeId() != TYPEID_PLAYER)
-                damage = int32(float(damage) * target->GetTotalAuraMultiplierByMiscMask(SPELL_AURA_MOD_CREATURE_AOE_DAMAGE_AVOIDANCE, m_spellInfo->SchoolMask));
-        }
 
     bool crit = false;
 
