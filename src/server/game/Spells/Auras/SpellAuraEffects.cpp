@@ -318,7 +318,6 @@ pAuraEffectHandler AuraEffectHandler[TOTAL_AURAS]=
     &AuraEffect::HandlePhase                                      //261 SPELL_AURA_PHASE
 
     /* FOR REMOVE
-    &AuraEffect::HandleAuraModIncreaseSpeed,                      //305 SPELL_AURA_MOD_MINIMUM_SPEED
     &AuraEffect::HandleUnused,                                    //306 0 spells in 3.3.5
     &AuraEffect::HandleUnused,                                    //307 0 spells in 3.3.5
     &AuraEffect::HandleNULL,                                      //308 new aura for hunter traps
