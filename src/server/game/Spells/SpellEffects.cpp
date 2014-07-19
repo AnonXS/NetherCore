@@ -354,13 +354,6 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                             return;
                         break;
                     }
-                    // Gargoyle Strike
-                    case 51963:
-                    {
-                        // about +4 base spell dmg per level
-                        damage = (m_caster->getLevel() - 60) * 4 + 60;
-                        break;
-                    }
                 }
                 break;
             }
