@@ -18,7 +18,6 @@
 #ifndef _LFGMGR_H
 #define _LFGMGR_H
 
-#include <ace/Singleton.h>
 #include "Field.h"
 #include "LFGPlayerData.h"
 
@@ -34,6 +33,12 @@ class LFGMgr
         ~LFGMgr();
 
     public:
+        static LFGMgr* instance()
+        {
+            static LFGMgr* instance = new LFGMgr();
+            return instance;
+        }
+
         void AttemptJoin(Player* _player);
         void AttemptAddMore(Player* _player);
 
@@ -64,5 +69,5 @@ class LFGMgr
 
 } // namespace lfg
 
-#define sLFGMgr lfg::LFGMgr
+#define sLFGMgr lfg::LFGMgr::instance()
 #endif
