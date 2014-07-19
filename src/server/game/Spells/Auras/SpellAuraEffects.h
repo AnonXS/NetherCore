@@ -240,7 +240,6 @@ class AuraEffect
         void HandleModSpellHitChance(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleModSpellCritChance(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleModSpellCritChanceShool(AuraApplication const* aurApp, uint8 mode, bool apply) const;
-        void HandleAuraModCritPct(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         //   attack speed
         void HandleModCastingSpeed(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleModMeleeRangedSpeedPct(AuraApplication const* aurApp, uint8 mode, bool apply) const;
@@ -277,8 +276,6 @@ class AuraEffect
         void HandleAuraEmpathy(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleAuraModFaction(AuraApplication const* aurApp, uint8 mode, bool apply) const;
         void HandleComprehendLanguage(AuraApplication const* aurApp, uint8 mode, bool apply) const;
-        void HandleAuraLinked(AuraApplication const* aurApp, uint8 mode, bool apply) const;
-
         // aura effect periodic tick handlers
         void HandlePeriodicDummyAuraTick(Unit* target, Unit* caster) const;
         void HandlePeriodicTriggerSpellAuraTick(Unit* target, Unit* caster) const;
@@ -291,7 +288,6 @@ class AuraEffect
         void HandleObsModPowerAuraTick(Unit* target, Unit* caster) const;
         void HandlePeriodicEnergizeAuraTick(Unit* target, Unit* caster) const;
         void HandlePeriodicPowerBurnAuraTick(Unit* target, Unit* caster) const;
-
         // aura effect proc handlers
         void HandleProcTriggerSpellAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
         void HandleProcTriggerSpellWithValueAuraProc(AuraApplication* aurApp, ProcEventInfo& eventInfo);
