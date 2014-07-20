@@ -35,7 +35,7 @@ void LFGPlayerScript::OnLogout(Player* player)
 {
     if (!player->GetGroup())
     {
-        sLFGMgr->LeaveLfg(player->GetGUID());
+        sLFGMgr->LeaveLFG(player->GetGUID());
     }
 }
 

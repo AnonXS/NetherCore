@@ -24,6 +24,7 @@
 #include "DatabaseEnv.h"
 #include "AccountMgr.h"
 #include "Player.h"
+#include "LFGMgr.h"
 
 Channel::Channel(std::string const& name, uint32 channelId, uint32 team):
     _announce(true),
@@ -181,11 +182,13 @@ void Channel::JoinChannel(Player* player, std::string const& pass)
     if (HasFlag(CHANNEL_FLAG_LFG) &&
         sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) &&
         AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) && //FIXME: Move to RBAC
-        player->GetGroup())
+        !sLFGMgr->IsQueued(player))
     {
+        /* Removes the player completely from the channel, we dont want that. The channel should just stay inactive until the player queues up in LFG
         WorldPacket data;
         MakeNotInLfg(&data);
         SendToOne(&data, guid);
+        */
         return;
     }
 

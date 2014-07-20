@@ -20,41 +20,41 @@
 namespace lfg
 {
 
-    LfgPlayerData::LfgPlayerData(): m_Comment("")
+    LFGPlayerData::LFGPlayerData(): m_comment("")
     { }
 
-    LfgPlayerData::~LfgPlayerData() { }
+    LFGPlayerData::~LFGPlayerData() { }
 
-    std::string const& LfgPlayerData::GetComment() const
+    std::string const& LFGPlayerData::GetComment() const
     {
-        return m_Comment;
+        return m_comment;
     }
 
-    void LfgPlayerData::SetComment(std::string const& comment)
+    void LFGPlayerData::SetComment(std::string const& comment)
     {
-        m_Comment = comment;
+        m_comment = comment;
     }
 
     // LFM
-    LookingForGroupSlot const& LfgPlayerData::GetLfmSlot() const
+    LookingForGroupSlot const& LFGPlayerData::GetLFMSlot() const
     {
-        return m_Lfm;
+        return m_lfm;
     }
 
-    void LfgPlayerData::SetLfmSlot(uint32 entry, uint32 type)
+    void LFGPlayerData::SetLFMSlot(uint32 entry, uint32 type)
     {
-        m_Lfm.Set(entry,type);
+        m_lfm.Set(entry,type);
     }
 
     // LFG
-    LookingForGroupSlot const& LfgPlayerData::GetLfgSlot(uint8 slot) const
+    LookingForGroupSlot const& LFGPlayerData::GetLFGSlot(uint8 slot) const
     {
-        return m_Lfg[slot];
+        return m_lfg[slot];
     }
 
-    void LfgPlayerData::SetLfgSlot(uint8 slot, uint32 entry, uint32 type)
+    void LFGPlayerData::SetLFGSlot(uint8 slot, uint32 entry, uint32 type)
     {
-        m_Lfg[slot].Set(entry,type);
+        m_lfg[slot].Set(entry,type);
     }
 
 } // namespace lfg

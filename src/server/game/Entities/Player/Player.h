@@ -1791,7 +1791,6 @@ class Player : public Unit, public GridObject<Player>
         void LeftChannel(Channel* c);
         void CleanupChannels();
         void UpdateLocalChannels(uint32 newZone);
-        void LeaveLFGChannel();
 
         void UpdateDefense();
         void UpdateWeaponSkill (WeaponAttackType attType);

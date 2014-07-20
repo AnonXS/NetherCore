@@ -176,6 +176,8 @@ class Channel
         void UnsetModerator(Player const* player, std::string const& newname) { SetMode(player, newname, true, false); }
         void SetMute(Player const* player, std::string const& newname) { SetMode(player, newname, false, true); }
         void UnsetMute(Player const* player, std::string const& newname) { SetMode(player, newname, false, false); }
+        bool IsOn(uint64 who) const { return playersStore.find(who) != playersStore.end(); }
+        bool IsBanned(uint64 guid) const { return bannedStore.find(guid) != bannedStore.end(); }
         void List(Player const* player);
         void Announce(Player const* player);
         void Say(uint64 guid, std::string const& what, uint32 lang);
@@ -229,9 +231,6 @@ class Channel
         void SendToAll(WorldPacket* data, uint64 guid = 0);
         void SendToAllButOne(WorldPacket* data, uint64 who);
         void SendToOne(WorldPacket* data, uint64 who);
-
-        bool IsOn(uint64 who) const { return playersStore.find(who) != playersStore.end(); }
-        bool IsBanned(uint64 guid) const { return bannedStore.find(guid) != bannedStore.end(); }
 
         void UpdateChannelInDB() const;
         void UpdateChannelUseageInDB() const;

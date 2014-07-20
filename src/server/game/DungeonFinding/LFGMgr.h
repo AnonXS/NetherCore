@@ -24,7 +24,7 @@
 namespace lfg
 {
 
-typedef std::map<uint64, LfgPlayerData> LfgPlayerDataContainer;
+typedef std::map<uint64, LFGPlayerData> LFGPlayerDataContainer;
 
 class LFGMgr
 {
@@ -43,28 +43,30 @@ class LFGMgr
         void AttemptAddMore(Player* _player);
 
         std::string const& GetComment(uint64 gguid);
+        bool IsQueued(Player* player);
         bool IsAutoJoin(Player* player);
         bool IsAutoAdd(Player* player);
-
         void SetComment(uint64 guid, std::string const& comment);
         void SetAutoJoin(Player* player, bool value);
         void SetAutoAdd(Player* player, bool value);
 
+        void JoinLFGChannel(Player* player);
+        void LeaveLFGChannel(Player* player);
+
         LookingForGroupSlot GetLfmSlot(uint64 guid);
         LookingForGroupSlot GetLfgSlot(uint64 guid, uint8 slot);
-        void SetLfmSlot(uint64 guid, uint32 entry, uint32 type);
-        void SetLfgSlot(uint64 guid, uint8 slot, uint32 entry, uint32 type);
-        bool IsInLfmSlot(uint64 guid, uint32 entry, uint32 type);
-        bool IsInLfgSlot(uint64 guid, uint32 entry, uint32 type);
-        void ClearLfm(uint64 guid);
-        void ClearLfg(uint64 guid);
+        void SetLFMSlot(uint64 guid, uint32 entry, uint32 type);
+        void SetLFGSlot(uint64 guid, uint8 slot, uint32 entry, uint32 type);
+        bool IsInLFMSlot(uint64 guid, uint32 entry, uint32 type);
+        bool IsInLFGSlot(uint64 guid, uint32 entry, uint32 type);
+        void ClearLFM(uint64 guid);
+        void ClearLFG(uint64 guid);
 
-        /// Leaves lfg
-        void LeaveLfg(uint64 guid);
+        void LeaveLFG(uint64 guid);
 
     private:
         uint32 m_options;                                  ///< Stores config options
-        LfgPlayerDataContainer PlayersStore;               ///< Player data
+        LFGPlayerDataContainer PlayersStore;               ///< Player data
 };
 
 } // namespace lfg

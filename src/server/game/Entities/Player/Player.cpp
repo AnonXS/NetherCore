@@ -5437,6 +5437,9 @@ void Player::RepopAtGraveyard()
 
 bool Player::CanJoinConstantChannelInZone(ChatChannelsEntry const* channel, AreaTableEntry const* zone)
 {
+    if ((channel->flags & CHANNEL_DBC_FLAG_LFG) && sWorld->getBoolConfig(CONFIG_ALLOW_LFG_IN_WORLD))
+        return true;
+    
     if (channel->flags & CHANNEL_DBC_FLAG_ZONE_DEP && zone->flags & AREA_FLAG_ARENA_INSTANCE)
         return false;
 
@@ -5551,18 +5554,6 @@ void Player::UpdateLocalChannels(uint32 newZone)
                 LeftChannel(removeChannel);                  // Remove from player's channel list
                 cMgr->LeftChannel(name);                     // Delete if empty
             }
-        }
-    }
-}
-
-void Player::LeaveLFGChannel()
-{
-    for (JoinedChannelsList::iterator i = m_channels.begin(); i != m_channels.end(); ++i)
-    {
-        if ((*i)->IsLFG())
-        {
-            (*i)->LeaveChannel(this);
-            break;
         }
     }
 }

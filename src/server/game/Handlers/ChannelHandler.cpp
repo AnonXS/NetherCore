@@ -286,7 +286,7 @@ void WorldSession::HandleGetChannelMemberCount(WorldPacket &recvPacket)
 
     if (ChannelMgr* cMgr = ChannelMgr::forTeam(GetPlayer()->GetTeam()))
     {
-        if (Channel* channel = cMgr->GetChannel(channelName, GetPlayer()))
+        if (Channel* channel = cMgr->GetChannel(channelName, GetPlayer(), false))
         {
             TC_LOG_DEBUG("chat.system", "SMSG_CHANNEL_MEMBER_COUNT %s Channel: %s Count: %u",
                 GetPlayerInfo().c_str(), channelName.c_str(), channel->GetNumPlayers());

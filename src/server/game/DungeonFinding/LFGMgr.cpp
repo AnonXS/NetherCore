@@ -17,20 +17,14 @@
 
 #include "Common.h"
 #include "SharedDefines.h"
-#include "DBCStores.h"
-#include "DisableMgr.h"
-#include "ObjectMgr.h"
-#include "SocialMgr.h"
-#include "Language.h"
 #include "LFGMgr.h"
 #include "LFGScripts.h"
 #include "LFGPlayerData.h"
 #include "Group.h"
 #include "Player.h"
-#include "RBAC.h"
 #include "GroupMgr.h"
-#include "GameEventMgr.h"
 #include "WorldSession.h"
+#include "ChannelMgr.h"
 
 namespace lfg
 {
@@ -69,7 +63,7 @@ void LFGMgr::AttemptJoin(Player* _player)
             continue;
 
         // skip if type dosnt allow auto join or the slots dosnt fit
-        if (!lfmSlot.CanAutoJoin() || !sLFGMgr->IsInLfgSlot(_player->GetGUID(), lfmSlot.entry, lfmSlot.type))
+        if (!lfmSlot.CanAutoJoin() || !sLFGMgr->IsInLFGSlot(_player->GetGUID(), lfmSlot.entry, lfmSlot.type))
             continue;
 
         // attempt create group, or skip
@@ -83,19 +77,8 @@ void LFGMgr::AttemptJoin(Player* _player)
             }
             sGroupMgr->AddGroup(group);
         }
-
-        // stop at success join
-        if (plr->GetGroup()->AddMember(_player))
-        {
-            //if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && _player->GetSession()->GetSecurity() == SEC_PLAYER)
-            //_player->LeaveLFGChannel();
-        }
-        // full
-        else
-        {
-            //if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && plr->GetSession()->GetSecurity() == SEC_PLAYER)
-            //plr->LeaveLFGChannel();
-        }
+        
+        plr->GetGroup()->AddMember(_player);
     }
 }
 
@@ -131,7 +114,7 @@ void LFGMgr::AttemptAddMore(Player* _player)
             continue;
             
         // skip if slots dosnt fit
-        if (!sLFGMgr->IsInLfgSlot(plr->GetGUID(), lfmSlot.entry, lfmSlot.type))
+        if (!sLFGMgr->IsInLFGSlot(plr->GetGUID(), lfmSlot.entry, lfmSlot.type))
             continue;
 
         // attempt create group if need, or stop attempts
@@ -146,28 +129,7 @@ void LFGMgr::AttemptAddMore(Player* _player)
             sGroupMgr->AddGroup(group);
         }
 
-        // stop at join fail (full)
-        if (!_player->GetGroup()->AddMember(plr))
-        {
-            /*
-            if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && _player->GetSession()->GetSecurity() == SEC_PLAYER)
-                _player->LeaveLFGChannel();
-            */
-        }
-        
-        // joined
-        //if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && plr->GetSession()->GetSecurity() == SEC_PLAYER)    
-        //plr->LeaveLFGChannel();
-        /*
-        // and group full
-        if (_player->GetGroup()->IsFull())
-        {
-        if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && _player->GetSession()->GetSecurity() == SEC_PLAYER)
-        _player->LeaveLFGChannel();
-
-        break;
-        }
-        */
+        _player->GetGroup()->AddMember(plr);
     }
 }
 
@@ -175,6 +137,22 @@ const std::string& LFGMgr::GetComment(uint64 guid)
 {
     TC_LOG_TRACE("lfg.data.player.comment.get", "Player: %u, Comment: %s", GUID_LOPART(guid), PlayersStore[guid].GetComment().c_str());
     return PlayersStore[guid].GetComment();
+}
+
+bool LFGMgr::IsQueued(Player* player)
+{
+    if (!player->GetGroup()) {
+        for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
+        {
+            if (PlayersStore[player->GetGUID()].GetLFGSlot(i).Used())
+                return true;
+        }
+    }
+
+    if (PlayersStore[player->GetGUID()].GetLFMSlot().Used())
+        return true;
+
+    return false;
 }
 
 bool LFGMgr::IsAutoJoin(Player* player)
@@ -207,55 +185,81 @@ void LFGMgr::SetAutoAdd(Player* player, bool value)
     player->GetSession()->LookingForGroup_auto_add = value;
 }
 
+void LFGMgr::JoinLFGChannel(Player* player)
+{
+    ChannelMgr* cMgr = ChannelMgr::forTeam(player->GetTeam());
+
+    for (uint32 i = 0; i < sChatChannelsStore.GetNumRows(); ++i)
+    {
+        if (ChatChannelsEntry const* channel = sChatChannelsStore.LookupEntry(i))
+        {
+            if (channel->flags & CHANNEL_DBC_FLAG_LFG && player->CanJoinConstantChannelInZone(channel, GetAreaEntryByAreaID(player->GetZoneId())))
+            {
+                Channel* ch = cMgr->GetJoinChannel(channel->pattern[player->GetSession()->GetSessionDbcLocale()], channel->ChannelID);
+                ch->JoinChannel(player, "");
+            }
+        }
+    }
+}
+
+void LFGMgr::LeaveLFGChannel(Player* player)
+{
+    ChannelMgr* cMgr = ChannelMgr::forTeam(player->GetTeam());
+
+    if (Channel* ch = cMgr->GetChannel("LookingForGroup", player, false))
+        if (ch->IsOn(player->GetGUID()))
+            ch->LeaveChannel(player);
+}
+
 LookingForGroupSlot LFGMgr::GetLfmSlot(uint64 guid)
 {
     TC_LOG_TRACE("lfg.data.player.lfmslot.get", "Player: %u", GUID_LOPART(guid));
-    return PlayersStore[guid].GetLfmSlot();
+    return PlayersStore[guid].GetLFMSlot();
 }
 
 LookingForGroupSlot LFGMgr::GetLfgSlot(uint64 guid, uint8 slot)
 {
     TC_LOG_TRACE("lfg.data.player.lfgslot.get", "Player: %u", GUID_LOPART(guid));
-    return PlayersStore[guid].GetLfgSlot(slot);
+    return PlayersStore[guid].GetLFGSlot(slot);
 }
 
-void LFGMgr::SetLfmSlot(uint64 guid, uint32 entry, uint32 type)
+void LFGMgr::SetLFMSlot(uint64 guid, uint32 entry, uint32 type)
 {
     TC_LOG_TRACE("lfg.data.player.lfmslot.set", "Player: %u, Entry: %s, Type: %s", GUID_LOPART(guid), entry, type);
-    PlayersStore[guid].SetLfmSlot(entry, type);
+    PlayersStore[guid].SetLFMSlot(entry, type);
 }
 
-void LFGMgr::SetLfgSlot(uint64 guid, uint8 slot, uint32 entry, uint32 type)
+void LFGMgr::SetLFGSlot(uint64 guid, uint8 slot, uint32 entry, uint32 type)
 {
     TC_LOG_TRACE("lfg.data.player.lfgslot.set", "Player: %u, Slot: %s, Entry: %s, Type: %s", GUID_LOPART(guid), slot, entry, type);
-    PlayersStore[guid].SetLfgSlot(slot, entry, type);
+    PlayersStore[guid].SetLFGSlot(slot, entry, type);
 }
 
-bool LFGMgr::IsInLfmSlot(uint64 guid, uint32 entry, uint32 type)
+bool LFGMgr::IsInLFMSlot(uint64 guid, uint32 entry, uint32 type)
 {
-    return PlayersStore[guid].GetLfmSlot().Is(entry, type);
+    return PlayersStore[guid].GetLFMSlot().Is(entry, type);
 }
 
-bool LFGMgr::IsInLfgSlot(uint64 guid, uint32 entry, uint32 type)
+bool LFGMgr::IsInLFGSlot(uint64 guid, uint32 entry, uint32 type)
 {
     for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
-    if (PlayersStore[guid].GetLfgSlot(i).Is(entry, type))
+    if (PlayersStore[guid].GetLFGSlot(i).Is(entry, type))
         return true;
     return false;
 }
 
-void LFGMgr::ClearLfm(uint64 guid)
+void LFGMgr::ClearLFM(uint64 guid)
 {
-    PlayersStore[guid].SetLfmSlot(0, 0);
+    PlayersStore[guid].SetLFMSlot(0, 0);
 }
 
-void LFGMgr::ClearLfg(uint64 guid)
+void LFGMgr::ClearLFG(uint64 guid)
 {
     for (int i = 0; i < MAX_LOOKING_FOR_GROUP_SLOT; ++i)
-        PlayersStore[guid].SetLfgSlot(i, 0, 0);
+        PlayersStore[guid].SetLFGSlot(i, 0, 0);
 }
 
-void LFGMgr::LeaveLfg(uint64 guid)
+void LFGMgr::LeaveLFG(uint64 guid)
 {
     TC_LOG_DEBUG("lfg.leave", "%u left (player)", GUID_LOPART(guid));
     PlayersStore.erase(guid);

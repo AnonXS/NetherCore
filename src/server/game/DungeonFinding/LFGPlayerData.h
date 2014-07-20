@@ -25,6 +25,7 @@ struct LookingForGroupSlot
 {
     LookingForGroupSlot() : entry(0), type(0) {}
     bool Empty() const { return !entry && !type; }
+    bool Used() const { return entry && type; }
     void Set(uint32 _entry, uint32 _type) { entry = _entry; type = _type; }
     bool Is(uint32 _entry, uint32 _type) const { return entry == _entry && type == _type; }
     bool CanAutoJoin() const { return entry && (type == LFG_TYPE_DUNGEON || type == LFG_TYPE_HEROIC_DUNGEON); }
@@ -36,28 +37,26 @@ struct LookingForGroupSlot
 /**
     Stores all lfg data needed about the player.
 */
-class LfgPlayerData
+class LFGPlayerData
 {
     public:
-        LfgPlayerData();
-        ~LfgPlayerData();
+        LFGPlayerData();
+        ~LFGPlayerData();
 
         std::string const& GetComment() const;
         void SetComment(std::string const& comment);
 
-        LookingForGroupSlot const& GetLfmSlot() const;
-        void SetLfmSlot(uint32 entry, uint32 type);
+        LookingForGroupSlot const& GetLFMSlot() const;
+        void SetLFMSlot(uint32 entry, uint32 type);
            
-        LookingForGroupSlot const& GetLfgSlot(uint8 slot) const;
-        void SetLfgSlot(uint8 slot, uint32 entry, uint32 type);
+        LookingForGroupSlot const& GetLFGSlot(uint8 slot) const;
+        void SetLFGSlot(uint8 slot, uint32 entry, uint32 type);
 
     private:
-        LookingForGroupSlot m_Lfm;
-        LookingForGroupSlot m_Lfg[MAX_LOOKING_FOR_GROUP_SLOT];
+        LookingForGroupSlot m_lfm;
+        LookingForGroupSlot m_lfg[MAX_LOOKING_FOR_GROUP_SLOT];
 
-        std::string m_Comment;
-        bool m_AutoJoin;            // init value send by client CMSG_LFG_SET_AUTOJOIN, before player login
-        bool m_AutoAdd;             // init value send by client CMSG_LFM_CLEAR_AUTOFILL, before player login
+        std::string m_comment;
 };
 
 } // namespace lfg

@@ -49,7 +49,7 @@ void WorldSession::HandleLfgSetOpcode(WorldPacket& recv_data)
     if (slot >= MAX_LOOKING_FOR_GROUP_SLOT)
         return;
 
-    sLFGMgr->SetLfgSlot(_player->GetGUID(), slot, entry, type);
+    sLFGMgr->SetLFGSlot(_player->GetGUID(), slot, entry, type);
     TC_LOG_DEBUG("lfg", "CMSG_SET_LOOKING_FOR_GROUP %s looknumber: %u, temp: %X, type: %u, entry: %u", GetPlayerInfo().c_str(), slot, temp, type, entry);
 
     if (sLFGMgr->IsAutoJoin(_player))
@@ -90,10 +90,10 @@ void WorldSession::HandleLfgClearOpcode(WorldPacket & /*recv_data */)
 {
     TC_LOG_DEBUG("lfg", "CMSG_CLEAR_LOOKING_FOR_GROUP %s", GetPlayerInfo().c_str());
 
-    sLFGMgr->ClearLfg(_player->GetGUID());
+    sLFGMgr->ClearLFG(_player->GetGUID());
 
-    //if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && _player->GetSession()->GetSecurity() == SEC_PLAYER)
-    //    _player->LeaveLFGChannel();
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+        sLFGMgr->LeaveLFGChannel(_player);
 }
 
 void WorldSession::HandleLfmSetOpcode(WorldPacket& recv_data)
@@ -104,7 +104,7 @@ void WorldSession::HandleLfmSetOpcode(WorldPacket& recv_data)
     uint32 entry = (temp & 0xFFFF);
     uint32 type = ((temp >> 24) & 0xFFFF);
 
-    sLFGMgr->SetLfmSlot(_player->GetGUID(), entry, type);
+    sLFGMgr->SetLFMSlot(_player->GetGUID(), entry, type);
     TC_LOG_DEBUG("lfg", "CMSG_SET_LOOKING_FOR_MORE %s temp: %u, zone: %u, type: %u", GetPlayerInfo().c_str(), temp, entry, type);
 
     if (sLFGMgr->IsAutoAdd(_player))
@@ -134,7 +134,10 @@ void WorldSession::HandleLfmClearAutoFillOpcode(WorldPacket & /*recv_data*/)
 void WorldSession::HandleLfmClearOpcode(WorldPacket & /*recv_data */)
 {
     TC_LOG_DEBUG("lfg", "CMSG_CLEAR_LOOKING_FOR_MORE %s", GetPlayerInfo().c_str());
-    sLFGMgr->ClearLfm(_player->GetGUID());
+    sLFGMgr->ClearLFM(_player->GetGUID());
+
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+        sLFGMgr->LeaveLFGChannel(_player);
 }
 
 void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
@@ -160,7 +163,7 @@ void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
         if (!plr->IsInWorld())
             continue;
         
-        if ((plr->GetGroup() || !sLFGMgr->IsInLfgSlot(plr->GetGUID(), entry, type)) && (!plr->GetGroup() || !sLFGMgr->IsInLfmSlot(plr->GetGUID(), entry, type)))
+        if ((plr->GetGroup() || !sLFGMgr->IsInLFGSlot(plr->GetGUID(), entry, type)) && (!plr->GetGroup() || !sLFGMgr->IsInLFMSlot(plr->GetGUID(), entry, type)))
             continue;
 
         ++number;
@@ -169,7 +172,7 @@ void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
         data << uint32(plr->getLevel());                    // level
         data << uint32(plr->GetZoneId());                   // current zone
 
-        if (sLFGMgr->IsInLfgSlot(plr->GetGUID(), entry, type))
+        if (sLFGMgr->IsInLFGSlot(plr->GetGUID(), entry, type))
         {
             data << uint8(LFG_MODE);                        // 0x00 - LFG, 0x01 - LFM
             for (uint8 j = 0; j < MAX_LOOKING_FOR_GROUP_SLOT; ++j)
@@ -183,9 +186,6 @@ void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
             data << uint32(0);
         }
             
-
-        
-
         data << sLFGMgr->GetComment(plr->GetGUID());
 
         Group* group = plr->GetGroup();
@@ -213,4 +213,12 @@ void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
     data.put<uint32>(4 + 4 + 4, number);
 
     SendPacket(&data);
+    
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+    {
+        if (sLFGMgr->IsQueued(_player))
+            sLFGMgr->JoinLFGChannel(_player);
+        else
+            sLFGMgr->LeaveLFGChannel(_player);
+    }
 }
