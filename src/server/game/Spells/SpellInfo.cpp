@@ -330,7 +330,6 @@ SpellEffectInfo::SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* 
     PointsPerComboPoint = spellEntry->EffectPointsPerComboPoint[effIndex];
     ValueMultiplier = spellEntry->EffectValueMultiplier[effIndex];
     DamageMultiplier = spellEntry->EffectDamageMultiplier[effIndex];
-    BonusMultiplier = spellEntry->EffectBonusMultiplier[effIndex];
     MiscValue = spellEntry->EffectMiscValue[effIndex];
     MiscValueB = spellEntry->EffectMiscValueB[effIndex];
     Mechanic = Mechanics(spellEntry->EffectMechanic[effIndex]);
@@ -340,7 +339,6 @@ SpellEffectInfo::SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* 
     ChainTarget = spellEntry->EffectChainTarget[effIndex];
     ItemType = spellEntry->EffectItemType[effIndex];
     TriggerSpell = spellEntry->EffectTriggerSpell[effIndex];
-    SpellClassMask = spellEntry->EffectSpellClassMask[effIndex];
     ImplicitTargetConditions = NULL;
 }
 
@@ -769,7 +767,6 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     AttributesEx4 = spellEntry->AttributesEx4;
     AttributesEx5 = spellEntry->AttributesEx5;
     AttributesEx6 = spellEntry->AttributesEx6;
-    AttributesEx7 = spellEntry->AttributesEx7;
     AttributesCu = 0;
     Stances = spellEntry->Stances;
     StancesNot = spellEntry->StancesNot;
@@ -781,10 +778,6 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     TargetAuraState = spellEntry->TargetAuraState;
     CasterAuraStateNot = spellEntry->CasterAuraStateNot;
     TargetAuraStateNot = spellEntry->TargetAuraStateNot;
-    CasterAuraSpell = spellEntry->casterAuraSpell;
-    TargetAuraSpell = spellEntry->targetAuraSpell;
-    ExcludeCasterAuraSpell = spellEntry->excludeCasterAuraSpell;
-    ExcludeTargetAuraSpell = spellEntry->excludeTargetAuraSpell;
     CastTimeEntry = spellEntry->CastingTimeIndex ? sSpellCastTimesStore.LookupEntry(spellEntry->CastingTimeIndex) : NULL;
     RecoveryTime = spellEntry->RecoveryTime;
     CategoryRecoveryTime = spellEntry->CategoryRecoveryTime;
@@ -1609,12 +1602,6 @@ SpellCastResult SpellInfo::CheckTarget(Unit const* caster, WorldObject const* ta
             return SPELL_FAILED_TARGET_AURASTATE;
     }
 
-    if (TargetAuraSpell && !unitTarget->HasAura(sSpellMgr->GetSpellIdForDifficulty(TargetAuraSpell, caster)))
-        return SPELL_FAILED_TARGET_AURASTATE;
-
-    if (ExcludeTargetAuraSpell && unitTarget->HasAura(sSpellMgr->GetSpellIdForDifficulty(ExcludeTargetAuraSpell, caster)))
-        return SPELL_FAILED_TARGET_AURASTATE;
-
     return SPELL_CAST_OK;
 }
 
@@ -1975,23 +1962,20 @@ float SpellInfo::GetMinRange(bool positive) const
 {
     if (!RangeEntry)
         return 0.0f;
-    if (positive)
-        return RangeEntry->minRangeFriend;
-    return RangeEntry->minRangeHostile;
+
+    return RangeEntry->minRange;
 }
 
 float SpellInfo::GetMaxRange(bool positive, Unit* caster, Spell* spell) const
 {
     if (!RangeEntry)
         return 0.0f;
-    float range;
-    if (positive)
-        range = RangeEntry->maxRangeFriend;
-    else
-        range = RangeEntry->maxRangeHostile;
+
+    float range = RangeEntry->maxRange;
     if (caster)
         if (Player* modOwner = caster->GetSpellModOwner())
             modOwner->ApplySpellMod(Id, SPELLMOD_RANGE, range, spell);
+
     return range;
 }
 

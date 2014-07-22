@@ -232,7 +232,6 @@ public:
     float     PointsPerComboPoint;
     float     ValueMultiplier;
     float     DamageMultiplier;
-    float     BonusMultiplier;
     int32     MiscValue;
     int32     MiscValueB;
     Mechanics Mechanic;
@@ -247,7 +246,7 @@ public:
 
     SpellEffectInfo() : _spellInfo(NULL), _effIndex(0), Effect(0), ApplyAuraName(0), Amplitude(0), DieSides(0),
                         RealPointsPerLevel(0), BasePoints(0), PointsPerComboPoint(0), ValueMultiplier(0), DamageMultiplier(0),
-                        BonusMultiplier(0), MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(NULL), ChainTarget(0),
+                        MiscValue(0), MiscValueB(0), Mechanic(MECHANIC_NONE), RadiusEntry(NULL), ChainTarget(0),
                         ItemType(0), TriggerSpell(0), ImplicitTargetConditions(NULL) {}
     SpellEffectInfo(SpellEntry const* spellEntry, SpellInfo const* spellInfo, uint8 effIndex);
 
@@ -298,7 +297,6 @@ public:
     uint32 AttributesEx4;
     uint32 AttributesEx5;
     uint32 AttributesEx6;
-    uint32 AttributesEx7;
     uint32 AttributesCu;
     uint32 Stances;
     uint32 StancesNot;
@@ -310,10 +308,6 @@ public:
     uint32 TargetAuraState;
     uint32 CasterAuraStateNot;
     uint32 TargetAuraStateNot;
-    uint32 CasterAuraSpell;
-    uint32 TargetAuraSpell;
-    uint32 ExcludeCasterAuraSpell;
-    uint32 ExcludeTargetAuraSpell;
     SpellCastTimesEntry const* CastTimeEntry;
     uint32 RecoveryTime;
     uint32 CategoryRecoveryTime;
