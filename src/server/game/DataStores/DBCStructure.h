@@ -1550,67 +1550,65 @@ struct SoundEntriesEntry
 #define MAX_SPELL_EFFECTS 3
 #define MAX_EFFECT_MASK 7
 #define MAX_SPELL_REAGENTS 8
+#define MAX_SPELL_TOTEMS 2
+#define MAX_SPELL_TOTEM_CATEGORIES 2
 
 struct SpellEntry
 {
     uint32    Id;                                           // 0        m_ID
     uint32    Category;                                     // 1        m_category
-    uint32    Dispel;                                       // 2        m_dispelType
-    uint32    Mechanic;                                     // 3        m_mechanic
-    uint32    Attributes;                                   // 4        m_attributes
-    uint32    AttributesEx;                                 // 5        m_attributesEx
-    uint32    AttributesEx2;                                // 6        m_attributesExB
-    uint32    AttributesEx3;                                // 7        m_attributesExC
-    uint32    AttributesEx4;                                // 8        m_attributesExD
-    uint32    AttributesEx5;                                // 9        m_attributesExE
-    uint32    AttributesEx6;                                // 10       m_attributesExF
-    uint32    AttributesEx7;                                // 11       m_attributesExG
+    // uint32    CastUI                                     // 2        not used
+    uint32    Dispel;                                       // 3        m_dispelType
+    uint32    Mechanic;                                     // 4        m_mechanic
+    uint32    Attributes;                                   // 5        m_attributes
+    uint32    AttributesEx;                                 // 6        m_attributesEx
+    uint32    AttributesEx2;                                // 7        m_attributesExB
+    uint32    AttributesEx3;                                // 8        m_attributesExC
+    uint32    AttributesEx4;                                // 9        m_attributesExD
+    uint32    AttributesEx5;                                // 10       m_attributesExE
+    uint32    AttributesEx6;                                // 11       m_attributesExF
     uint32    Stances;                                      // 12       m_shapeshiftMask
-    // uint32 unk_320_2;                                    // 13       3.2.0
-    uint32    StancesNot;                                   // 14       m_shapeshiftExclude
-    // uint32 unk_320_3;                                    // 15       3.2.0
-    uint32    Targets;                                      // 16       m_targets
-    uint32    TargetCreatureType;                           // 17       m_targetCreatureType
-    uint32    RequiresSpellFocus;                           // 18       m_requiresSpellFocus
-    uint32    FacingCasterFlags;                            // 19       m_facingCasterFlags
-    uint32    CasterAuraState;                              // 20       m_casterAuraState
-    uint32    TargetAuraState;                              // 21       m_targetAuraState
-    uint32    CasterAuraStateNot;                           // 22       m_excludeCasterAuraState
-    uint32    TargetAuraStateNot;                           // 23       m_excludeTargetAuraState
-    uint32    casterAuraSpell;                              // 24       m_casterAuraSpell
-    uint32    targetAuraSpell;                              // 25       m_targetAuraSpell
-    uint32    excludeCasterAuraSpell;                       // 26       m_excludeCasterAuraSpell
-    uint32    excludeTargetAuraSpell;                       // 27       m_excludeTargetAuraSpell
-    uint32    CastingTimeIndex;                             // 28       m_castingTimeIndex
-    uint32    RecoveryTime;                                 // 29       m_recoveryTime
-    uint32    CategoryRecoveryTime;                         // 30       m_categoryRecoveryTime
-    uint32    InterruptFlags;                               // 31       m_interruptFlags
-    uint32    AuraInterruptFlags;                           // 32       m_auraInterruptFlags
-    uint32    ChannelInterruptFlags;                        // 33       m_channelInterruptFlags
-    uint32    procFlags;                                    // 34       m_procTypeMask
-    uint32    procChance;                                   // 35       m_procChance
-    uint32    procCharges;                                  // 36       m_procCharges
-    uint32    maxLevel;                                     // 37       m_maxLevel
-    uint32    baseLevel;                                    // 38       m_baseLevel
-    uint32    spellLevel;                                   // 39       m_spellLevel
-    uint32    DurationIndex;                                // 40       m_durationIndex
-    uint32    powerType;                                    // 41       m_powerType
-    uint32    manaCost;                                     // 42       m_manaCost
-    uint32    manaCostPerlevel;                             // 43       m_manaCostPerLevel
-    uint32    manaPerSecond;                                // 44       m_manaPerSecond
-    uint32    manaPerSecondPerLevel;                        // 45       m_manaPerSecondPerLeve
-    uint32    rangeIndex;                                   // 46       m_rangeIndex
-    float     speed;                                        // 47       m_speed
-    //uint32    modalNextSpell;                             // 48       m_modalNextSpell not used
-    uint32    StackAmount;                                  // 49       m_cumulativeAura
-    uint32    Totem[2];                                     // 50-51    m_totem
-    int32     Reagent[MAX_SPELL_REAGENTS];                  // 52-59    m_reagent
-    uint32    ReagentCount[MAX_SPELL_REAGENTS];             // 60-67    m_reagentCount
-    int32     EquippedItemClass;                            // 68       m_equippedItemClass (value)
-    int32     EquippedItemSubClassMask;                     // 69       m_equippedItemSubclass (mask)
-    int32     EquippedItemInventoryTypeMask;                // 70       m_equippedItemInvTypes (mask)
-    uint32    Effect[MAX_SPELL_EFFECTS];                    // 71-73    m_effect
-    int32     EffectDieSides[MAX_SPELL_EFFECTS];            // 74-76    m_effectDieSides
+    uint32    StancesNot;                                   // 13       m_shapeshiftExclude
+    uint32    Targets;                                      // 14       m_targets
+    uint32    TargetCreatureType;                           // 15       m_targetCreatureType
+    uint32    RequiresSpellFocus;                           // 16       m_requiresSpellFocus
+    uint32    FacingCasterFlags;                            // 17       m_facingCasterFlags
+    uint32    CasterAuraState;                              // 18       m_casterAuraState
+    uint32    TargetAuraState;                              // 19       m_targetAuraState
+    uint32    CasterAuraStateNot;                           // 20       m_excludeCasterAuraState
+    uint32    TargetAuraStateNot;                           // 21       m_excludeTargetAuraState
+    uint32    CastingTimeIndex;                             // 22       m_castingTimeIndex
+    uint32    RecoveryTime;                                 // 23       m_recoveryTime
+    uint32    CategoryRecoveryTime;                         // 24       m_categoryRecoveryTime
+    uint32    InterruptFlags;                               // 25       m_interruptFlags
+    uint32    AuraInterruptFlags;                           // 26       m_auraInterruptFlags
+    uint32    ChannelInterruptFlags;                        // 27       m_channelInterruptFlags
+    uint32    procFlags;                                    // 28       m_procTypeMask
+    uint32    procChance;                                   // 29       m_procChance
+    uint32    procCharges;                                  // 30       m_procCharges
+    uint32    maxLevel;                                     // 31       m_maxLevel
+    uint32    baseLevel;                                    // 32       m_baseLevel
+    uint32    spellLevel;                                   // 33       m_spellLevel
+    uint32    DurationIndex;                                // 34       m_durationIndex
+    uint32    powerType;                                    // 35       m_powerType
+    uint32    manaCost;                                     // 36       m_manaCost
+    uint32    manaCostPerlevel;                             // 37       m_manaCostPerLevel
+    uint32    manaPerSecond;                                // 38       m_manaPerSecond
+    uint32    manaPerSecondPerLevel;                        // 39       m_manaPerSecondPerLeve
+    uint32    rangeIndex;                                   // 40       m_rangeIndex
+    float     speed;                                        // 41       m_speed
+    //uint32    modalNextSpell;                             // 42       m_modalNextSpell not used
+    uint32    StackAmount;                                  // 43       m_cumulativeAura
+    uint32    Totem[MAX_SPELL_TOTEMS];                      // 44-45    m_totem
+    int32     Reagent[MAX_SPELL_REAGENTS];                  // 46-53    m_reagent
+    uint32    ReagentCount[MAX_SPELL_REAGENTS];             // 54-61    m_reagentCount
+    int32     EquippedItemClass;                            // 62       m_equippedItemClass (value)
+    int32     EquippedItemSubClassMask;                     // 63       m_equippedItemSubclass (mask)
+    int32     EquippedItemInventoryTypeMask;                // 64       m_equippedItemInvTypes (mask)
+    uint32    Effect[MAX_SPELL_EFFECTS];                    // 65-67    m_effect
+    int32     EffectDieSides[MAX_SPELL_EFFECTS];            // 68-70    m_effectDieSides
+    //uint32    EffectBaseDice[MAX_SPELL_EFFECTS];            // 71-73
+    //float     EffectDicePerLevel[MAX_SPELL_EFFECTS];        // 74-76
     float     EffectRealPointsPerLevel[MAX_SPELL_EFFECTS];  // 77-79    m_effectRealPointsPerLevel
     int32     EffectBasePoints[MAX_SPELL_EFFECTS];          // 80-82    m_effectBasePoints (must not be used in spell/auras explicitly, must be used cached Spell::m_currentBasePoints)
     uint32    EffectMechanic[MAX_SPELL_EFFECTS];            // 83-85    m_effectMechanic
@@ -1619,49 +1617,42 @@ struct SpellEntry
     uint32    EffectRadiusIndex[MAX_SPELL_EFFECTS];         // 92-94    m_effectRadiusIndex - spellradius.dbc
     uint32    EffectApplyAuraName[MAX_SPELL_EFFECTS];       // 95-97    m_effectAura
     uint32    EffectAmplitude[MAX_SPELL_EFFECTS];           // 98-100   m_effectAuraPeriod
-    float     EffectValueMultiplier[MAX_SPELL_EFFECTS];      // 101-103
+    float     EffectValueMultiplier[MAX_SPELL_EFFECTS];     // 101-103
     uint32    EffectChainTarget[MAX_SPELL_EFFECTS];         // 104-106  m_effectChainTargets
     uint32    EffectItemType[MAX_SPELL_EFFECTS];            // 107-109  m_effectItemType
     int32     EffectMiscValue[MAX_SPELL_EFFECTS];           // 110-112  m_effectMiscValue
     int32     EffectMiscValueB[MAX_SPELL_EFFECTS];          // 113-115  m_effectMiscValueB
     uint32    EffectTriggerSpell[MAX_SPELL_EFFECTS];        // 116-118  m_effectTriggerSpell
     float     EffectPointsPerComboPoint[MAX_SPELL_EFFECTS]; // 119-121  m_effectPointsPerCombo
-    flag96    EffectSpellClassMask[MAX_SPELL_EFFECTS];      // 122-130
-    uint32    SpellVisual[2];                               // 131-132  m_spellVisualID
-    uint32    SpellIconID;                                  // 133      m_spellIconID
-    uint32    activeIconID;                                 // 134      m_activeIconID
-    //uint32    spellPriority;                              // 135 not used
-    char*     SpellName[16];                                // 136-151  m_name_lang
-    //uint32    SpellNameFlag;                              // 152 not used
-    char*     Rank[16];                                     // 153-168  m_nameSubtext_lang
-    //uint32    RankFlags;                                  // 169 not used
-    //char*     Description[16];                            // 170-185  m_description_lang not used
-    //uint32    DescriptionFlags;                           // 186 not used
-    //char*     ToolTip[16];                                // 187-202  m_auraDescription_lang not used
-    //uint32    ToolTipFlags;                               // 203 not used
-    uint32    ManaCostPercentage;                           // 204      m_manaCostPct
-    uint32    StartRecoveryCategory;                        // 205      m_startRecoveryCategory
-    uint32    StartRecoveryTime;                            // 206      m_startRecoveryTime
-    uint32    MaxTargetLevel;                               // 207      m_maxTargetLevel
-    uint32    SpellFamilyName;                              // 208      m_spellClassSet
-    flag96    SpellFamilyFlags;                             // 209-211
-    uint32    MaxAffectedTargets;                           // 212      m_maxTargets
-    uint32    DmgClass;                                     // 213      m_defenseType
-    uint32    PreventionType;                               // 214      m_preventionType
-    //uint32    StanceBarOrder;                             // 215      m_stanceBarOrder not used
-    float     EffectDamageMultiplier[MAX_SPELL_EFFECTS];    // 216-218  m_effectChainAmplitude
-    //uint32    MinFactionId;                               // 219      m_minFactionID not used
-    //uint32    MinReputation;                              // 220      m_minReputation not used
-    //uint32    RequiredAuraVision;                         // 221      m_requiredAuraVision not used
-    uint32    TotemCategory[2];                             // 222-223  m_requiredTotemCategoryID
-    int32     AreaGroupId;                                  // 224      m_requiredAreaGroupId
-    uint32    SchoolMask;                                   // 225      m_schoolMask
-    uint32    runeCostID;                                   // 226      m_runeCostID
-    //uint32    spellMissileID;                             // 227      m_spellMissileID not used
-    //uint32  PowerDisplayId;                               // 228      PowerDisplay.dbc, new in 3.1
-    float     EffectBonusMultiplier[MAX_SPELL_EFFECTS];     // 229-231  3.2.0
-    //uint32  spellDescriptionVariableID;                   // 232      3.2.0
-    //uint32  SpellDifficultyId;                            // 233      3.3.0
+    uint32    SpellVisual[2];                               // 122-123  m_spellVisualID
+    uint32    SpellIconID;                                  // 124      m_spellIconID
+    uint32    activeIconID;                                 // 125      m_activeIconID
+    //uint32    spellPriority;                              // 126 not used
+    char*     SpellName[16];                                // 127-142  m_name_lang
+    //uint32    SpellNameFlag;                              // 143 not used
+    char*     Rank[16];                                     // 144-159  m_nameSubtext_lang
+    //uint32    RankFlags;                                  // 160 not used
+    //char*     Description[16];                            // 161-176  m_description_lang not used
+    //uint32    DescriptionFlags;                           // 177 not used
+    //char*     ToolTip[16];                                // 178-193  m_auraDescription_lang not used
+    //uint32    ToolTipFlags;                               // 194 not used
+    uint32    ManaCostPercentage;                           // 195      m_manaCostPct
+    uint32    StartRecoveryCategory;                        // 196      m_startRecoveryCategory
+    uint32    StartRecoveryTime;                            // 197      m_startRecoveryTime
+    uint32    MaxTargetLevel;                               // 198      m_maxTargetLevel
+    uint32    SpellFamilyName;                              // 199      m_spellClassSet
+    uint64    SpellFamilyFlags;                             // 200-201
+    uint32    MaxAffectedTargets;                           // 202      m_maxTargets
+    uint32    DmgClass;                                     // 203      m_defenseType
+    uint32    PreventionType;                               // 204      m_preventionType
+    //uint32    StanceBarOrder;                             // 205      m_stanceBarOrder not used
+    float     EffectDamageMultiplier[MAX_SPELL_EFFECTS];    // 206-208  m_effectChainAmplitude
+    //uint32    MinFactionId;                               // 209      m_minFactionID not used
+    //uint32    MinReputation;                              // 210      m_minReputation not used
+    //uint32    RequiredAuraVision;                         // 211      m_requiredAuraVision not used
+    uint32    TotemCategory[MAX_SPELL_TOTEM_CATEGORIES];    // 212-213  m_requiredTotemCategoryID
+    int32     AreaGroupId;                                  // 214      m_requiredAreaGroupId
+    uint32    SchoolMask;                                   // 215      m_schoolMask
 };
 
 typedef std::set<uint32> SpellCategorySet;
@@ -1707,15 +1698,13 @@ struct SpellRadiusEntry
 struct SpellRangeEntry
 {
     uint32    ID;
-    float     minRangeHostile;
-    float     minRangeFriend;
-    float     maxRangeHostile;
-    float     maxRangeFriend;
+    float     minRange;
+    float     maxRange;
     uint32    type;
-    //char*     Name[16];                                   // 7-23 unused
-                                                            // 24 string flags, unused
-    //char*     Name2[16];                                  // 25-40 unused
-                                                            // 41 string flags, unused
+    //char*     Name[16];                                   // 5-21 unused
+    // 22 string flags, unused
+    //char*     Name2[16];                                  // 23-38 unused
+    // 39 string flags, unused
 };
 
 #define MAX_SHAPESHIFT_SPELLS 8
@@ -1746,20 +1735,16 @@ struct SpellDurationEntry
 struct SpellItemEnchantmentEntry
 {
     uint32      ID;                                         // 0        m_ID
-    //uint32      charges;                                  // 1        m_charges
-    uint32      type[MAX_ITEM_ENCHANTMENT_EFFECTS];         // 2-4      m_effect[MAX_ITEM_ENCHANTMENT_EFFECTS]
-    uint32      amount[MAX_ITEM_ENCHANTMENT_EFFECTS];       // 5-7      m_effectPointsMin[MAX_ITEM_ENCHANTMENT_EFFECTS]
-    //uint32      amount2[MAX_ITEM_ENCHANTMENT_EFFECTS]     // 8-10     m_effectPointsMax[MAX_ITEM_ENCHANTMENT_EFFECTS]
-    uint32      spellid[MAX_ITEM_ENCHANTMENT_EFFECTS];      // 11-13    m_effectArg[MAX_ITEM_ENCHANTMENT_EFFECTS]
-    char*       description[16];                            // 14-29    m_name_lang[16]
-    //uint32      descriptionFlags;                         // 30 name flags
-    uint32      aura_id;                                    // 31       m_itemVisual
-    uint32      slot;                                       // 32       m_flags
-    uint32      GemID;                                      // 33       m_src_itemID
-    uint32      EnchantmentCondition;                       // 34       m_condition_id
-    uint32      requiredSkill;                              // 35       m_requiredSkillID
-    uint32      requiredSkillValue;                         // 36       m_requiredSkillRank
-    uint32      requiredLevel;                              // 37       m_requiredLevel
+    uint32      type[MAX_ITEM_ENCHANTMENT_EFFECTS];         // 1-3      m_effect[MAX_ITEM_ENCHANTMENT_EFFECTS]
+    uint32      amount[MAX_ITEM_ENCHANTMENT_EFFECTS];       // 4-6      m_effectPointsMin[MAX_ITEM_ENCHANTMENT_EFFECTS]
+    //uint32      amount2[MAX_ITEM_ENCHANTMENT_EFFECTS]     // 7-9      m_effectPointsMax[MAX_ITEM_ENCHANTMENT_EFFECTS]
+    uint32      spellid[MAX_ITEM_ENCHANTMENT_EFFECTS];      // 10-12    m_effectArg[MAX_ITEM_ENCHANTMENT_EFFECTS]
+    char*       description[16];                            // 13-28    m_name_lang[16]
+    //uint32      descriptionFlags;                         // 29       name flags
+    uint32      aura_id;                                    // 30       m_itemVisual
+    uint32      slot;                                       // 31       m_flags
+    uint32      GemID;                                      // 32       m_src_itemID
+    uint32      EnchantmentCondition;                       // 33       m_condition_id
 };
 
 struct SpellItemEnchantmentConditionEntry
