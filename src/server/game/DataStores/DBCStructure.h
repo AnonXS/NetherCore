@@ -830,8 +830,10 @@ struct EmotesEntry
 
 struct EmotesTextEntry
 {
-    uint32  Id;
-    uint32  textid;
+    uint32  Id;                                             // 0
+                                                            // 1
+    uint32  textid;                                         // 2
+                                                            // 3
 };
 
 struct FactionEntry
