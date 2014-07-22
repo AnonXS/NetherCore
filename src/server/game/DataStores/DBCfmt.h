@@ -50,18 +50,18 @@ char const FactionEntryfmt[] = "niiiiiiiiiiiiiiiiiissssssssssssssssxxxxxxxxxxxxx
 char const FactionTemplateEntryfmt[] = "niiiiiiiiiiiii";
 char const GameObjectDisplayInfofmt[] = "nsxxxxxxxxxxffffff";
 char const GemPropertiesEntryfmt[] = "nixxi";
-
 char const GtCombatRatingsfmt[] = "f";
 char const GtChanceToMeleeCritBasefmt[] = "f";
 char const GtChanceToMeleeCritfmt[] = "f";
 char const GtChanceToSpellCritBasefmt[] = "f";
 char const GtChanceToSpellCritfmt[] = "f";
 char const GtNPCManaCostScalerfmt[] = "f";
-char const GtOCTClassCombatRatingScalarfmt[] = "df";
 char const GtOCTRegenHPfmt[] = "f";
-//char const GtOCTRegenMPfmt[] = "f";
+char const GtOCTRegenMPfmt[] = "f";
 char const GtRegenHPPerSptfmt[] = "f";
 char const GtRegenMPPerSptfmt[] = "f";
+
+
 char const Holidaysfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
 char const Itemfmt[] = "niiiiiii";
 char const ItemBagFamilyfmt[] = "nxxxxxxxxxxxxxxxxx";

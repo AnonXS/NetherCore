@@ -933,8 +933,6 @@ struct GemPropertiesEntry
 
 // All Gt* DBC store data for 100 levels, some by 100 per class/race
 #define GT_MAX_LEVEL    100
-// gtOCTClassCombatRatingScalar.dbc stores data for 32 ratings, look at MAX_COMBAT_RATING for real used amount
-#define GT_MAX_RATING   32
 
 struct GtCombatRatingsEntry
 {
@@ -966,20 +964,15 @@ struct GtChanceToSpellCritEntry
     float    ratio;
 };
 
-struct GtOCTClassCombatRatingScalarEntry
-{
-    float    ratio;
-};
-
 struct GtOCTRegenHPEntry
 {
     float    ratio;
 };
 
-//struct GtOCTRegenMPEntry
-//{
-//    float    ratio;
-//};
+struct GtOCTRegenMPEntry
+{
+    float    ratio;
+};
 
 struct GtRegenHPPerSptEntry
 {
