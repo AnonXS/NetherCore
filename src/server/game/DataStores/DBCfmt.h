@@ -60,9 +60,9 @@ char const GtOCTRegenHPfmt[] = "f";
 char const GtOCTRegenMPfmt[] = "f";
 char const GtRegenHPPerSptfmt[] = "f";
 char const GtRegenMPPerSptfmt[] = "f";
-
-
 char const Holidaysfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
+
+
 char const Itemfmt[] = "niiiiiii";
 char const ItemBagFamilyfmt[] = "nxxxxxxxxxxxxxxxxx";
 //char const ItemDisplayTemplateEntryfmt[] = "nxxxxxxxxxxixxxxxxxxxxx";

@@ -984,24 +984,6 @@ struct GtRegenMPPerSptEntry
     float    ratio;
 };
 
-/* no used
-struct HolidayDescriptionsEntry
-{
-    uint32 ID;                                              // 0, m_holidayDescriptionID
-    //char*     name[16]                                    // 1-16 m_name_lang
-                                                            // 17 name flags
-};
-*/
-
-/* no used
-struct HolidayNamesEntry
-{
-    uint32 ID;                                              // 0, m_holidayNameID
-    //char*     name[16]                                    // 1-16 m_name_lang
-    // 17 name flags
-};
-*/
-
 #define MAX_HOLIDAY_DURATIONS 10
 #define MAX_HOLIDAY_DATES 26
 #define MAX_HOLIDAY_FLAGS 10
