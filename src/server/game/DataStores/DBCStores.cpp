@@ -648,7 +648,7 @@ void LoadDBCStores(const std::string& dataPath)
 
     // Check loaded DBC files proper version
     if (!sAreaStore.LookupEntry(1768)              ||       // last area added in 2.4.3
-        !sCharTitlesStore.LookupEntry(177)         ||       // last char title added in 3.3.5a
+        !sCharTitlesStore.LookupEntry(71)          ||       // last char title added in 2.4.3
         !sGemPropertiesStore.LookupEntry(1629)     ||       // last added spell in 3.3.5a
         !sItemStore.LookupEntry(56806)             ||       // last gem property added in 3.3.5a
         !sItemExtendedCostStore.LookupEntry(2997)  ||       // last item extended cost added in 3.3.5a

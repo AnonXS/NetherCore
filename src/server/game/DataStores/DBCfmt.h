@@ -28,12 +28,13 @@ char const AreaTriggerEntryfmt[] = "niffffffff";
 char const AuctionHouseEntryfmt[] = "niiixxxxxxxxxxxxxxxxx";
 char const BankBagSlotPricesEntryfmt[] = "ni";
 char const BannedAddOnsfmt[] = "nxxxxxxxxxx";
-const char BattlemasterListEntryfmt[] = "niiiiiiiiixxxixssssssssssssssssxx";
-char const CharStartOutfitEntryfmt[] = "dbbbXiiiiiiiiiiiiiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+char const BattlemasterListEntryfmt[] = "niiiiiiiiixxxixssssssssssssssssxx";
+char const CharStartOutfitEntryfmt[] = "diiiiiiiiiiiiixxxxxxxxxxxxxxxxxxxxxxxxxxx"; //Test
 char const CharTitlesEntryfmt[] = "nxssssssssssssssssxssssssssssssssssxi";
 char const ChatChannelsEntryfmt[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
-char const ChrClassesEntryfmt[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixii";
+char const ChrClassesEntryfmt[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
 char const ChrRacesEntryfmt[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
+
 char const CinematicSequencesEntryfmt[] = "nxxxxxxxxx";
 char const CreatureDisplayInfofmt[] = "nixifxxxxxxxxxxx";
 char const CreatureDisplayInfoExtrafmt[] = "diixxxxxxxxxxxxxxxxxx";

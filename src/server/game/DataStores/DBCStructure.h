@@ -611,18 +611,21 @@ struct BattlemasterListEntry
     // 32 unused
 };
 
-#define MAX_OUTFIT_ITEMS 24
+#define MAX_OUTFIT_ITEMS 12
 
 struct CharStartOutfitEntry
 {
     //uint32 Id;                                            // 0
     uint8 Race;                                             // 1
-    uint8 Class;                                            // 2
-    uint8 Gender;                                           // 3
-    //uint8 Unused;                                         // 4
-    int32 ItemId[MAX_OUTFIT_ITEMS];                         // 5-28
-    //int32 ItemDisplayId[MAX_OUTFIT_ITEMS];                // 29-52 not required at server side
-    //int32 ItemInventorySlot[MAX_OUTFIT_ITEMS];            // 53-76 not required at server side
+    uint8 Class;                                            // 1
+    uint8 Gender;                                           // 1
+    uint8 Unused;                                           // 1
+    int32 ItemId[MAX_OUTFIT_ITEMS];                         // 2-13
+    //int32 ItemDisplayId[MAX_OUTFIT_ITEMS];                // 14-25 not required at server side
+    //int32 ItemInventorySlot[MAX_OUTFIT_ITEMS];            // 26-37 not required at server side
+    // uint32 Unknown1;                                     // 38, unique values (index-like with gaps ordered in other way as ids)
+    // uint32 Unknown2;                                     // 39
+    // uint32 Unknown3;                                     // 40
 };
 
 struct CharTitlesEntry
@@ -640,6 +643,7 @@ struct ChatChannelsEntry
 {
     uint32  ChannelID;                                      // 0
     uint32  flags;                                          // 1
+                                                            // 2, unused
     char*   pattern[16];                                    // 3-18
                                                             // 19 string flags, unused
     //char*       name[16];                                 // 20-35 unused
@@ -661,8 +665,6 @@ struct ChrClassesEntry
                                                             // 55, unused
     uint32  spellfamily;                                    // 56
                                                             // 57, unused
-    uint32  CinematicSequence;                              // 58 id from CinematicSequences.dbc
-    uint32  expansion;                                       // 59 (0 - original race, 1 - tbc addon, ...)
 };
 
 struct ChrRacesEntry

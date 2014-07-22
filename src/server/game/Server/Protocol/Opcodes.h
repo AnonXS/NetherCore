@@ -1391,7 +1391,7 @@ enum Opcodes
     CMSG_GM_NUKE_CHARACTER                          = 0x998,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID1                  = 0x999,
     CMSG_SET_ALLOW_LOW_LEVEL_RAID2                  = 0x9A1,
-    SMSG_CAMERA_SHAKE                               = 0x9A2, // uint32 SpellEffectCameraShakes.dbc index, uint32
+    //SMSG_CAMERA_SHAKE                               = 0x9A2, // uint32 SpellEffectCameraShakes.dbc index, uint32
     SMSG_SOCKET_GEMS_RESULT                         = 0x9A3,
     CMSG_SET_CHARACTER_MODEL                        = 0x9A4,
     SMSG_REDIRECT_CLIENT                            = 0x9A5, // uint32 ip, uint16 port, uint32 unk, uint8[20] hash (ip + port, seed=sessionkey)
