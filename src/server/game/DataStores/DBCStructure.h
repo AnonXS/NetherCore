@@ -690,19 +690,6 @@ struct ChrRacesEntry
     uint32      expansion;                                  // 68 (0 - original race, 1 - tbc addon, ...)
 };
 
-/* not used
-struct CinematicCameraEntry
-{
-    uint32      id;                                         // 0 index
-    char*       filename;                                   // 1
-    uint32      soundid;                                    // 2 in SoundEntries.dbc or 0
-    float       start_x;                                    // 3
-    float       start_y;                                    // 4
-    float       start_z;                                    // 5
-    float       unk6;                                       // 6 speed?
-};
-*/
-
 struct CinematicSequencesEntry
 {
     uint32      Id;                                         // 0 index
@@ -725,8 +712,6 @@ struct CreatureDisplayInfoEntry
                                                             // 11       m_bloodID
                                                             // 12       m_NPCSoundID
                                                             // 13       m_particleColorID
-                                                            // 14       m_creatureGeosetData
-                                                            // 15       m_objectEffectPackageID
 };
 
 struct CreatureDisplayInfoExtraEntry
@@ -763,33 +748,31 @@ struct CreatureFamilyEntry
     uint32  maxScaleLevel;                                  // 4        m_maxScaleLevel
     uint32  skillLine[2];                                   // 5-6      m_skillLine
     uint32  petFoodMask;                                    // 7        m_petFoodMask
-    int32   petTalentType;                                  // 8        m_petTalentType
-                                                            // 9        m_categoryEnumID
-    char*   Name[16];                                       // 10-25    m_name_lang
-                                                            // 26 string flags
-                                                            // 27       m_iconFile
+    char*   Name[16];                                       // 8-23     m_name_lang
+                                                            // 24       string flags
+                                                            // 25       m_iconFile
 };
 
 struct CreatureModelDataEntry
 {
-    uint32 Id;
-    uint32 Flags;
-    //char* ModelPath[16]
-    //uint32 Unk1;
-    float Scale;                                             // Used in calculation of unit collision data
-    //int32 Unk2
-    //int32 Unk3
-    //uint32 Unk4
-    //uint32 Unk5
-    //float Unk6
-    //uint32 Unk7
-    //float Unk8
-    //uint32 Unk9
-    //uint32 Unk10
-    //float CollisionWidth;
-    float CollisionHeight;
-    float MountHeight;                                       // Used in calculation of unit collision data when mounted
-    //float Unks[11]
+    uint32 Id;                                              // 0 
+    uint32 Flags;                                           // 1
+    //char* ModelPath[16]                                   // 2-18 
+    //uint32 unk1;                                          // 19 
+    float Scale;                                            // 20  Used in calculation of unit collision data
+    //int32 unk2;                                           // 21
+    //int32 unk3;                                           // 22
+    //uint32 unk4;                                          // 23
+    //uint32 unk5;                                          // 24
+    //float unk6;                                           // 25
+    //uint32 unk7;                                          // 26
+    //float unk8;                                           // 27
+    //uint32 unk9;                                          // 28
+    //uint32 unk10;                                         // 29
+    //float CollisionWidth;                                 // 30
+    float CollisionHeight;                                  // 31
+    float MountHeight;                                      // 32 Used in calculation of unit collision data when mounted
+    //float unks[7];                                        // 33-40 
 };
 
 #define MAX_CREATURE_SPELL_DATA_SLOT 4
@@ -799,6 +782,7 @@ struct CreatureSpellDataEntry
     uint32    ID;                                           // 0        m_ID
     uint32    spellId[MAX_CREATURE_SPELL_DATA_SLOT];        // 1-4      m_spells[4]
     //uint32    availability[MAX_CREATURE_SPELL_DATA_SLOT]; // 4-7      m_availability[4]
+    //uint32    unk1;                                       // 8
 };
 
 struct CreatureTypeEntry
@@ -806,7 +790,7 @@ struct CreatureTypeEntry
     uint32    ID;                                           // 0        m_ID
     //char*   Name[16];                                     // 1-16     name
                                                             // 17       string flags
-    //uint32    no_expirience;                              // 18 no exp? critters, non-combat pets, gas cloud.
+    //uint32    no_expirience;                              // 18       no exp? critters, non-combat pets, gas cloud.
 };
 
 /* not used

@@ -1636,62 +1636,8 @@ bool Pet::resetTalents()
     CreatureTemplate const* ci = GetCreatureTemplate();
     if (!ci)
         return false;
-    // Check pet talent type
-    CreatureFamilyEntry const* pet_family = sCreatureFamilyStore.LookupEntry(ci->family);
-    if (!pet_family || pet_family->petTalentType < 0)
-        return false;
 
-    uint8 level = getLevel();
-    uint32 talentPointsForLevel = GetMaxTalentPointsForLevel(level);
-
-    if (m_usedTalentCount == 0)
-    {
-        SetFreeTalentPoints(talentPointsForLevel);
-        return false;
-    }
-
-    for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-    {
-        TalentEntry const* talentInfo = sTalentStore.LookupEntry(i);
-
-        if (!talentInfo)
-            continue;
-
-        TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talentInfo->TalentTab);
-
-        if (!talentTabInfo)
-            continue;
-
-        // unlearn only talents for pets family talent type
-        if (!((1 << pet_family->petTalentType) & talentTabInfo->petTalentMask))
-            continue;
-
-        for (uint8 j = 0; j < MAX_TALENT_RANK; ++j)
-        {
-            for (PetSpellMap::const_iterator itr = m_spells.begin(); itr != m_spells.end();)
-            {
-                if (itr->second.state == PETSPELL_REMOVED)
-                {
-                    ++itr;
-                    continue;
-                }
-                // remove learned spells (all ranks)
-                uint32 itrFirstId = sSpellMgr->GetFirstSpellInChain(itr->first);
-
-                // unlearn if first rank is talent or learned by talent
-                if (itrFirstId == talentInfo->RankID[j] || sSpellMgr->IsSpellLearnToSpell(talentInfo->RankID[j], itrFirstId))
-                {
-                    unlearnSpell(itr->first, false);
-                    itr = m_spells.begin();
-                    continue;
-                }
-                else
-                    ++itr;
-            }
-        }
-    }
-
-    SetFreeTalentPoints(talentPointsForLevel);
+    //placeholder
 
     if (!m_loading)
         player->PetSpellInitialize();

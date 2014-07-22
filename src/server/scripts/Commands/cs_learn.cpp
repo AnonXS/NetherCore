@@ -266,51 +266,7 @@ public:
             return false;
         }
 
-        if (petFamily->petTalentType < 0)                       // not hunter pet
-        {
-            handler->SendSysMessage(LANG_WRONG_PET_TYPE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        for (uint32 i = 0; i < sTalentStore.GetNumRows(); ++i)
-        {
-            TalentEntry const* talentInfo = sTalentStore.LookupEntry(i);
-            if (!talentInfo)
-                continue;
-
-            TalentTabEntry const* talentTabInfo = sTalentTabStore.LookupEntry(talentInfo->TalentTab);
-            if (!talentTabInfo)
-                continue;
-
-            // prevent learn talent for different family (cheating)
-            if (((1 << petFamily->petTalentType) & talentTabInfo->petTalentMask) == 0)
-                continue;
-
-            // search highest talent rank
-            uint32 spellId = 0;
-
-            for (int8 rank = MAX_TALENT_RANK-1; rank >= 0; --rank)
-            {
-                if (talentInfo->RankID[rank] != 0)
-                {
-                    spellId = talentInfo->RankID[rank];
-                    break;
-                }
-            }
-
-            if (!spellId)                                        // ??? none spells in talent
-                continue;
-
-            SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(spellId);
-            if (!spellInfo || !SpellMgr::IsSpellValid(spellInfo, handler->GetSession()->GetPlayer(), false))
-                continue;
-
-            // learn highest rank of talent and learn all non-talent spell ranks (recursive by tree)
-            pet->learnSpellHighRank(spellId);
-        }
-
-        pet->SetFreeTalentPoints(0);
+        //placeholder
 
         handler->SendSysMessage(LANG_COMMAND_LEARN_PET_TALENTS);
         return true;

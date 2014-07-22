@@ -34,12 +34,12 @@ char const CharTitlesEntryfmt[] = "nxssssssssssssssssxssssssssssssssssxi";
 char const ChatChannelsEntryfmt[] = "nixssssssssssssssssxxxxxxxxxxxxxxxxxx";
 char const ChrClassesEntryfmt[] = "nxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxix";
 char const ChrRacesEntryfmt[] = "niixiixixxxxixssssssssssssssssxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi";
-
 char const CinematicSequencesEntryfmt[] = "nxxxxxxxxx";
-char const CreatureDisplayInfofmt[] = "nixifxxxxxxxxxxx";
+char const CreatureDisplayInfofmt[] = "nixifxxxxxxxxx";
 char const CreatureDisplayInfoExtrafmt[] = "diixxxxxxxxxxxxxxxxxx";
-char const CreatureFamilyfmt[] = "nfifiiiiixssssssssssssssssxx";
-char const CreatureModelDatafmt[] = "nixxfxxxxxxxxxxffxxxxxxxxxxx";
+char const CreatureFamilyfmt[] = "nfifiiiissssssssssssssssxx";
+char const CreatureModelDatafmt[] = "nixxfxxxxxxxxxxffxxxxxxx";
+
 char const CreatureSpellDatafmt[] = "niiiixxxx";
 char const CreatureTypefmt[] = "nxxxxxxxxxxxxxxxxxx";
 char const CurrencyTypesfmt[] = "xnxi";
