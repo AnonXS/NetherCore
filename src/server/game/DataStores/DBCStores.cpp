@@ -345,8 +345,6 @@ void LoadDBCStores(const std::string& dataPath)
 
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemStore,                   dbcPath, "Item.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemBagFamilyStore,          dbcPath, "ItemBagFamily.dbc");
-    //LoadDBC(dbcCount, availableDbcLocales, bad_dbc_files, sItemDisplayInfoStore,        dbcPath, "ItemDisplayInfo.dbc");     -- not used currently
-    //LoadDBC(dbcCount, availableDbcLocales, bad_dbc_files, sItemCondExtCostsStore,       dbcPath, "ItemCondExtCosts.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemExtendedCostStore,       dbcPath, "ItemExtendedCost.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemLimitCategoryStore,      dbcPath, "ItemLimitCategory.dbc");
     LoadDBC(availableDbcLocales, bad_dbc_files, sItemRandomPropertiesStore,   dbcPath, "ItemRandomProperties.dbc");
@@ -644,8 +642,8 @@ void LoadDBCStores(const std::string& dataPath)
     if (!sAreaStore.LookupEntry(1768)              ||       // last added in 2.4.3
         !sCharTitlesStore.LookupEntry(71)          ||       // last added in 2.4.3
         !sGemPropertiesStore.LookupEntry(1127)     ||       // last added in 2.4.3
-        !sItemStore.LookupEntry(56806)             ||       // last gem property added in 3.3.5a
-        !sItemExtendedCostStore.LookupEntry(2997)  ||       // last item extended cost added in 3.3.5a
+        !sItemStore.LookupEntry(56806)             ||       // last added in 3.3.5a
+        !sItemExtendedCostStore.LookupEntry(2997)  ||       // last added in 3.3.5a
         !sMapStore.LookupEntry(724)                ||       // last map added in 3.3.5a
         !sSpellStore.LookupEntry(53085))                    // last added in 2.4.3
     {

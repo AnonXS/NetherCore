@@ -61,17 +61,15 @@ char const GtOCTRegenMPfmt[] = "f";
 char const GtRegenHPPerSptfmt[] = "f";
 char const GtRegenMPPerSptfmt[] = "f";
 char const Holidaysfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiixxsiix";
-
-
 char const Itemfmt[] = "niiiiiii";
 char const ItemBagFamilyfmt[] = "nxxxxxxxxxxxxxxxxx";
-//char const ItemDisplayTemplateEntryfmt[] = "nxxxxxxxxxxixxxxxxxxxxx";
-//char const ItemCondExtCostsEntryfmt[] = "xiii";
 char const ItemExtendedCostEntryfmt[] = "niiiiiiiiiiiiiix";
 char const ItemLimitCategoryEntryfmt[] = "nxxxxxxxxxxxxxxxxxii";
 char const ItemRandomPropertiesfmt[] = "nxiiixxssssssssssssssssx";
 char const ItemRandomSuffixfmt[] = "nssssssssssssssssxxiiixxiiixx";
 char const ItemSetEntryfmt[] = "dssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
+
+
 char const LightEntryfmt[] = "nifffxxxxxxxxxx";
 char const LiquidTypefmt[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 char const LockEntryfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
