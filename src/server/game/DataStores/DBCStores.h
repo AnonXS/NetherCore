@@ -78,8 +78,7 @@ SkillRaceClassInfoEntry const* GetSkillRaceClassInfo(uint32 skill, uint8 race, u
 
 extern DBCStorage <AchievementEntry>             sAchievementStore;
 extern DBCStorage <AchievementCriteriaEntry>     sAchievementCriteriaStore;
-extern DBCStorage <AreaTableEntry>               sAreaStore;// recommend access using functions
-extern DBCStorage <AreaPOIEntry>                 sAreaPOIStore;
+extern DBCStorage <AreaTableEntry>               sAreaStore;
 extern DBCStorage <AreaTriggerEntry>             sAreaTriggerStore;
 extern DBCStorage <AuctionHouseEntry>            sAuctionHouseStore;
 extern DBCStorage <BankBagSlotPricesEntry>       sBankBagSlotPricesStore;
