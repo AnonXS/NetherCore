@@ -2109,15 +2109,9 @@ public:
                     return false;
                 }
 
-                if (!go->IsDestructibleBuilding())
-                {
-                    handler->SendSysMessage(LANG_INVALID_GAMEOBJECT_TYPE);
-                    handler->SetSentErrorMessage(true);
-                    return false;
-                }
-
-                go->ModifyHealth(-damage, player);
-                handler->PSendSysMessage(LANG_GAMEOBJECT_DAMAGED, go->GetName().c_str(), guid, -damage, go->GetGOValue()->Building.Health);
+                handler->SendSysMessage(LANG_INVALID_GAMEOBJECT_TYPE);
+                handler->SetSentErrorMessage(true);
+                return false;
             }
 
             return true;

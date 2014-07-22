@@ -1394,9 +1394,7 @@ enum GameObjectFlags
     GO_FLAG_TRANSPORT       = 0x00000008,                   // any kind of transport? Object can transport (elevator, boat, car)
     GO_FLAG_NOT_SELECTABLE  = 0x00000010,                   // not selectable even in GM mode
     GO_FLAG_NODESPAWN       = 0x00000020,                   // never despawn, typically for doors, they just change state
-    GO_FLAG_TRIGGERED       = 0x00000040,                   // typically, summoned objects. Triggered by spell or other events
-    GO_FLAG_DAMAGED         = 0x00000200,
-    GO_FLAG_DESTROYED       = 0x00000400
+    GO_FLAG_TRIGGERED       = 0x00000040                    // typically, summoned objects. Triggered by spell or other events
 };
 
 enum GameObjectDynamicLowFlags
@@ -1404,16 +1402,7 @@ enum GameObjectDynamicLowFlags
     GO_DYNFLAG_LO_ACTIVATE          = 0x01,                 // enables interaction with GO
     GO_DYNFLAG_LO_ANIMATE           = 0x02,                 // possibly more distinct animation of GO
     GO_DYNFLAG_LO_NO_INTERACT       = 0x04,                 // appears to disable interaction (not fully verified)
-    GO_DYNFLAG_LO_SPARKLE           = 0x08,                 // makes GO sparkle
-    GO_DYNFLAG_LO_STOPPED           = 0x10                  // Transport is stopped
-};
-
-enum GameObjectDestructibleState
-{
-    GO_DESTRUCTIBLE_INTACT      = 0,
-    GO_DESTRUCTIBLE_DAMAGED     = 1,
-    GO_DESTRUCTIBLE_DESTROYED   = 2,
-    GO_DESTRUCTIBLE_REBUILDING  = 3
+    GO_DYNFLAG_LO_SPARKLE           = 0x08                  // makes GO sparkle
 };
 
 // EmotesText.dbc

@@ -352,30 +352,10 @@ struct GameObjectTemplate
         //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
         struct
         {
-            uint32 intactNumHits;                           //0
-            uint32 creditProxyCreature;                     //1
+            uint32 dmgPctState1;                            //0
+            uint32 dmgPctState2;                            //1
             uint32 state1Name;                              //2
-            uint32 intactEvent;                             //3
-            uint32 damagedDisplayId;                        //4
-            uint32 damagedNumHits;                          //5
-            uint32 empty3;                                  //6
-            uint32 empty4;                                  //7
-            uint32 empty5;                                  //8
-            uint32 damagedEvent;                            //9
-            uint32 destroyedDisplayId;                      //10
-            uint32 empty7;                                  //11
-            uint32 empty8;                                  //12
-            uint32 empty9;                                  //13
-            uint32 destroyedEvent;                          //14
-            uint32 empty10;                                 //15
-            uint32 debuildingTimeSecs;                      //16
-            uint32 empty11;                                 //17
-            uint32 destructibleData;                        //18
-            uint32 rebuildingEvent;                         //19
-            uint32 empty12;                                 //20
-            uint32 empty13;                                 //21
-            uint32 damageEvent;                             //22
-            uint32 empty14;                                 //23
+            uint32 state2Name;                              //3
         } building;
         //34 GAMEOBJECT_TYPE_GUILDBANK - empty
         //35 GAMEOBJECT_TYPE_TRAPDOOR
@@ -557,12 +537,6 @@ union GameObjectValue
     {
         OPvPCapturePoint *OPvPObj;
     } CapturePoint;
-    //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
-    struct
-    {
-        uint32 Health;
-        uint32 MaxHealth;
-    } Building;
 };
 
 struct GameObjectLocale
@@ -645,7 +619,6 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
 
         bool IsTransport() const;
         bool IsDynTransport() const;
-        bool IsDestructibleBuilding() const;
 
         uint32 GetDBTableGUIDLow() const { return m_DBTableGuid; }
 
@@ -793,18 +766,6 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
         void CastSpell(Unit* target, uint32 spell, bool triggered = true);
         void SendCustomAnim(uint32 anim);
         bool IsInRange(float x, float y, float z, float radius) const;
-
-        void ModifyHealth(int32 change, Unit* attackerOrHealer = NULL, uint32 spellId = 0);
-        // sets GameObject type 33 destruction flags and optionally default health for that state
-        void SetDestructibleState(GameObjectDestructibleState state, Player* eventInvoker = NULL, bool setHealth = false);
-        GameObjectDestructibleState GetDestructibleState() const
-        {
-            if (HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_DESTROYED))
-                return GO_DESTRUCTIBLE_DESTROYED;
-            if (HasFlag(GAMEOBJECT_FLAGS, GO_FLAG_DAMAGED))
-                return GO_DESTRUCTIBLE_DAMAGED;
-            return GO_DESTRUCTIBLE_INTACT;
-        }
 
         void EventInform(uint32 eventId, WorldObject* invoker = NULL);
 

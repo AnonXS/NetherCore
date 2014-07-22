@@ -42,7 +42,6 @@ char const CreatureModelDatafmt[] = "nixxfxxxxxxxxxxffxxxxxxx";
 char const CreatureSpellDatafmt[] = "niiiixxxx";
 char const CreatureTypefmt[] = "nxxxxxxxxxxxxxxxxxx";
 
-char const DestructibleModelDatafmt[] = "nxxixxxixxxixxxixxx";
 char const DungeonEncounterfmt[] = "niixissssssssssssssssxx";
 char const DurabilityCostsfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";
 char const DurabilityQualityfmt[] = "nf";
