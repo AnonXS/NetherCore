@@ -598,16 +598,17 @@ struct BannedAddOnsEntry
 
 struct BattlemasterListEntry
 {
-    uint32  id;                                             // 0
-    int32   mapid[8];                                       // 1-8 mapid
-    uint32  type;                                           // 9 map type (3 - BG, 4 - arena)
-    //uint32 canJoinAsGroup;                                // 10 (0 or 1)
-    char*   name[16];                                       // 11-26
-    //uint32 nameFlags                                      // 27 string flag, unused
-    uint32 maxGroupSize;                                    // 28 maxGroupSize, used for checking if queue as group
-    uint32 HolidayWorldStateId;                             // 29 new 3.1
-    //uint32 MinLevel;                                      // 30
-    //uint32 SomeLevel;                                     // 31, may be max level
+    uint32  id;                                            // 0
+    int32   mapid[8];                                      // 1-8 mapid
+    uint32  type;                                          // 9 map type (3 - BG, 4 - arena)
+    //uint32  minLevel;                                      // 10 m_minlevel
+    //uint32  maxLevel;                                      // 11 m_maxlevel
+    //uint32 maxPlayersPerTeam;                            // 12
+    uint32  maxGroupSize;                                  // 13 maxGroupSize, used for checking if queue as group (not sure if correct)
+    //uint32 canJoinAsGroup;                               // 14 (0 or 1)
+    char*   name[16];                                      // 15-30    m_name_lang
+    // 31 string flags
+    // 32 unused
 };
 
 #define MAX_OUTFIT_ITEMS 24

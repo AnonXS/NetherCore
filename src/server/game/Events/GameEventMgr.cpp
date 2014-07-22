@@ -1074,7 +1074,6 @@ void GameEventMgr::UnApplyEvent(uint16 event_id)
     ChangeEquipOrModel(event_id, false);
     // Remove quests that are events only to non event npc
     UpdateEventQuests(event_id, false);
-    UpdateWorldStates(event_id, false);
     // update npcflags in this event
     UpdateEventNPCFlags(event_id);
     // remove vendor items
@@ -1103,7 +1102,6 @@ void GameEventMgr::ApplyNewEvent(uint16 event_id)
     ChangeEquipOrModel(event_id, true);
     // Add quests that are events only to non event npc
     UpdateEventQuests(event_id, true);
-    UpdateWorldStates(event_id, true);
     // update npcflags in this event
     UpdateEventNPCFlags(event_id);
     // add vendor items
@@ -1469,25 +1467,6 @@ void GameEventMgr::UpdateEventQuests(uint16 event_id, bool activate)
                         break;                                  // but we can exit loop since the element is found
                     }
                 }
-            }
-        }
-    }
-}
-
-void GameEventMgr::UpdateWorldStates(uint16 event_id, bool Activate)
-{
-    GameEventData const& event = mGameEvent[event_id];
-    if (event.holiday_id != HOLIDAY_NONE)
-    {
-        BattlegroundTypeId bgTypeId = BattlegroundMgr::WeekendHolidayIdToBGType(event.holiday_id);
-        if (bgTypeId != BATTLEGROUND_TYPE_NONE)
-        {
-            BattlemasterListEntry const* bl = sBattlemasterListStore.LookupEntry(bgTypeId);
-            if (bl && bl->HolidayWorldStateId)
-            {
-                WorldPacket data;
-                sBattlegroundMgr->BuildUpdateWorldStatePacket(&data, bl->HolidayWorldStateId, Activate ? 1 : 0);
-                sWorld->SendGlobalMessage(&data);
             }
         }
     }

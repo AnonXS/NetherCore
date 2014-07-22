@@ -9469,22 +9469,6 @@ void Player::SendInitWorldStates(uint32 zoneid, uint32 areaid)
     data.put<uint16>(countPos, length);
 
     GetSession()->SendPacket(&data);
-    SendBGWeekendWorldStates();
-}
-
-void Player::SendBGWeekendWorldStates()
-{
-    for (uint32 i = 1; i < sBattlemasterListStore.GetNumRows(); ++i)
-    {
-        BattlemasterListEntry const* bl = sBattlemasterListStore.LookupEntry(i);
-        if (bl && bl->HolidayWorldStateId)
-        {
-            if (BattlegroundMgr::IsBGWeekend((BattlegroundTypeId)bl->id))
-                SendUpdateWorldState(bl->HolidayWorldStateId, 1);
-            else
-                SendUpdateWorldState(bl->HolidayWorldStateId, 0);
-        }
-    }
 }
 
 uint32 Player::GetXPRestBonus(uint32 xp)
