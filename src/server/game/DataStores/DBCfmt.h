@@ -39,10 +39,9 @@ char const CreatureDisplayInfofmt[] = "nixifxxxxxxxxx";
 char const CreatureDisplayInfoExtrafmt[] = "diixxxxxxxxxxxxxxxxxx";
 char const CreatureFamilyfmt[] = "nfifiiiissssssssssssssssxx";
 char const CreatureModelDatafmt[] = "nixxfxxxxxxxxxxffxxxxxxx";
-
 char const CreatureSpellDatafmt[] = "niiiixxxx";
 char const CreatureTypefmt[] = "nxxxxxxxxxxxxxxxxxx";
-char const CurrencyTypesfmt[] = "xnxi";
+
 char const DestructibleModelDatafmt[] = "nxxixxxixxxixxxixxx";
 char const DungeonEncounterfmt[] = "niixissssssssssssssssxx";
 char const DurabilityCostsfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiiiiiii";

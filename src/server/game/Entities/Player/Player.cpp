@@ -7150,8 +7150,6 @@ void Player::SetHonorPoints(uint32 value)
     if (value > sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS))
         value = sWorld->getIntConfig(CONFIG_MAX_HONOR_POINTS);
     SetUInt32Value(PLAYER_FIELD_HONOR_CURRENCY, value);
-    if (value)
-        AddKnownCurrency(ITEM_HONOR_POINTS_ID);
 }
 
 void Player::SetArenaPoints(uint32 value)
@@ -7159,8 +7157,6 @@ void Player::SetArenaPoints(uint32 value)
     if (value > sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS))
         value = sWorld->getIntConfig(CONFIG_MAX_ARENA_POINTS);
     SetUInt32Value(PLAYER_FIELD_ARENA_CURRENCY, value);
-    if (value)
-        AddKnownCurrency(ITEM_ARENA_POINTS_ID);
 }
 
 void Player::ModifyHonorPoints(int32 value, SQLTransaction trans)
@@ -24415,14 +24411,6 @@ void Player::LearnPetTalent(uint64 petGuid, uint32 talentId, uint32 talentRank)
         return;
     
     //placeholder
-}
-
-void Player::AddKnownCurrency(uint32 itemId)
-{
-    /* Not implemented in 2.4.3
-    if (CurrencyTypesEntry const* ctEntry = sCurrencyTypesStore.LookupEntry(itemId))
-        SetFlag64(PLAYER_FIELD_KNOWN_CURRENCIES, (1LL << (ctEntry->BitIndex-1)));
-    */
 }
 
 void Player::UpdateFallInformationIfNeed(MovementInfo const& minfo, uint16 opcode)

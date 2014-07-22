@@ -2469,9 +2469,6 @@ class Player : public Unit, public GridObject<Player>
         void SendRefundInfo(Item* item);
         void RefundItem(Item* item);
 
-        // know currencies are not removed at any point (0 displayed)
-        void AddKnownCurrency(uint32 itemId);
-
         void AdjustQuestReqItemCount(Quest const* quest, QuestStatusData& questStatusData);
 
         bool IsCanDelayTeleport() const { return m_bCanDelayTeleport; }

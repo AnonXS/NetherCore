@@ -2707,14 +2707,7 @@ void ObjectMgr::LoadItemTemplates()
                 }
 
                 if (BAG_FAMILY_MASK_CURRENCY_TOKENS & mask)
-                {
-                    CurrencyTypesEntry const* ctEntry = sCurrencyTypesStore.LookupEntry(itemTemplate.ItemId);
-                    if (!ctEntry)
-                    {
-                        TC_LOG_ERROR("sql.sql", "Item (Entry: %u) has currency bag family bit set in BagFamily but not listed in CurrencyTypes.dbc, remove bit", entry);
-                        itemTemplate.BagFamily &= ~mask;
-                    }
-                }
+                    itemTemplate.BagFamily &= ~mask;
             }
         }
 
