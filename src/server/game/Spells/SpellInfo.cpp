@@ -834,7 +834,7 @@ SpellInfo::SpellInfo(SpellEntry const* spellEntry)
     SpellFamilyFlags = spellEntry->SpellFamilyFlags;
     DmgClass = spellEntry->DmgClass;
     PreventionType = spellEntry->PreventionType;
-    AreaGroupId = spellEntry->AreaGroupId;
+    AreaId = spellEntry->AreaId;
     SchoolMask = spellEntry->SchoolMask;
     for (uint8 i = 0; i < MAX_SPELL_EFFECTS; ++i)
         Effects[i] = SpellEffectInfo(spellEntry, this, i);
@@ -1339,24 +1339,8 @@ SpellCastResult SpellInfo::CheckShapeshift(uint32 form) const
 SpellCastResult SpellInfo::CheckLocation(uint32 map_id, uint32 zone_id, uint32 area_id, Player const* player) const
 {
     // normal case
-    if (AreaGroupId > 0)
-    {
-        bool found = false;
-        AreaGroupEntry const* groupEntry = sAreaGroupStore.LookupEntry(AreaGroupId);
-        while (groupEntry)
-        {
-            for (uint8 i = 0; i < MAX_GROUP_AREA_IDS; ++i)
-                if (groupEntry->AreaId[i] == zone_id || groupEntry->AreaId[i] == area_id)
-                    found = true;
-            if (found || !groupEntry->nextGroup)
-                break;
-            // Try search in next group
-            groupEntry = sAreaGroupStore.LookupEntry(groupEntry->nextGroup);
-        }
-
-        if (!found)
-            return SPELL_FAILED_REQUIRES_AREA;
-    }
+    if (AreaId > 0 && AreaId != zone_id && AreaId != area_id)
+        return SPELL_FAILED_REQUIRES_AREA;
 
     // continent limitation (virtual continent)
     if (AttributesEx4 & SPELL_ATTR4_CAST_ONLY_IN_OUTLAND)

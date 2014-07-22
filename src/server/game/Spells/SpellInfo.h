@@ -351,7 +351,7 @@ public:
     flag96 SpellFamilyFlags;
     uint32 DmgClass;
     uint32 PreventionType;
-    int32  AreaGroupId;
+    int32  AreaId;
     uint32 SchoolMask;
     SpellEffectInfo Effects[MAX_SPELL_EFFECTS];
     uint32 ExplicitTargetMask;

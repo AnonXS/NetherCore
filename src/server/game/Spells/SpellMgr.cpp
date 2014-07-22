@@ -3417,7 +3417,7 @@ void SpellMgr::LoadSpellInfoCorrections()
                 break;
             case 71266: // Swarming Shadows
             case 72890: // Swarming Shadows
-                spellInfo->AreaGroupId = 0; // originally, these require area 4522, which is... outside of Icecrown Citadel
+                spellInfo->AreaId = 0; // originally, these require area 4522, which is... outside of Icecrown Citadel
                 break;
             case 70602: // Corruption
             case 48278: // Paralyze
