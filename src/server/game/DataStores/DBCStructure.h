@@ -845,15 +845,11 @@ struct FactionEntry
     int32       BaseRepValue[4];                            // 10-13    m_reputationBase
     uint32      ReputationFlags[4];                         // 14-17    m_reputationFlags
     uint32      team;                                       // 18       m_parentFactionID
-    float       spilloverRateIn;                            // 19       Faction gains incoming rep * spilloverRateIn
-    float       spilloverRateOut;                           // 20       Faction outputs rep * spilloverRateOut as spillover reputation
-    uint32      spilloverMaxRankIn;                         // 21       The highest rank the faction will profit from incoming spillover
-    //uint32    spilloverRank_unk;                          // 22       It does not seem to be the max standing at which a faction outputs spillover ...so no idea
-    char*       name[16];                                   // 23-38    m_name_lang
-                                                            // 39 string flags
-    //char*     description[16];                            // 40-55    m_description_lang
-                                                            // 56 string flags
-
+    char*       name[16];                                   // 19-34    m_name_lang
+                                                            // 35 string flags
+    //char*     description[16];                            // 26-51    m_description_lang
+                                                            // 52 string flags
+ 
     // helpers
     bool CanHaveReputation() const
     {
@@ -915,23 +911,24 @@ struct FactionTemplateEntry
 
 struct GameObjectDisplayInfoEntry
 {
-    uint32      Displayid;                                  // 0        m_ID
-    char* filename;                                      // 1
-    //uint32  unk1[10];   //2-11
-    float   minX;
-    float   minY;
-    float   minZ;
-    float   maxX;
-    float   maxY;
-    float   maxZ;
-    //uint32  transport;  //18
+    uint32  Displayid;                                      // 0        m_ID
+    char*   filename;                                       // 1
+    //uint32  unk1[10];                                     // 2-11
+    float   minX;                                           // 12                                  
+    float   minY;                                           // 13
+    float   minZ;                                           // 14
+    float   maxX;                                           // 15
+    float   maxY;                                           // 16
+    float   maxZ;                                           // 17
 };
 
 struct GemPropertiesEntry
 {
-    uint32      ID;
-    uint32      spellitemenchantement;
-    uint32      color;
+    uint32      ID;                                         // 0 
+    uint32      spellitemenchantement;                      // 1
+                                                            // 2 m_maxcount_inv
+                                                            // 3 m_maxcount_item
+    uint32      color;                                      // 4
 };
 
 // All Gt* DBC store data for 100 levels, some by 100 per class/race
