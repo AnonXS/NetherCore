@@ -24,7 +24,7 @@
 #include "AccountMgr.h"
 #include "World.h"
 
-#define DUMP_TABLE_COUNT 27
+#define DUMP_TABLE_COUNT 25
 struct DumpTable
 {
     char const* name;
