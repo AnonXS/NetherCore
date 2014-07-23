@@ -1329,13 +1329,6 @@ struct ScalingStatValuesEntry
     }
 };
 
-//struct SkillLineCategoryEntry{
-//    uint32    id;                                         // 0      m_ID
-//    char*     name[16];                                   // 1-17   m_name_lang
-//                                                          // 18 string flag
-//    uint32    displayOrder;                               // 19     m_sortIndex
-//};
-
 struct SkillLineEntry
 {
     uint32    id;                                           // 0        m_ID
@@ -1346,9 +1339,6 @@ struct SkillLineEntry
     //char*     description[16];                            // 20-35    m_description_lang
                                                             // 36 string flags
     uint32    spellIcon;                                    // 37       m_spellIconID
-    //char*     alternateVerb[16];                          // 38-53    m_alternateVerb_lang
-                                                            // 54 string flags
-    uint32    canLink;                                      // 55       m_canLink (prof. with recipes
 };
 
 struct SkillLineAbilityEntry
@@ -1366,6 +1356,7 @@ struct SkillLineAbilityEntry
     uint32    max_value;                                    // 10       m_trivialSkillLineRankHigh
     uint32    min_value;                                    // 11       m_trivialSkillLineRankLow
     //uint32    characterPoints[2];                         // 12-13    m_characterPoints[2]
+    uint32    reqtrainpoints;                               // 14
 };
 
 struct SkillRaceClassInfoEntry
@@ -1402,7 +1393,6 @@ struct SoundEntriesEntry
                                                             // 26       m_minDistance
                                                             // 27       m_distanceCutoff
                                                             // 28       m_EAXDef
-                                                            // 29       new in 3.1
 };
 
 #define MAX_SPELL_EFFECTS 3

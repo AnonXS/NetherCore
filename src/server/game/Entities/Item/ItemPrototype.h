@@ -539,6 +539,7 @@ struct _ItemStat
     uint32  ItemStatType;
     int32   ItemStatValue;
 };
+
 struct _Spell
 {
     int32 SpellId;                                         // id from Spell.dbc

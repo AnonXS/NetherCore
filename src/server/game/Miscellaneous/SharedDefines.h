@@ -2134,9 +2134,7 @@ enum QuestTypes
     QUEST_TYPE_WORLD_EVENT         = 82,
     QUEST_TYPE_LEGENDARY           = 83,
     QUEST_TYPE_ESCORT              = 84,
-    QUEST_TYPE_HEROIC              = 85,
-    QUEST_TYPE_RAID_10             = 88,
-    QUEST_TYPE_RAID_25             = 89
+    QUEST_TYPE_HEROIC              = 85
 };
 
 // values based at QuestSort.dbc
@@ -2176,13 +2174,7 @@ enum QuestSort
     QUEST_SORT_REPUTATION          = 367,
     QUEST_SORT_INVASION            = 368,
     QUEST_SORT_MIDSUMMER           = 369,
-    QUEST_SORT_BREWFEST            = 370,
-    QUEST_SORT_INSCRIPTION         = 371,
-    QUEST_SORT_DEATH_KNIGHT        = 372,
-    QUEST_SORT_JEWELCRAFTING       = 373,
-    QUEST_SORT_NOBLEGARDEN         = 374,
-    QUEST_SORT_PILGRIMS_BOUNTY     = 375,
-    QUEST_SORT_LOVE_IS_IN_THE_AIR  = 376
+    QUEST_SORT_BREWFEST            = 370
 };
 
 inline uint8 ClassByQuestSort(int32 QuestSort)
@@ -2387,8 +2379,6 @@ inline uint32 SkillByQuestSort(int32 QuestSort)
         case QUEST_SORT_TAILORING:      return SKILL_TAILORING;
         case QUEST_SORT_COOKING:        return SKILL_COOKING;
         case QUEST_SORT_FIRST_AID:      return SKILL_FIRST_AID;
-        case QUEST_SORT_JEWELCRAFTING:  return SKILL_JEWELCRAFTING;
-        case QUEST_SORT_INSCRIPTION:    return SKILL_INSCRIPTION;
     }
     return 0;
 }
