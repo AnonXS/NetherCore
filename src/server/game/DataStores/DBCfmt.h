@@ -68,21 +68,17 @@ char const ItemLimitCategoryEntryfmt[] = "nxxxxxxxxxxxxxxxxxii";
 char const ItemRandomPropertiesfmt[] = "nxiiixxssssssssssssssssx";
 char const ItemRandomSuffixfmt[] = "nssssssssssssssssxxiiixxiiixx";
 char const ItemSetEntryfmt[] = "dssssssssssssssssxiiiiiiiiiixxxxxxxiiiiiiiiiiiiiiiiii";
-
-
-char const LightEntryfmt[] = "nifffxxxxxxxxxx";
+char const LightEntryfmt[] = "nifffxxxxxxx";
 char const LiquidTypefmt[] = "nxxixixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 char const LockEntryfmt[] = "niiiiiiiiiiiiiiiiiiiiiiiixxxxxxxx";
 char const MailTemplateEntryfmt[] = "nxxxxxxxxxxxxxxxxxssssssssssssssssx";
 char const MapEntryfmt[] = "nxiixssssssssssssssssxixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxixiffxiii";
 char const MapDifficultyEntryfmt[] = "diisxxxxxxxxxxxxxxxxiix";
-char const MovieEntryfmt[] = "nxx";
-char const OverrideSpellDatafmt[] = "niiiiiiiiiix";
+
+char const PvPDifficultyfmt[] = "diiiii";
 char const QuestFactionRewardfmt[] = "niiiiiiiiii";
 char const QuestSortEntryfmt[] = "nxxxxxxxxxxxxxxxxx";
 char const QuestXPfmt[] = "niiiiiiiiii";
-char const PowerDisplayfmt[] = "nixxxx";
-char const PvPDifficultyfmt[] = "diiiii";
 char const RandomPropertiesPointsfmt[] = "niiiiiiiiiiiiiii";
 char const ScalingStatDistributionfmt[] = "niiiiiiiiiiiiiiiiiiiii";
 char const ScalingStatValuesfmt[] = "iniiiiiiiiiiiiiiiiiiiiii";

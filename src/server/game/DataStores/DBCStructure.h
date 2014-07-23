@@ -1087,44 +1087,41 @@ struct ItemSetEntry
 
 struct LightEntry
 {
-    uint32 Id;
-    uint32 MapId;
-    float X;
-    float Y;
-    float Z;
-    //float FalloffStart;
-    //float FalloffEnd;
-    //uint32 SkyAndFog;
-    //uint32 WaterSettings;
-    //uint32 SunsetParams;
-    //uint32 OtherParams;
-    //uint32 DeathParams;
-    //uint32 Unknown;
-    //uint32 Unknown;
-    //uint32 Unknown;
+    uint32 Id;                                              // 0 
+    uint32 MapId;                                           // 1 
+    float X;                                                // 2 
+    float Y;                                                // 3
+    float Z;                                                // 4 
+    //float FalloffStart;                                   // 5 
+    //float FalloffEnd;                                     // 6
+    //uint32 SkyAndFog;                                     // 7
+    //uint32 WaterSettings;                                 // 8
+    //uint32 SunsetParams;                                  // 9
+    //uint32 OtherParams;                                   // 10
+    //uint32 DeathParams;                                   // 11
 };
 
 struct LiquidTypeEntry
 {
-    uint32 Id;
-    //char*  Name;
-    //uint32 Flags;
-    uint32 Type;
-    //uint32 SoundId;
-    uint32 SpellId;
-    //float MaxDarkenDepth;
-    //float FogDarkenIntensity;
-    //float AmbDarkenIntensity;
-    //float DirDarkenIntensity;
-    //uint32 LightID;
-    //float ParticleScale;
-    //uint32 ParticleMovement;
-    //uint32 ParticleTexSlots;
-    //uint32 LiquidMaterialID;
-    //char* Texture[6];
-    //uint32 Color[2];
-    //float Unk1[18];
-    //uint32 Unk2[4];
+    uint32 Id;                                              // 0
+    //char*  Name;                                          // 1
+    //uint32 Flags;                                         // 2
+    uint32 Type;                                            // 3
+    //uint32 SoundId;                                       // 4
+    uint32 SpellId;                                         // 5
+    //float MaxDarkenDepth;                                 // 6
+    //float FogDarkenIntensity;                             // 7
+    //float AmbDarkenIntensity;                             // 8
+    //float DirDarkenIntensity;                             // 9
+    //uint32 LightID;                                       // 10
+    //float ParticleScale;                                  // 11
+    //uint32 ParticleMovement;                              // 12
+    //uint32 ParticleTexSlots;                              // 13
+    //uint32 LiquidMaterialID;                              // 14
+    //char* Texture[6];                                     // 15-21
+    //uint32 Color[2];                                      // 22-24
+    //float Unk1[18];                                       // 24-42
+    //uint32 Unk2[4];                                       // 43-47
 };
 
 #define MAX_LOCK_CASE 8
@@ -1194,7 +1191,7 @@ struct MapEntry
 
     bool IsContinent() const
     {
-        return MapID == 0 || MapID == 1 || MapID == 530 || MapID == 571;
+        return MapID == 0 || MapID == 1 || MapID == 530;
     }
 
     bool IsDynamicDifficultyMap() const { return (Flags & MAP_FLAG_DYNAMIC_DIFFICULTY) != 0; }
@@ -1210,32 +1207,6 @@ struct MapDifficultyEntry
     uint32      resetTime;                                  // 20
     uint32      maxPlayers;                                 // 21
     //char*       difficultyString;                         // 22
-};
-
-struct MovieEntry
-{
-    uint32      Id;                                         // 0 index
-    //char*       filename;                                 // 1
-    //uint32      unk2;                                     // 2 always 100
-};
-
-#define MAX_OVERRIDE_SPELL 10
-
-struct OverrideSpellDataEntry
-{
-    uint32      id;                                         // 0
-    uint32      spellId[MAX_OVERRIDE_SPELL];                // 1-10
-    //uint32      unk0;                                     // 11
-};
-
-struct PowerDisplayEntry
-{
-    uint32 Id;                                              // 0
-    uint32 PowerType;                                       // 1
-    //char*  Name;                                          // 2
-    //uint32 R;                                             // 3
-    //uint32 G;                                             // 4
-    //uint32 B;                                             // 5
 };
 
 struct PvPDifficultyEntry

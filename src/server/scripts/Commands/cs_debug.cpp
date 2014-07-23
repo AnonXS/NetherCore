@@ -46,7 +46,6 @@ public:
         static ChatCommand debugPlayCommandTable[] =
         {
             { "cinematic",     rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_CINEMATIC, false, &HandleDebugPlayCinematicCommand,   "", NULL },
-            { "movie",         rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_MOVIE,     false, &HandleDebugPlayMovieCommand,       "", NULL },
             { "sound",         rbac::RBAC_PERM_COMMAND_DEBUG_PLAY_SOUND,     false, &HandleDebugPlaySoundCommand,       "", NULL },
             { NULL,            0,                                      false, NULL,                               "", NULL }
         };
@@ -122,30 +121,6 @@ public:
         }
 
         handler->GetSession()->GetPlayer()->SendCinematicStart(id);
-        return true;
-    }
-
-    static bool HandleDebugPlayMovieCommand(ChatHandler* handler, char const* args)
-    {
-        // USAGE: .debug play movie #movieid
-        // #movieid - ID decimal number from Movie.dbc (1st column)
-        if (!*args)
-        {
-            handler->SendSysMessage(LANG_BAD_VALUE);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        uint32 id = atoi((char*)args);
-
-        if (!sMovieStore.LookupEntry(id))
-        {
-            handler->PSendSysMessage(LANG_MOVIE_NOT_EXIST, id);
-            handler->SetSentErrorMessage(true);
-            return false;
-        }
-
-        handler->GetSession()->GetPlayer()->SendMovieStart(id);
         return true;
     }
 
