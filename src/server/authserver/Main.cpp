@@ -114,12 +114,15 @@ int main(int argc, char** argv)
         TC_LOG_ERROR("server.authserver", "Specified port out of allowed range (1-65535)");
         return 1;
     }
-    
+
     std::string bindIp = sConfigMgr->GetStringDefault("BindIP", "0.0.0.0");
     AsyncAcceptor<AuthSession> authServer(_ioService, bindIp, port);
 
     // Set signal handlers
     boost::asio::signal_set signals(_ioService, SIGINT, SIGTERM);
+#if PLATFORM == PLATFORM_WINDOWS
+    signals.add(SIGBREAK);
+#endif
     signals.async_wait(SignalHandler);
 
     // Set process priority according to configuration settings
@@ -186,18 +189,10 @@ void StopDB()
     MySQL::Library_End();
 }
 
-void SignalHandler(const boost::system::error_code& error, int signalNumber)
+void SignalHandler(const boost::system::error_code& error, int /*signalNumber*/)
 {
     if (!error)
-    {
-        switch (signalNumber)
-        {
-        case SIGINT:
-        case SIGTERM:
-            _ioService.stop();
-            break;
-        }
-    }
+        _ioService.stop();
 }
 
 void KeepDatabaseAliveHandler(const boost::system::error_code& error)
