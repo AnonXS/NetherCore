@@ -79,16 +79,13 @@ struct TransportTemplate
 };
 
 typedef std::map<uint32, TransportAnimationEntry const*> TransportPathContainer;
-typedef std::map<uint32, TransportRotationEntry const*> TransportPathRotationContainer;
 
 struct TransportAnimation
 {
     TransportPathContainer Path;
-    TransportPathRotationContainer Rotations;
     uint32 TotalTime;
 
     TransportAnimationEntry const* GetAnimNode(uint32 time) const;
-    G3D::Quat GetAnimRotation(uint32 time) const;
 };
 
 typedef std::map<uint32, TransportAnimation> TransportAnimationContainer;
@@ -144,11 +141,6 @@ class TransportMgr
         void GeneratePath(GameObjectTemplate const* goInfo, TransportTemplate* transport);
 
         void AddPathNodeToTransport(uint32 transportEntry, uint32 timeSeg, TransportAnimationEntry const* node);
-
-        void AddPathRotationToTransport(uint32 transportEntry, uint32 timeSeg, TransportRotationEntry const* node)
-        {
-            _transportAnimations[transportEntry].Rotations[timeSeg] = node;
-        }
 
         // Container storing transport templates
         TransportTemplates _transportTemplates;

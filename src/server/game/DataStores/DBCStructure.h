@@ -1608,8 +1608,8 @@ struct SpellItemEnchantmentConditionEntry
 
 struct StableSlotPricesEntry
 {
-    uint32 Slot;
-    uint32 Price;
+    uint32  Slot;                                           // 1
+    uint32  Price;                                          // 2
 };
 
 struct SummonPropertiesEntry
@@ -1623,7 +1623,6 @@ struct SummonPropertiesEntry
 };
 
 #define MAX_TALENT_RANK 5
-#define MAX_PET_TALENT_RANK 3                               // use in calculations, expected <= MAX_TALENT_RANK
 #define MAX_TALENT_TABS 3
 
 struct TalentEntry
@@ -1639,8 +1638,7 @@ struct TalentEntry
     uint32    DependsOnRank;                                // 16
                                                             // 17-18 not used
     //uint32  needAddInSpellBook;                           // 19  also need disable higest ranks on reset talent tree
-    //uint32  unk2;                                         // 20, all 0
-    //uint64  allowForPet;                                  // 21 its a 64 bit mask for pet 1<<m_categoryEnumID in CreatureFamily.dbc
+    uint32    DependsOnSpell;                               // 20
 };
 
 struct TalentTabEntry
@@ -1651,9 +1649,8 @@ struct TalentTabEntry
     //unit32  spellicon;                                    // 18
                                                             // 19 not used
     uint32  ClassMask;                                      // 20
-    uint32  petTalentMask;                                  // 21
-    uint32  tabpage;                                        // 22
-    //char* internalname;                                   // 23
+    uint32  tabpage;                                        // 21
+    //char* internalname;                                   // 22
 };
 
 struct TaxiNodesEntry
@@ -1717,17 +1714,6 @@ struct TransportAnimationEntry
     //uint32  MovementId;
 };
 
-struct TransportRotationEntry
-{
-    //uint32  Id;
-    uint32  TransportEntry;
-    uint32  TimeSeg;
-    float   X;
-    float   Y;
-    float   Z;
-    float   W;
-};
-
 struct WMOAreaTableEntry
 {
     uint32 Id;                                              // 0 index
@@ -1756,8 +1742,6 @@ struct WorldMapAreaEntry
     float   x1;                                             // 6
     float   x2;                                             // 7
     int32   virtual_map_id;                                 // 8 -1 (map_id have correct map) other: virtual map where zone show (map_id - where zone in fact internally)
-    // int32   dungeonMap_id;                               // 9 pointer to DungeonMap.dbc (owerride x1, x2, y1, y2 coordinates)
-    // uint32  parentMapID;                                 // 10
 };
 
 #define MAX_WORLD_MAP_OVERLAY_AREA_IDX 4
@@ -1782,42 +1766,6 @@ struct WorldSafeLocsEntry
     //char*   name[16]                                      // 5-20 name, unused
                                                             // 21 name flags, unused
 };
-
-/*
-struct WorldStateSounds
-{
-    uint32    ID;                                           // 0        Worldstate
-    uint32    unk;                                          // 1
-    uint32    areaTable;                                    // 2
-    uint32    WMOAreaTable;                                 // 3
-    uint32    zoneIntroMusicTable;                          // 4
-    uint32    zoneIntroMusic;                               // 5
-    uint32    zoneMusic;                                    // 6
-    uint32    soundAmbience;                                // 7
-    uint32    soundProviderPreferences;                     // 8
-};
-*/
-
-/*
-struct WorldStateUI
-{
-    uint32    ID;                                           // 0
-    uint32    map_id;                                       // 1        Can be -1 to show up everywhere.
-    uint32    zone;                                         // 2        Can be zero for "everywhere".
-    uint32    phaseMask;                                    // 3        Phase this WorldState is avaliable in
-    uint32    icon;                                         // 4        The icon that is used in the interface.
-    char*     textureFilename;                              // 5
-    char*     text;                                         // 6-21     The worldstate text
-    char*     description;                                  // 22-38    Text shown when hovering mouse on icon
-    uint32    worldstateID;                                 // 39       This is the actual ID used
-    uint32    type;                                         // 40       0 = unknown, 1 = unknown, 2 = not shown in ui, 3 = wintergrasp
-    uint32    unk1;                                         // 41
-    uint32    unk2;                                         // 43
-    uint32    unk3;                                         // 44-58
-    uint32    unk4;                                         // 59-61    Used for some progress bars.
-    uint32    unk7;                                         // 62       Unused in 3.3.5a
-};
-*/
 
 // GCC have alternative #pragma pack() syntax and old gcc version not support pack(pop), also any gcc version not support it at some platform
 #if defined(__GNUC__)

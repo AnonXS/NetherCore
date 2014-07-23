@@ -101,21 +101,18 @@ char const SpellItemEnchantmentConditionfmt[] = "nbbbbbxxxxxbbbbbbbbbbiiiiiXXXXX
 char const SpellRadiusfmt[] = "nfff";
 char const SpellRangefmt[] = "nffixxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 char const SpellShapeshiftfmt[] = "nxxxxxxxxxxxxxxxxxxiixiiixxiiiiiiii";
-
-
 char const StableSlotPricesfmt[] = "ni";
 char const SummonPropertiesfmt[] = "niiiii";
-char const TalentEntryfmt[] = "niiiiiiiixxxxixxixxxxxx";
-char const TalentTabEntryfmt[] = "nxxxxxxxxxxxxxxxxxxxiiix";
+char const TalentEntryfmt[] = "niiiiiiiixxxxixxixxxi";
+char const TalentTabEntryfmt[] = "nxxxxxxxxxxxxxxxxxxxiix";
 char const TaxiNodesEntryfmt[] = "nifffssssssssssssssssxii";
 char const TaxiPathEntryfmt[] = "niii";
 char const TaxiPathNodeEntryfmt[] = "diiifffiiii";
 char const TeamContributionPointsfmt[] = "df";
 char const TotemCategoryEntryfmt[] = "nxxxxxxxxxxxxxxxxxii";
 char const TransportAnimationfmt[] = "diifffx";
-char const TransportRotationfmt[] = "diiffff";
 char const WMOAreaTableEntryfmt[] = "niiixxxxxiixxxxxxxxxxxxxxxxx";
-char const WorldMapAreaEntryfmt[] = "xinxffffixx";
+char const WorldMapAreaEntryfmt[] = "xinxffffi";
 char const WorldMapOverlayEntryfmt[] = "nxiiiixxxxxxxxxxx";
 char const WorldSafeLocsEntryfmt[] = "nifffxxxxxxxxxxxxxxxxx";
 

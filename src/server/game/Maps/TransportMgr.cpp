@@ -72,6 +72,12 @@ void TransportMgr::LoadTransportTemplates()
             continue;
         }
 
+        if (sTaxiPathNodesByPath[goInfo->moTransport.taxiPathId].empty())
+        {
+            TC_LOG_ERROR("sql.sql", "Transport %u (name: %s) has an invalid TaxiPath (Id: %u) not exist, skipped.", entry, goInfo->name.c_str(), goInfo->moTransport.taxiPathId);
+            continue;
+        }
+
         // paths are generated per template, saves us from generating it again in case of instanced transports
         TransportTemplate& transport = _transportTemplates[entry];
         transport.entry = entry;
@@ -461,22 +467,4 @@ TransportAnimationEntry const* TransportAnimation::GetAnimNode(uint32 time) cons
             return itr2->second;
 
     return Path.begin()->second;
-}
-
-G3D::Quat TransportAnimation::GetAnimRotation(uint32 time) const
-{
-    if (Rotations.empty())
-        return G3D::Quat(0.0f, 0.0f, 0.0f, 1.0f);
-
-    TransportRotationEntry const* rot = Rotations.begin()->second;
-    for (TransportPathRotationContainer::const_reverse_iterator itr2 = Rotations.rbegin(); itr2 != Rotations.rend(); ++itr2)
-    {
-        if (time >= itr2->first)
-        {
-            rot = itr2->second;
-            break;
-        }
-    }
-
-    return G3D::Quat(rot->X, rot->Y, rot->Z, rot->W);
 }
