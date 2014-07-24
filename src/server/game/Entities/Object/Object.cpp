@@ -363,7 +363,7 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
         if (unit->m_movementInfo.GetMovementFlags() & MOVEMENTFLAG_SPLINE_ENABLED)
             Movement::PacketBuilder::WriteCreate(*unit->movespline, *data);
     }
-    else
+    else if (flags & UPDATEFLAG_STATIONARY_POSITION)
     {
         /* not iplemented in 2.4.3, maybe we need parts of this code in 0x40
         if (flags & UPDATEFLAG_POSITION)
@@ -407,8 +407,15 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
                 *data << float(0);
         }*/
 
-        // 0x40
-        if (flags & UPDATEFLAG_STATIONARY_POSITION)
+        if (flags & UPDATEFLAG_TRANSPORT && object->ToGameObject()->IsTransport())
+        {
+            ASSERT(object);
+            *data << object->GetTransOffsetX();
+            *data << object->GetTransOffsetY();
+            *data << object->GetTransOffsetZ();
+            *data << object->GetOrientation();
+        }
+        else
         {
             ASSERT(object);
             *data << object->GetStationaryX();
