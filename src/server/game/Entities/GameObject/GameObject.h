@@ -31,6 +31,7 @@ class Group;
 class Transport;
 
 #define MAX_GAMEOBJECT_QUEST_ITEMS 6
+#define GO_ANIMPROGRESS_DEFAULT 100
 
 // from `gameobject_template`
 struct GameObjectTemplate

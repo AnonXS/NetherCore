@@ -388,7 +388,7 @@ Transport* TransportMgr::CreateTransport(uint32 entry, uint32 guid /*= 0*/, Map*
 
     // initialize the gameobject base
     uint32 guidLow = guid ? guid : sObjectMgr->GenerateLowGuid(HIGHGUID_MO_TRANSPORT);
-    if (!trans->Create(guidLow, entry, mapId, x, y, z, o, 255))
+    if (!trans->Create(guidLow, entry, mapId, x, y, z, o, GO_ANIMPROGRESS_DEFAULT))
     {
         delete trans;
         return NULL;
