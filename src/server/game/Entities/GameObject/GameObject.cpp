@@ -243,9 +243,6 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMa
             SetGoAnimProgress(animprogress);
             m_goValue.FishingHole.MaxOpens = urand(GetGOInfo()->fishinghole.minSuccessOpens, GetGOInfo()->fishinghole.maxSuccessOpens);
             break;
-        case GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING:
-            SetGoAnimProgress(255);
-            break;
         case GAMEOBJECT_TYPE_TRANSPORT:
             SetUInt32Value(GAMEOBJECT_LEVEL, goinfo->transport.pause);
             SetGoState(goinfo->transport.startOpen ? GO_STATE_ACTIVE : GO_STATE_READY);
@@ -1140,16 +1137,13 @@ void GameObject::UseDoorOrButton(uint32 time_to_restore, bool alternative /* = f
 
 void GameObject::SetGoArtKit(uint32 kit)
 {
-    /* Not implemented in 2.4.3
-    SetByteValue(GAMEOBJECT_BYTES_1, 2, kit);
-    */
     SetUInt32Value(GAMEOBJECT_ARTKIT, kit);
     GameObjectData* data = const_cast<GameObjectData*>(sObjectMgr->GetGOData(m_DBTableGuid));
     if (data)
         data->artKit = kit;
 }
 
-/*void GameObject::SetGoArtKit(uint32 artkit, GameObject* go, uint32 lowguid)
+void GameObject::SetGoArtKit(uint32 artkit, GameObject* go, uint32 lowguid)
 {
     const GameObjectData* data = NULL;
     if (go)
@@ -1162,7 +1156,7 @@ void GameObject::SetGoArtKit(uint32 kit)
 
     if (data)
         const_cast<GameObjectData*>(data)->artKit = artkit;
-}*/
+}
 
 void GameObject::SwitchDoorOrButton(bool activate, bool alternative /* = false */)
 {
@@ -1904,9 +1898,6 @@ void GameObject::SetLootState(LootState state, Unit* unit)
 
 void GameObject::SetGoState(GOState state)
 {
-    /* Not implemented in 2.4.3
-    SetByteValue(GAMEOBJECT_BYTES_1, 0, state);
-    */
     SetUInt32Value(GAMEOBJECT_STATE, state);
     sScriptMgr->OnGameObjectStateChanged(this, state);
     if (m_model && !IsTransport())

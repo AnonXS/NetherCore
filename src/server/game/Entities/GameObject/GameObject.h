@@ -349,15 +349,8 @@ struct GameObjectTemplate
             uint32 mapID;                                   //0
             uint32 difficulty;                              //1
         } dungeonDifficulty;
-        //32 GAMEOBJECT_TYPE_BARBER_CHAIR
-        //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING
-        struct
-        {
-            uint32 dmgPctState1;                            //0
-            uint32 dmgPctState2;                            //1
-            uint32 state1Name;                              //2
-            uint32 state2Name;                              //3
-        } building;
+        //32 GAMEOBJECT_TYPE_BARBER_CHAIR - not used
+        //33 GAMEOBJECT_TYPE_DESTRUCTIBLE_BUILDING - not used
         //34 GAMEOBJECT_TYPE_GUILDBANK - empty
         //35 GAMEOBJECT_TYPE_TRAPDOOR
         struct
@@ -684,7 +677,6 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
         void getFishLoot(Loot* loot, Player* loot_owner);
         void getFishLootJunk(Loot* loot, Player* loot_owner);
 
-        // Change to TBC Version, needs testing
         GameobjectTypes GetGoType() const { return GameobjectTypes(GetUInt32Value(GAMEOBJECT_TYPE_ID)); }
         void SetGoType(GameobjectTypes type) { SetUInt32Value(GAMEOBJECT_TYPE_ID, type); }
         GOState GetGoState() const { return GOState(GetUInt32Value(GAMEOBJECT_STATE)); }
@@ -693,7 +685,7 @@ class GameObject : public WorldObject, public GridObject<GameObject>, public Map
         void SetGoArtKit(uint32 artkit);
         uint32 GetGoAnimProgress() const { return GetUInt32Value(GAMEOBJECT_ANIMPROGRESS); }
         void SetGoAnimProgress(uint32 animprogress) { SetUInt32Value(GAMEOBJECT_ANIMPROGRESS, animprogress); }
-        //static void SetGoArtKit(uint32 artkit, GameObject* go, uint32 lowguid = 0);
+        static void SetGoArtKit(uint32 artkit, GameObject* go, uint32 lowguid = 0);
 
         void SetPhaseMask(uint32 newPhaseMask, bool update);
         void EnableCollision(bool enable);
