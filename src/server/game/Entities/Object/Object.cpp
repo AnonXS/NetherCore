@@ -189,8 +189,8 @@ void Object::BuildCreateUpdateBlockForPlayer(UpdateData* data, Player* target) c
     if (!target)
         return;
 
-    uint8  updateType = UPDATETYPE_CREATE_OBJECT;
-    uint16 flags      = m_updateFlag;
+    uint8 updateType = UPDATETYPE_CREATE_OBJECT;
+    uint8 flags      = m_updateFlag;
 
     /** lower flag1 **/
     if (target == this)                                      // building packet for yourself

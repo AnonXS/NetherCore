@@ -245,7 +245,7 @@ class Object
         uint16 m_objectType;
 
         TypeID m_objectTypeId;
-        uint16 m_updateFlag;
+        uint8 m_updateFlag;
 
         union
         {
