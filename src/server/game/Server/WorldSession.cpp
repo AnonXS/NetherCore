@@ -793,7 +793,8 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo* mi)
 
     if (mi->HasMovementFlag(MOVEMENTFLAG_ONTRANSPORT))
     {
-        data >> mi->transport.guid; //readPackGUID(mi->transport.guid); does not work here in 2.4.3
+        //readPackGUID(mi->transport.guid); does not work here in 2.4.3
+        data >> mi->transport.guid;
         data >> mi->transport.pos.PositionXYZOStream();
         data >> mi->transport.time;
     }
@@ -905,8 +906,8 @@ void WorldSession::WriteMovementInfo(WorldPacket* data, MovementInfo* mi)
 
     if (mi->HasMovementFlag(MOVEMENTFLAG_ONTRANSPORT))
     {
-       data->appendPackGUID(mi->transport.guid);
-
+       //data->appendPackGUID(mi->transport.guid); does not work here in 2.4.3
+       *data << mi->transport.guid;
        *data << mi->transport.pos.PositionXYZOStream();
        *data << mi->transport.time;
     }

@@ -365,48 +365,6 @@ void Object::BuildMovementUpdate(ByteBuffer* data, uint16 flags) const
     }
     else if (flags & UPDATEFLAG_STATIONARY_POSITION)
     {
-        /* not iplemented in 2.4.3, maybe we need parts of this code in 0x40
-        if (flags & UPDATEFLAG_POSITION)
-        {
-            ASSERT(object);
-            Transport* transport = object->GetTransport();
-
-            if (transport)
-                data->append(transport->GetPackGUID());
-            else
-                *data << uint8(0);
-
-            *data << object->GetPositionX();
-            *data << object->GetPositionY();
-            if (isType(TYPEMASK_UNIT))
-                *data << unit->GetPositionZMinusOffset();
-            else
-                *data << object->GetPositionZ();
-
-            if (transport)
-            {
-                *data << object->GetTransOffsetX();
-                *data << object->GetTransOffsetY();
-                *data << object->GetTransOffsetZ();
-            }
-            else
-            {
-                *data << object->GetPositionX();
-                *data << object->GetPositionY();
-                if (isType(TYPEMASK_UNIT))
-                    *data << unit->GetPositionZMinusOffset();
-                else
-                    *data << object->GetPositionZ();
-            }
-
-            *data << object->GetOrientation();
-
-            if (GetTypeId() == TYPEID_CORPSE)
-                *data << float(object->GetOrientation());
-            else
-                *data << float(0);
-        }*/
-
         if (flags & UPDATEFLAG_TRANSPORT && object->ToGameObject()->IsTransport())
         {
             ASSERT(object);

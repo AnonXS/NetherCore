@@ -15497,7 +15497,8 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEMENTFLAG_ONTRANSPORT)
     {
-        *data << GetTransGUID();  //data->append(GetTransport()->GetPackGUID());
+        //data->append(GetTransport()->GetPackGUID()); does not work here in 2.4.3
+        *data << GetTransGUID();  
         *data << float (GetTransOffsetX());
         *data << float (GetTransOffsetY());
         *data << float (GetTransOffsetZ());
