@@ -135,10 +135,14 @@ void TransportMgr::GeneratePath(GameObjectTemplate const* goInfo, TransportTempl
         if (!mapChange)
         {
             TaxiPathNodeEntry const& node_i = path[i];
-            if (i != path.size() - 1 && (node_i.actionFlag & 1 || node_i.mapid != path[i + 1].mapid))
+            // we dont want a teleport on transport without map change, e.g. Feathermoon Ferry, The Iron Eagle
+            // looks like actionFlag = 1 indicates a loading screen for the client
+            // old code: if (i != path.size() - 1 && (node_i.actionFlag & 1 || node_i.mapid != path[i + 1].mapid))
+            if (i != path.size() - 1 && node_i.mapid != path[i + 1].mapid)   
             {
                 keyFrames.back().Teleport = true;
                 mapChange = true;
+                transport->mapChange = true;
             }
             else
             {
@@ -183,8 +187,9 @@ void TransportMgr::GeneratePath(GameObjectTemplate const* goInfo, TransportTempl
     else
         transport->inInstance = sMapStore.LookupEntry(*transport->mapsUsed.begin())->Instanceable();
 
-    // last to first is always "teleport", even for closed paths
-    keyFrames.back().Teleport = true;
+    // we dont want a teleport on transport without map change, e.g. Feathermoon Ferry, The Iron Eagle
+    if (transport->mapChange)
+        keyFrames.back().Teleport = true;
 
     const float speed = float(goInfo->moTransport.moveSpeed);
     const float accel = float(goInfo->moTransport.accelRate);

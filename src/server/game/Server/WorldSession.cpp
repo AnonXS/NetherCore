@@ -793,8 +793,7 @@ void WorldSession::ReadMovementInfo(WorldPacket &data, MovementInfo* mi)
 
     if (mi->HasMovementFlag(MOVEMENTFLAG_ONTRANSPORT))
     {
-        data.readPackGUID(mi->transport.guid);
-
+        data >> mi->transport.guid; //readPackGUID(mi->transport.guid); does not work here in 2.4.3
         data >> mi->transport.pos.PositionXYZOStream();
         data >> mi->transport.time;
     }

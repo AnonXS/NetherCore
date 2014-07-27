@@ -7396,6 +7396,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
         case 72176:
             basepoints0 = 3;
             break;
+        /* 2.4.3 server crash proc on fall dmg
         case 15337: // Improved Spirit Tap (Rank 1)
         case 15338: // Improved Spirit Tap (Rank 2)
         {
@@ -7405,7 +7406,7 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
 
             target = victim;
             break;
-        }
+        }*/
         // Professor Putricide - Ooze Spell Tank Protection
         case 71770:
             if (victim)
@@ -15496,11 +15497,7 @@ void Unit::BuildMovementPacket(ByteBuffer *data) const
     // 0x00000200
     if (GetUnitMovementFlags() & MOVEMENTFLAG_ONTRANSPORT)
     {
-        if (GetTransport())
-            data->append(GetTransport()->GetPackGUID());
-        else
-            *data << (uint8)0;
-
+        *data << GetTransGUID();  //data->append(GetTransport()->GetPackGUID());
         *data << float (GetTransOffsetX());
         *data << float (GetTransOffsetY());
         *data << float (GetTransOffsetZ());

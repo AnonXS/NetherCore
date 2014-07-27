@@ -66,11 +66,12 @@ struct KeyFrame
 
 struct TransportTemplate
 {
-    TransportTemplate() : inInstance(false), pathTime(0), accelTime(0.0f), accelDist(0.0f), entry(0) { }
+    TransportTemplate() : inInstance(false), mapChange(false), pathTime(0), accelTime(0.0f), accelDist(0.0f), entry(0) { }
     ~TransportTemplate();
 
     std::set<uint32> mapsUsed;
     bool inInstance;
+    bool mapChange;
     uint32 pathTime;
     KeyFrameVec keyFrames;
     float accelTime;

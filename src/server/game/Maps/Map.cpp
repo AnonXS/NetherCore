@@ -576,7 +576,7 @@ bool Map::AddToMap(Transport* obj)
                 UpdateData data;
                 obj->BuildCreateUpdateBlockForPlayer(&data, itr->GetSource());
                 WorldPacket packet;
-                data.BuildPacket(&packet);
+                data.BuildPacket(&packet, true);
                 itr->GetSource()->SendDirectMessage(&packet);
             }
         }
@@ -2502,7 +2502,7 @@ void Map::SendInitSelf(Player* player)
     // attach to player data current transport data
     if (Transport* transport = player->GetTransport())
     {
-        bool hasTransport = true;
+        hasTransport = true;
         transport->BuildCreateUpdateBlockForPlayer(&data, player);
     }
 
@@ -2524,12 +2524,19 @@ void Map::SendInitTransports(Player* player)
 {
     // Hack to send out transports
     UpdateData transData;
+    bool hasTransport = false;
+
     for (TransportsContainer::const_iterator i = _transports.begin(); i != _transports.end(); ++i)
+    {
         if (*i != player->GetTransport())
+        {   
+            hasTransport = true;
             (*i)->BuildCreateUpdateBlockForPlayer(&transData, player);
+        }  
+    }
 
     WorldPacket packet;
-    transData.BuildPacket(&packet);
+    transData.BuildPacket(&packet, hasTransport);
     player->GetSession()->SendPacket(&packet);
 }
 
