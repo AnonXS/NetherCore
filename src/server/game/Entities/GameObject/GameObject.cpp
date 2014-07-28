@@ -210,6 +210,10 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMa
         TC_LOG_ERROR("sql.sql", "Gameobject (GUID: %u Entry: %u) not created: non-existing GO type '%u' in `gameobject_template`. It will crash client if created.", guidlow, name_id, goinfo->type);
         return false;
     }
+    
+    SetFloatValue(GAMEOBJECT_POS_X, x);
+    SetFloatValue(GAMEOBJECT_POS_Y, y);
+    SetFloatValue(GAMEOBJECT_POS_Z, z);
     SetFloatValue(GAMEOBJECT_ROTATION+0, rotation0);
     SetFloatValue(GAMEOBJECT_ROTATION+1, rotation1);
 
