@@ -210,10 +210,6 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMa
         TC_LOG_ERROR("sql.sql", "Gameobject (GUID: %u Entry: %u) not created: non-existing GO type '%u' in `gameobject_template`. It will crash client if created.", guidlow, name_id, goinfo->type);
         return false;
     }
-    /* Not implemented in 2.4.3
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+0, rotation0);
-    SetFloatValue(GAMEOBJECT_PARENTROTATION+1, rotation1);
-    */
     SetFloatValue(GAMEOBJECT_ROTATION+0, rotation0);
     SetFloatValue(GAMEOBJECT_ROTATION+1, rotation1);
 
@@ -232,7 +228,6 @@ bool GameObject::Create(uint32 guidlow, uint32 name_id, Map* map, uint32 phaseMa
     SetDisplayId(goinfo->displayId);
 
     m_model = GameObjectModel::Create(*this);
-    // GAMEOBJECT_BYTES_1, index at 0, 1, 2 and 3
     SetGoType(GameobjectTypes(goinfo->type));
     SetGoState(go_state);
     SetGoArtKit(artKit);
@@ -756,12 +751,6 @@ void GameObject::SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask)
     data.posY = GetPositionY();
     data.posZ = GetPositionZ();
     data.orientation = GetOrientation();
-    /* Not implemented in 2.4.3
-    data.rotation0 = GetFloatValue(GAMEOBJECT_PARENTROTATION+0);
-    data.rotation1 = GetFloatValue(GAMEOBJECT_PARENTROTATION+1);
-    data.rotation2 = GetFloatValue(GAMEOBJECT_PARENTROTATION+2);
-    data.rotation3 = GetFloatValue(GAMEOBJECT_PARENTROTATION+3);
-    */
     data.rotation0 = GetFloatValue(GAMEOBJECT_ROTATION+0);
     data.rotation1 = GetFloatValue(GAMEOBJECT_ROTATION+1);
     data.rotation2 = GetFloatValue(GAMEOBJECT_ROTATION+2);
@@ -791,12 +780,6 @@ void GameObject::SaveToDB(uint32 mapid, uint8 spawnMask, uint32 phaseMask)
     stmt->setFloat(index++, GetPositionY());
     stmt->setFloat(index++, GetPositionZ());
     stmt->setFloat(index++, GetOrientation());
-    /* Not implemented in 2.4.3
-    stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_PARENTROTATION));
-    stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_PARENTROTATION+1));
-    stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_PARENTROTATION+2));
-    stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_PARENTROTATION+3));
-    */
     stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_ROTATION));
     stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_ROTATION+1));
     stmt->setFloat(index++, GetFloatValue(GAMEOBJECT_ROTATION+2));
@@ -1844,6 +1827,8 @@ std::string const & GameObject::GetNameForLocaleIdx(LocaleConstant loc_idx) cons
 
 void GameObject::UpdateRotationFields(float rotation2 /*=0.0f*/, float rotation3 /*=0.0f*/)
 {
+    SetFloatValue(GAMEOBJECT_FACING, GetOrientation());
+    
     static double const atan_pow = atan(pow(2.0f, -20.0f));
 
     double f_rot1 = std::sin(GetOrientation() / 2.0f);
@@ -2027,7 +2012,6 @@ void GameObject::BuildValuesUpdate(uint8 updateType, ByteBuffer* data, Player* t
         {
             updateMask.SetBit(index);
 
-            //if (index == GAMEOBJECT_DYNAMIC)
             if (index == GAMEOBJECT_DYN_FLAGS)
             {
                 uint16 dynFlags = 0;
