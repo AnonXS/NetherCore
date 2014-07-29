@@ -930,6 +930,7 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recvData)
 void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_UPDATE_ACCOUNT_DATA, NOT YET IMPLEMENTED");
+    recvData.rpos(recvData.wpos());
 
     /*
     uint32 type, timestamp, decompressedSize;
@@ -987,6 +988,7 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
 void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_REQUEST_ACCOUNT_DATA, NOT YET IMPLEMENTED");
+    recvData.rpos(recvData.wpos());
 
     /*
     uint32 type;
@@ -1590,15 +1592,11 @@ void WorldSession::HandleMoveSetCanFlyAckOpcode(WorldPacket& recvData)
     // fly mode on/off
     TC_LOG_DEBUG("network", "WORLD: CMSG_MOVE_SET_CAN_FLY_ACK");
 
-    uint64 guid;                                            // guid - unused
-    recvData.readPackGUID(guid);
-
-    recvData.read_skip<uint32>();                          // unk
-
     MovementInfo movementInfo;
-    movementInfo.guid = guid;
+    
+    recvData.read_skip<uint64>();                          // guid
+    recvData.read_skip<uint32>();                          // unk
     ReadMovementInfo(recvData, &movementInfo);
-
     recvData.read_skip<float>();                           // unk2
 
     _player->m_mover->m_movementInfo.flags = movementInfo.GetMovementFlags();
