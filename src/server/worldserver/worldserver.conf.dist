@@ -1438,21 +1438,21 @@ ChatFlood.MessageDelay = 1
 ChatFlood.MuteTime = 10
 
 #
-#    Channel.RestrictedLfg
+#    Channel.RestrictedLfgTool
 #        Description: Restrict LookingForGroup channel to characters registered in the LFG tool.
 #        Default:     1 - (Enabled, Allow join to channel only if registered in LFG)
 #                     0 - (Disabled, Allow join to channel in any time)
 
-Channel.RestrictedLfg = 1
+Channel.RestrictedLfgTool = 1
 
 #
-#    Channel.AllowLfgInWorld
-#        Description: Allow LookingForGroup channel in the world.
-#		 This setting can be combined with Channel.RestrictedLfg
-#        Default:     1 - (Enabled, Allow join to channel from everywhere)
-#                     0 - (Disabled, Restrict channel to city)
+#    Channel.RestrictedLfgCity
+#        Description: Restrict LookingForGroup channel to city.
+#        This setting can be combined with Channel.RestrictedLfgTool
+#        Default:     0 - (Disabled, Allow join to channel from everywhere)
+#                     1 - (Enabled, Restrict channel to city)            
 
-Channel.AllowLfgInWorld = 1
+Channel.RestrictedLfgCity = 0
 
 #
 #    ChatLevelReq.Channel

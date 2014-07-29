@@ -987,8 +987,8 @@ void World::LoadConfigSettings(bool reload)
 
     m_bool_configs[CONFIG_DETECT_POS_COLLISION] = sConfigMgr->GetBoolDefault("DetectPosCollision", true);
 
-    m_bool_configs[CONFIG_RESTRICTED_LFG_CHANNEL]       = sConfigMgr->GetBoolDefault("Channel.RestrictedLfg", true);
-    m_bool_configs[CONFIG_ALLOW_LFG_IN_WORLD]           = sConfigMgr->GetBoolDefault("Channel.AllowLfgInWorld", false);
+    m_bool_configs[CONFIG_RESTRICTED_LFG_CHANNEL_TOOL]  = sConfigMgr->GetBoolDefault("Channel.RestrictedLfgTool", true);
+    m_bool_configs[CONFIG_RESTRICTED_LFG_CHANNEL_CITY]  = sConfigMgr->GetBoolDefault("Channel.RestrictedLfgCity", false);
     m_bool_configs[CONFIG_TALENTS_INSPECTING]           = sConfigMgr->GetBoolDefault("TalentsInspecting", true);
     m_bool_configs[CONFIG_CHAT_FAKE_MESSAGE_PREVENTING] = sConfigMgr->GetBoolDefault("ChatFakeMessagePreventing", false);
     m_int_configs[CONFIG_CHAT_STRICT_LINK_CHECKING_SEVERITY] = sConfigMgr->GetIntDefault("ChatStrictLinkChecking.Severity", 0);

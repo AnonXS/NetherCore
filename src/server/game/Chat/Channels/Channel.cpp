@@ -180,7 +180,7 @@ void Channel::JoinChannel(Player* player, std::string const& pass)
     }
 
     if (HasFlag(CHANNEL_FLAG_LFG) &&
-        sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) &&
+        sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL_TOOL) &&
         AccountMgr::IsPlayerAccount(player->GetSession()->GetSecurity()) && //FIXME: Move to RBAC
         !sLFGMgr->IsQueued(player))
     {

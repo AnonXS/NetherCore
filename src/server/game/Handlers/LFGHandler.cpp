@@ -92,7 +92,7 @@ void WorldSession::HandleLfgClearOpcode(WorldPacket & /*recv_data */)
 
     sLFGMgr->ClearLFG(_player->GetGUID());
 
-    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL_TOOL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
         sLFGMgr->LeaveLFGChannel(_player);
 }
 
@@ -136,7 +136,7 @@ void WorldSession::HandleLfmClearOpcode(WorldPacket & /*recv_data */)
     TC_LOG_DEBUG("lfg", "CMSG_CLEAR_LOOKING_FOR_MORE %s", GetPlayerInfo().c_str());
     sLFGMgr->ClearLFM(_player->GetGUID());
 
-    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL_TOOL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
         sLFGMgr->LeaveLFGChannel(_player);
 }
 
@@ -214,7 +214,7 @@ void WorldSession::SendLfgResult(LfgType type, uint32 entry, LfgMode lfg_mode)
 
     SendPacket(&data);
     
-    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
+    if (sWorld->getBoolConfig(CONFIG_RESTRICTED_LFG_CHANNEL_TOOL) && AccountMgr::IsPlayerAccount(_player->GetSession()->GetSecurity()))
     {
         if (sLFGMgr->IsQueued(_player))
             sLFGMgr->JoinLFGChannel(_player);
