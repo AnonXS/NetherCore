@@ -930,29 +930,23 @@ void WorldSession::HandleAreaTriggerOpcode(WorldPacket& recvData)
 void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_UPDATE_ACCOUNT_DATA, NOT YET IMPLEMENTED");
-    recvData.rpos(recvData.wpos());
+    recvData.rfinish();
 
-    /*
+    /* Not yet implemented for 2.4.3, not sure what the package contains
     uint32 type, timestamp, decompressedSize;
     recvData >> type >> timestamp >> decompressedSize;
-
+    
     TC_LOG_DEBUG("network", "UAD: type %u, time %u, decompressedSize %u", type, timestamp, decompressedSize);
 
     if (type > NUM_ACCOUNT_DATA_TYPES)
         return;
-
-    if (decompressedSize == 0)                               // erase
+    
+    if (decompressedSize == 0)                // erase
     {
         SetAccountData(AccountDataType(type), 0, "");
-
-        WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4+4);
-        data << uint32(type);
-        data << uint32(0);
-        SendPacket(&data);
-
         return;
     }
-
+    
     if (decompressedSize > 0xFFFF)
     {
         recvData.rfinish();                   // unnneded warning spam in this case
@@ -977,20 +971,15 @@ void WorldSession::HandleUpdateAccountData(WorldPacket& recvData)
     dest >> adata;
 
     SetAccountData(AccountDataType(type), timestamp, adata);
-
-    WorldPacket data(SMSG_UPDATE_ACCOUNT_DATA_COMPLETE, 4+4);
-    data << uint32(type);
-    data << uint32(0);
-    SendPacket(&data);
     */
 }
 
 void WorldSession::HandleRequestAccountData(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_REQUEST_ACCOUNT_DATA, NOT YET IMPLEMENTED");
-    recvData.rpos(recvData.wpos());
+    recvData.rfinish();
 
-    /*
+    /* Not yet implemented for 2.4.3, not sure what the client expects as an response
     uint32 type;
     recvData >> type;
 
@@ -1649,14 +1638,6 @@ void WorldSession::HandleWorldStateUITimerUpdate(WorldPacket& /*recvData*/)
     WorldPacket data(SMSG_WORLD_STATE_UI_TIMER_UPDATE, 4);
     data << uint32(time(NULL));
     SendPacket(&data);
-}
-
-void WorldSession::HandleReadyForAccountDataTimes(WorldPacket& /*recvData*/)
-{
-    // empty opcode
-    TC_LOG_DEBUG("network", "WORLD: CMSG_READY_FOR_ACCOUNT_DATA_TIMES");
-
-    SendAccountDataTimes(GLOBAL_CACHE_MASK);
 }
 
 void WorldSession::SendSetPhaseShift(uint32 PhaseShift)

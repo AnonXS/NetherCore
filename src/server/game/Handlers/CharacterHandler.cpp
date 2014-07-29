@@ -726,9 +726,7 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder* holder)
     data << pCurrChar->GetOrientation();
     SendPacket(&data);
 
-    // load player specific part before send times
-    LoadAccountData(holder->GetPreparedResult(PLAYER_LOGIN_QUERY_LOAD_ACCOUNT_DATA), PER_CHARACTER_CACHE_MASK);
-    SendAccountDataTimes(PER_CHARACTER_CACHE_MASK);
+    SendAccountDataTimes();
 
     data.Initialize(SMSG_FEATURE_SYSTEM_STATUS, 2);         // added in 2.2.0
     data << uint8(2);                                       // unknown value

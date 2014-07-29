@@ -380,7 +380,7 @@ bool World::RemoveQueuedPlayer(WorldSession* sess)
         pop_sess->SendAddonsInfo();
 
         pop_sess->SendClientCacheVersion(sWorld->getIntConfig(CONFIG_CLIENTCACHE_VERSION));
-        pop_sess->SendAccountDataTimes(GLOBAL_CACHE_MASK);
+        pop_sess->SendAccountDataTimes();
 
         m_QueuedPlayer.pop_front();
 

@@ -303,7 +303,7 @@ class WorldSession
         // Account Data
         AccountData* GetAccountData(AccountDataType type) { return &m_accountData[type]; }
         void SetAccountData(AccountDataType type, time_t tm, std::string const& data);
-        void SendAccountDataTimes(uint32 mask);
+        void SendAccountDataTimes();
         void LoadGlobalAccountData();
         void LoadAccountData(PreparedQueryResult result, uint32 mask);
 
@@ -853,7 +853,6 @@ class WorldSession
         void HandleCharCustomize(WorldPacket& recvData);
         void HandleQueryInspectAchievements(WorldPacket& recvData);
         void HandleWorldStateUITimerUpdate(WorldPacket& recvData);
-        void HandleReadyForAccountDataTimes(WorldPacket& recvData);
         void HandleQueryQuestsCompleted(WorldPacket& recvData);
         void HandleQuestPOIQuery(WorldPacket& recvData);
         void HandleUpdateProjectilePosition(WorldPacket& recvPacket);
