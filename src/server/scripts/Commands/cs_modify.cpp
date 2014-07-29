@@ -404,7 +404,6 @@ public:
             if (handler->HasLowerSecurity(target->ToPlayer(), 0))
                 return false;
             target->ToPlayer()->SetFreeTalentPoints(tp);
-            target->ToPlayer()->SendTalentsInfoData(false);
             return true;
         }
         else if (target->ToCreature()->IsPet())
@@ -416,7 +415,6 @@ public:
                 if (handler->HasLowerSecurity(owner->ToPlayer(), 0))
                     return false;
                 ((Pet*)target)->SetFreeTalentPoints(tp);
-                owner->ToPlayer()->SendTalentsInfoData(true);
                 return true;
             }
         }

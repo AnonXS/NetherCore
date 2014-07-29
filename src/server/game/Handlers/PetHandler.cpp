@@ -849,7 +849,6 @@ void WorldSession::HandlePetLearnTalent(WorldPacket& recvData)
     recvData >> guid >> talentId >> requestedRank;
 
     _player->LearnPetTalent(guid, talentId, requestedRank);
-    _player->SendTalentsInfoData(true);
 }
 
 void WorldSession::HandleLearnPreviewTalentsPet(WorldPacket& recvData)
@@ -873,8 +872,6 @@ void WorldSession::HandleLearnPreviewTalentsPet(WorldPacket& recvData)
 
         _player->LearnPetTalent(guid, talentId, talentRank);
     }
-
-    _player->SendTalentsInfoData(true);
 
     recvData.rfinish();
 }

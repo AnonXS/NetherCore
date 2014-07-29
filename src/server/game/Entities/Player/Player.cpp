@@ -3066,9 +3066,6 @@ void Player::InitTalentForLevel()
         else
             SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
     }
-
-    if (!GetSession()->PlayerLoading())
-        SendTalentsInfoData(false);                         // update at client
 }
 
 void Player::InitStatsForLevel(bool reapplyMods)
@@ -9510,7 +9507,6 @@ void Player::ResetPetTalents()
         return;
     }
     pet->resetTalents();
-    SendTalentsInfoData(true);
 }
 
 /*********************************************************/
@@ -22154,8 +22150,6 @@ void Player::SendInitialPacketsBeforeAddToMap()
     // SMSG_SET_FLAT_SPELL_MODIFIER
     // SMSG_UPDATE_AURA_DURATION
 
-    SendTalentsInfoData(false);
-
     // SMSG_INSTANCE_DIFFICULTY
     data.Initialize(SMSG_INSTANCE_DIFFICULTY, 4+4);
     data << uint32(GetMap()->GetDifficulty());
@@ -24551,17 +24545,6 @@ void Player::BuildPetTalentsInfoData(WorldPacket* data)
     //placeholder
 }
 
-void Player::SendTalentsInfoData(bool pet)
-{
-    WorldPacket data(SMSG_TALENTS_INFO, 50);
-    data << uint8(pet ? 1 : 0);
-    if (pet)
-        BuildPetTalentsInfoData(&data);
-    else
-        BuildPlayerTalentsInfoData(&data);
-    GetSession()->SendPacket(&data);
-}
-
 void Player::BuildEnchantmentsInfoData(WorldPacket* data)
 {
     uint32 slotUsedMask = 0;
@@ -24761,8 +24744,6 @@ void Player::UpdateSpecCount(uint8 count)
     CharacterDatabase.CommitTransaction(trans);
 
     SetSpecsCount(count);
-
-    SendTalentsInfoData(false);
 }
 
 void Player::ActivateSpec(uint8 spec)

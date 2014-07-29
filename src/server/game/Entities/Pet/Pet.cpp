@@ -339,8 +339,6 @@ bool Pet::LoadPetFromDB(Player* owner, uint32 petEntry, uint32 petnumber, bool c
     if (owner->GetGroup())
         owner->SetGroupUpdateFlag(GROUP_UPDATE_PET);
 
-    owner->SendTalentsInfoData(true);
-
     if (getPetType() == HUNTER_PET)
     {
         PreparedStatement* stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_PET_DECLINED_NAME);
@@ -1730,9 +1728,6 @@ void Pet::InitTalentForLevel()
         resetTalents(); // Remove all talent points
 
     SetFreeTalentPoints(talentPointsForLevel - m_usedTalentCount);
-
-    if (!m_loading)
-        GetOwner()->SendTalentsInfoData(true);
 }
 
 uint8 Pet::GetMaxTalentPointsForLevel(uint8 level)

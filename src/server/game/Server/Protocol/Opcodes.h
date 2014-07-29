@@ -1317,7 +1317,7 @@ enum Opcodes
     //CMSG_EQUIPMENT_SET_SAVE                         = 0x924,
     CMSG_UPDATE_PROJECTILE_POSITION                 = 0x925,
     SMSG_SET_PROJECTILE_POSITION                    = 0x926,
-    SMSG_TALENTS_INFO                               = 0x927,
+    //SMSG_TALENTS_INFO                               = 0x927,
     CMSG_LEARN_PREVIEW_TALENTS                      = 0x928,
     CMSG_LEARN_PREVIEW_TALENTS_PET                  = 0x929,
     CMSG_SET_ACTIVE_TALENT_GROUP_OBSOLETE           = 0x930,
