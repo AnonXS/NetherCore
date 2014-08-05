@@ -623,7 +623,7 @@ void LoadDBCStores(const std::string& dataPath)
         !sGemPropertiesStore.LookupEntry(1127)     ||       // last added in 2.4.3
         !sItemStore.LookupEntry(56806)             ||       // last added in 3.3.5a
         !sItemExtendedCostStore.LookupEntry(2997)  ||       // last added in 3.3.5a
-        !sMapStore.LookupEntry(724)                ||       // last added in 3.3.5a
+        !sMapStore.LookupEntry(598)                ||       // last added in 2.4.3
         !sSpellStore.LookupEntry(53085))                    // last added in 2.4.3
     {
         TC_LOG_ERROR("misc", "You have _outdated_ DBC files. Please extract correct versions from current using client.");

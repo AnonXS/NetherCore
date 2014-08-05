@@ -2073,7 +2073,7 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
     if (!GetSession()->HasPermission(rbac::RBAC_PERM_SKIP_CHECK_DISABLE_MAP) && DisableMgr::IsDisabledFor(DISABLE_TYPE_MAP, mapid, this))
     {
         TC_LOG_ERROR("maps", "Player (GUID: %u, name: %s) tried to enter a forbidden map %u", GetGUIDLow(), GetName().c_str(), mapid);
-        SendTransferAborted(mapid, TRANSFER_ABORT_MAP_NOT_ALLOWED);
+        SendTransferAborted(mapid, TRANSFER_ABORT_NOT_FOUND);
         return false;
     }
 
@@ -22284,7 +22284,6 @@ void Player::SendTransferAborted(uint32 mapid, TransferAbortReason reason, uint8
     {
         case TRANSFER_ABORT_INSUF_EXPAN_LVL:
         case TRANSFER_ABORT_DIFFICULTY:
-        case TRANSFER_ABORT_UNIQUE_MESSAGE:
             // these are the ONLY cases that have an extra argument in the packet!!!
             data << uint8(arg);
             break;
