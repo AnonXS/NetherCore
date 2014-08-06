@@ -344,7 +344,7 @@ bool AchievementChatLink::Initialize(std::istringstream& iss)
     _achievement = sAchievementMgr->GetAchievement(achievementId);
     if (!_achievement)
     {
-        TC_LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid achivement id %u in |achievement command", iss.str().c_str(), achievementId);
+        TC_LOG_TRACE("chat.system", "ChatHandler::isValidChatMessage('%s'): got invalid achievement id %u in |achievement command", iss.str().c_str(), achievementId);
         return false;
     }
     // Check delimiter

@@ -1629,14 +1629,14 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
             AchievementEntry const* achievement = sAchievementMgr->GetAchievement(cond->ConditionValue1);
             if (!achievement)
             {
-                TC_LOG_ERROR("sql.sql", "Achivement condition has non existing achivement id (%u), skipped", cond->ConditionValue1);
+                TC_LOG_ERROR("sql.sql", "Achievement condition has non existing achievement id (%u), skipped", cond->ConditionValue1);
                 return false;
             }
 
             if (cond->ConditionValue2)
-                TC_LOG_ERROR("sql.sql", "Achivement condition has useless data in value2 (%u)!", cond->ConditionValue2);
+                TC_LOG_ERROR("sql.sql", "Achievement condition has useless data in value2 (%u)!", cond->ConditionValue2);
             if (cond->ConditionValue3)
-                TC_LOG_ERROR("sql.sql", "Achivement condition has useless data in value3 (%u)!", cond->ConditionValue3);
+                TC_LOG_ERROR("sql.sql", "Achievement condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
         case CONDITION_CLASS:
