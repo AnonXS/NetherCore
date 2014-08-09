@@ -62,7 +62,9 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
     recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint64>();                          // 0
     recvData >> name;                                      // name
-    recvData.read_skip<std::string>();                     // some string
+    recvData.read_skip<uint32>();                          // 0
+    recvData.read_skip<uint32>();                          // 0
+    recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint32>();                          // 0
@@ -71,12 +73,7 @@ void WorldSession::HandlePetitionBuyOpcode(WorldPacket& recvData)
     recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint32>();                          // 0
     recvData.read_skip<uint16>();                          // 0
-    recvData.read_skip<uint32>();                          // 0
-    recvData.read_skip<uint32>();                          // 0
-    recvData.read_skip<uint32>();                          // 0
-
-    for (int i = 0; i < 10; ++i)
-        recvData.read_skip<std::string>();
+    recvData.read_skip<uint8>();                           // 0
 
     recvData >> clientIndex;                               // index
     recvData.read_skip<uint32>();                          // 0
@@ -369,10 +366,6 @@ void WorldSession::SendPetitionQueryOpcode(uint64 petitionguid)
     data << uint32(0);                                      // 10
     data << uint32(0);                                      // 11
     data << uint32(0);                                      // 13 count of next strings?
-
-    for (int i = 0; i < 10; ++i)
-        data << uint8(0);                                   // some string
-
     data << uint32(0);                                      // 14
 
     data << uint32(type != GUILD_CHARTER_TYPE);             // 15 0 - guild, 1 - arena team
