@@ -852,10 +852,13 @@ std::string AuctionEntry::BuildAuctionMailSubject(MailAuctionAnswers response) c
 
 std::string AuctionEntry::BuildAuctionMailBody(uint32 lowGuid, uint32 bid, uint32 buyout, uint32 deposit, uint32 cut)
 {
+    time_t distrTime = sWorld->GetGameTime() + sWorld->getIntConfig(CONFIG_MAIL_DELIVERY_DELAY);
+
     std::ostringstream strm;
     strm.width(16);
     strm << std::right << std::hex << MAKE_NEW_GUID(lowGuid, 0, HIGHGUID_PLAYER);   // HIGHGUID_PLAYER always present, even for empty guids
     strm << std::dec << ':' << bid << ':' << buyout;
-    strm << ':' << deposit << ':' << cut;
+    strm << ':' << deposit << ':' << cut << ":0:";
+    strm << secsToTimeBitFields(distrTime);
     return strm.str();
 }

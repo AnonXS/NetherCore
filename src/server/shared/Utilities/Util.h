@@ -76,6 +76,12 @@ std::string secsToTimeString(uint64 timeInSecs, bool shortText = false, bool hou
 uint32 TimeStringToSecs(const std::string& timestring);
 std::string TimeToTimestampStr(time_t t);
 
+inline uint32 secsToTimeBitFields(time_t secs)
+{
+    tm* lt = localtime(&secs);
+    return (lt->tm_year - 100) << 24 | lt->tm_mon << 20 | (lt->tm_mday - 1) << 14 | lt->tm_wday << 11 | lt->tm_hour << 6 | lt->tm_min;
+}
+
 /* Return a random number in the range min..max. */
 int32 irand(int32 min, int32 max);
 
