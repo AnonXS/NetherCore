@@ -663,16 +663,10 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_BUY_ITEM_IN_SLOT");
     uint64 vendorguid, bagguid;
-    uint32 item, slot, count;
-    uint8 bagslot;
+    uint32 item;
+    uint8 bagslot, count;
 
-    recvData >> vendorguid >> item  >> slot >> bagguid >> bagslot >> count;
-
-    // client expects count starting at 1, and we send vendorslot+1 to client already
-    if (slot > 0)
-        --slot;
-    else
-        return;                                             // cheating
+    recvData >> vendorguid >> item >> bagguid >> bagslot >> count;
 
     uint8 bag = NULL_BAG;                                   // init for case invalid bagGUID
 
@@ -698,25 +692,19 @@ void WorldSession::HandleBuyItemInSlotOpcode(WorldPacket& recvData)
     if (bag == NULL_BAG)
         return;
 
-    GetPlayer()->BuyItemFromVendorSlot(vendorguid, slot, item, count, bag, bagslot);
+    GetPlayer()->BuyItemFromVendorSlot(vendorguid, item, count, bag, bagslot);
 }
 
 void WorldSession::HandleBuyItemOpcode(WorldPacket& recvData)
 {
     TC_LOG_DEBUG("network", "WORLD: Received CMSG_BUY_ITEM");
     uint64 vendorguid;
-    uint32 item, slot, count;
-    uint8 unk1;
+    uint32 item;
+    uint8 count, unk1;
 
-    recvData >> vendorguid >> item >> slot >> count >> unk1;
+    recvData >> vendorguid >> item >> count >> unk1;
 
-    // client expects count starting at 1, and we send vendorslot+1 to client already
-    if (slot > 0)
-        --slot;
-    else
-        return; // cheating
-
-    GetPlayer()->BuyItemFromVendorSlot(vendorguid, slot, item, count, NULL_BAG, NULL_SLOT);
+    GetPlayer()->BuyItemFromVendorSlot(vendorguid, item, count, NULL_BAG, NULL_SLOT);
 }
 
 void WorldSession::HandleListInventoryOpcode(WorldPacket& recvData)
