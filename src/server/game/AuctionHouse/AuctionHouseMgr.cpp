@@ -222,7 +222,7 @@ void AuctionHouseMgr::SendAuctionOutbiddedMail(AuctionEntry* auction, uint32 new
     if (oldBidder || oldBidder_accId)
     {
         if (oldBidder && newBidder)
-            oldBidder->GetSession()->SendAuctionBidderNotification(auction->GetHouseId(), auction->Id, newBidder->GetGUID(), newPrice, auction->GetAuctionOutBid(), auction->itemEntry);
+            oldBidder->GetSession()->SendAuctionBidderNotification(auction->GetHouseId(), auction->Id, newBidder->GetGUID(), newPrice, auction->GetAuctionOutBid(newPrice), auction->itemEntry);
 
         MailDraft(auction->BuildAuctionMailSubject(AUCTION_OUTBIDDED), AuctionEntry::BuildAuctionMailBody(auction->owner, auction->bid, auction->buyout, auction->deposit, auction->GetAuctionCut()))
             .AddMoney(auction->bid)
@@ -647,6 +647,12 @@ uint32 AuctionEntry::GetAuctionCut() const
 uint32 AuctionEntry::GetAuctionOutBid() const
 {
     uint32 outbid = CalculatePct(bid, 5);
+    return outbid ? outbid : 1;
+}
+
+uint32 AuctionEntry::GetAuctionOutBid(uint32 newprice) const
+{
+    uint32 outbid = CalculatePct(newprice, 5);
     return outbid ? outbid : 1;
 }
 
