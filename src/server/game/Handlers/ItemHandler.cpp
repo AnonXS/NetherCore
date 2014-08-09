@@ -368,6 +368,14 @@ void WorldSession::HandleItemQuerySingleOpcode(WorldPacket& recvData)
             data << pProto->Damage[i].DamageType;
         }
 
+        // TBC compatibility (placeholder)
+        for (int i = 0; i < 3; ++i)
+        {
+            data << float(0.0f);
+            data << float(0.0f);
+            data << uint32(0);
+        }
+
         // resistances (7)
         data << pProto->Armor;
         data << pProto->HolyRes;
