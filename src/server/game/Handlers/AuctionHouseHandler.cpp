@@ -66,7 +66,6 @@ void WorldSession::SendAuctionHello(uint64 guid, Creature* unit)
     WorldPacket data(MSG_AUCTION_HELLO, 12);
     data << uint64(guid);
     data << uint32(ahEntry->houseId);
-    data << uint8(1);                                       // 3.3.3: 1 - AH enabled, 0 - AH disabled
     SendPacket(&data);
 }
 
@@ -113,35 +112,11 @@ void WorldSession::SendAuctionOwnerNotification(AuctionEntry* auction)
 //this void creates new auction and adds auction to some auctionhouse
 void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
 {
-    uint64 auctioneer;
-    uint32 itemsCount, etime, bid, buyout;
+    uint64 auctioneer, itemGUID;
+    uint32 etime, bid, buyout;
+
     recvData >> auctioneer;
-    recvData >> itemsCount;
-
-    uint64 itemGUIDs[MAX_AUCTION_ITEMS]; // 160 slot = 4x 36 slot bag + backpack 16 slot
-    memset(itemGUIDs, 0, sizeof(itemGUIDs));
-    uint32 count[MAX_AUCTION_ITEMS];
-    memset(count, 0, sizeof(count));
-
-    if (itemsCount > MAX_AUCTION_ITEMS)
-    {
-        SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-        recvData.rfinish();
-        return;
-    }
-
-    for (uint32 i = 0; i < itemsCount; ++i)
-    {
-        recvData >> itemGUIDs[i];
-        recvData >> count[i];
-
-        if (!itemGUIDs[i] || !count[i] || count[i] > 1000)
-        {
-            recvData.rfinish();
-            return;
-        }
-    }
-
+    recvData >> itemGUID;
     recvData >> bid;
     recvData >> buyout;
     recvData >> etime;
@@ -186,72 +161,43 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
     if (GetPlayer()->HasUnitState(UNIT_STATE_DIED))
         GetPlayer()->RemoveAurasByType(SPELL_AURA_FEIGN_DEATH);
 
-    Item* items[MAX_AUCTION_ITEMS];
 
-    uint32 finalCount = 0;
     uint32 itemEntry = 0;
+    Item* item = _player->GetItemByGuid(itemGUID);
 
-    for (uint32 i = 0; i < itemsCount; ++i)
+    if (!item)
     {
-        Item* item = _player->GetItemByGuid(itemGUIDs[i]);
-
-        if (!item)
-        {
-            SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_ITEM_NOT_FOUND);
-            return;
-        }
-
-        if (itemEntry == 0)
-            itemEntry = item->GetTemplate()->ItemId;
-
-        if (sAuctionMgr->GetAItem(item->GetGUIDLow()) || !item->CanBeTraded() || item->IsNotEmptyBag() ||
-            item->GetTemplate()->Flags & ITEM_PROTO_FLAG_CONJURED || item->GetUInt32Value(ITEM_FIELD_DURATION) ||
-            item->GetCount() < count[i] || itemEntry != item->GetTemplate()->ItemId)
-        {
-            SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-            return;
-        }
-
-        items[i] = item;
-        finalCount += count[i];
+        SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_ITEM_NOT_FOUND);
+        return;
     }
 
-    if (!finalCount)
+    if (itemEntry == 0)
+        itemEntry = item->GetTemplate()->ItemId;
+
+    if (sAuctionMgr->GetAItem(item->GetGUIDLow()) || !item->CanBeTraded() || item->IsNotEmptyBag() ||
+        item->GetTemplate()->Flags & ITEM_PROTO_FLAG_CONJURED || item->GetUInt32Value(ITEM_FIELD_DURATION) ||
+        itemEntry != item->GetTemplate()->ItemId)
     {
         SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
         return;
     }
 
-    // check if there are 2 identical guids, in this case user is most likely cheating
-    for (uint32 i = 0; i < itemsCount - 1; ++i)
+    if (!item->GetCount())
     {
-        for (uint32 j = i + 1; j < itemsCount; ++j)
-        {
-            if (itemGUIDs[i] == itemGUIDs[j])
-            {
-                SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-                return;
-            }
-        }
+        SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
+        return;
     }
 
-    for (uint32 i = 0; i < itemsCount; ++i)
+    if (item->GetMaxStackCount() < item->GetCount())
     {
-        Item* item = items[i];
-
-        if (item->GetMaxStackCount() < finalCount)
-        {
-            SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-            return;
-        }
+        SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
+        return;
     }
-
-    Item* item = items[0];
 
     uint32 auctionTime = uint32(etime * sWorld->getRate(RATE_AUCTION_TIME));
     AuctionHouseObject* auctionHouse = sAuctionMgr->GetAuctionsMap(creature->getFaction());
 
-    uint32 deposit = sAuctionMgr->GetAuctionDeposit(auctionHouseEntry, etime, item, finalCount);
+    uint32 deposit = sAuctionMgr->GetAuctionDeposit(auctionHouseEntry, etime, item, item->GetCount());
     if (!_player->HasEnoughMoney(deposit))
     {
         SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_NOT_ENOUGHT_MONEY);
@@ -265,117 +211,41 @@ void WorldSession::HandleAuctionSellItem(WorldPacket& recvData)
     else
         AH->auctioneer = GUID_LOPART(auctioneer);
 
-    // Required stack size of auction matches to current item stack size, just move item to auctionhouse
-    if (itemsCount == 1 && item->GetCount() == count[0])
+    if (HasPermission(rbac::RBAC_PERM_LOG_GM_TRADE))
     {
-        if (HasPermission(rbac::RBAC_PERM_LOG_GM_TRADE))
-        {
-            sLog->outCommand(GetAccountId(), "GM %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
-                GetPlayerName().c_str(), GetAccountId(), item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetCount());
-        }
-
-        AH->Id = sObjectMgr->GenerateAuctionID();
-        AH->itemGUIDLow = item->GetGUIDLow();
-        AH->itemEntry = item->GetEntry();
-        AH->itemCount = item->GetCount();
-        AH->owner = _player->GetGUIDLow();
-        AH->startbid = bid;
-        AH->bidder = 0;
-        AH->bid = 0;
-        AH->buyout = buyout;
-        AH->expire_time = time(NULL) + auctionTime;
-        AH->deposit = deposit;
-        AH->auctionHouseEntry = auctionHouseEntry;
-
-        TC_LOG_INFO("network", "CMSG_AUCTION_SELL_ITEM: Player %s (guid %d) is selling item %s entry %u (guid %d) to auctioneer %u with count %u with initial bid %u with buyout %u and with time %u (in sec) in auctionhouse %u", _player->GetName().c_str(), _player->GetGUIDLow(), item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetGUIDLow(), AH->auctioneer, item->GetCount(), bid, buyout, auctionTime, AH->GetHouseId());
-        sAuctionMgr->AddAItem(item);
-        auctionHouse->AddAuction(AH);
-
-        _player->MoveItemFromInventory(item->GetBagSlot(), item->GetSlot(), true);
-
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
-        item->DeleteFromInventoryDB(trans);
-        item->SaveToDB(trans);
-        AH->SaveToDB(trans);
-        _player->SaveInventoryAndGoldToDB(trans);
-        CharacterDatabase.CommitTransaction(trans);
-
-        SendAuctionCommandResult(AH->Id, AUCTION_SELL_ITEM, ERR_AUCTION_OK);
-
-        GetPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CREATE_AUCTION, 1);
+        sLog->outCommand(GetAccountId(), "GM %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
+            GetPlayerName().c_str(), GetAccountId(), item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetCount());
     }
-    else // Required stack size of auction does not match to current item stack size, clone item and set correct stack size
-    {
-        Item* newItem = item->CloneItem(finalCount, _player);
-        if (!newItem)
-        {
-            TC_LOG_ERROR("network", "CMSG_AUCTION_SELL_ITEM: Could not create clone of item %u", item->GetEntry());
-            SendAuctionCommandResult(0, AUCTION_SELL_ITEM, ERR_AUCTION_DATABASE_ERROR);
-            delete AH;
-            return;
-        }
 
-        if (HasPermission(rbac::RBAC_PERM_LOG_GM_TRADE))
-        {
-            sLog->outCommand(GetAccountId(), "GM %s (Account: %u) create auction: %s (Entry: %u Count: %u)",
-                GetPlayerName().c_str(), GetAccountId(), newItem->GetTemplate()->Name1.c_str(), newItem->GetEntry(), newItem->GetCount());
-        }
+    AH->Id = sObjectMgr->GenerateAuctionID();
+    AH->itemGUIDLow = item->GetGUIDLow();
+    AH->itemEntry = item->GetEntry();
+    AH->itemCount = item->GetCount();
+    AH->owner = _player->GetGUIDLow();
+    AH->startbid = bid;
+    AH->bidder = 0;
+    AH->bid = 0;
+    AH->buyout = buyout;
+    AH->expire_time = time(NULL) + auctionTime;
+    AH->deposit = deposit;
+    AH->auctionHouseEntry = auctionHouseEntry;
 
-        AH->Id = sObjectMgr->GenerateAuctionID();
-        AH->itemGUIDLow = newItem->GetGUIDLow();
-        AH->itemEntry = newItem->GetEntry();
-        AH->itemCount = newItem->GetCount();
-        AH->owner = _player->GetGUIDLow();
-        AH->startbid = bid;
-        AH->bidder = 0;
-        AH->bid = 0;
-        AH->buyout = buyout;
-        AH->expire_time = time(NULL) + auctionTime;
-        AH->deposit = deposit;
-        AH->auctionHouseEntry = auctionHouseEntry;
+    TC_LOG_INFO("network", "CMSG_AUCTION_SELL_ITEM: Player %s (guid %d) is selling item %s entry %u (guid %d) to auctioneer %u with count %u with initial bid %u with buyout %u and with time %u (in sec) in auctionhouse %u", _player->GetName().c_str(), _player->GetGUIDLow(), item->GetTemplate()->Name1.c_str(), item->GetEntry(), item->GetGUIDLow(), AH->auctioneer, item->GetCount(), bid, buyout, auctionTime, AH->GetHouseId());
+    sAuctionMgr->AddAItem(item);
+    auctionHouse->AddAuction(AH);
 
-        TC_LOG_INFO("network", "CMSG_AUCTION_SELL_ITEM: Player %s (guid %d) is selling item %s entry %u (guid %d) to auctioneer %u with count %u with initial bid %u with buyout %u and with time %u (in sec) in auctionhouse %u", _player->GetName().c_str(), _player->GetGUIDLow(), newItem->GetTemplate()->Name1.c_str(), newItem->GetEntry(), newItem->GetGUIDLow(), AH->auctioneer, newItem->GetCount(), bid, buyout, auctionTime, AH->GetHouseId());
-        sAuctionMgr->AddAItem(newItem);
-        auctionHouse->AddAuction(AH);
+    _player->MoveItemFromInventory(item->GetBagSlot(), item->GetSlot(), true);
 
-        for (uint32 j = 0; j < itemsCount; ++j)
-        {
-            Item* item2 = items[j];
+    SQLTransaction trans = CharacterDatabase.BeginTransaction();
+    item->DeleteFromInventoryDB(trans);
+    item->SaveToDB(trans);
+    AH->SaveToDB(trans);
+    _player->SaveInventoryAndGoldToDB(trans);
+    CharacterDatabase.CommitTransaction(trans);
 
-            // Item stack count equals required count, ready to delete item - cloned item will be used for auction
-            if (item2->GetCount() == count[j])
-            {
-                _player->MoveItemFromInventory(item2->GetBagSlot(), item2->GetSlot(), true);
+    SendAuctionCommandResult(AH->Id, AUCTION_SELL_ITEM, ERR_AUCTION_OK);
 
-                SQLTransaction trans = CharacterDatabase.BeginTransaction();
-                item2->DeleteFromInventoryDB(trans);
-                item2->DeleteFromDB(trans);
-                CharacterDatabase.CommitTransaction(trans);
-                delete item2;
-            }
-            else // Item stack count is bigger than required count, update item stack count and save to database - cloned item will be used for auction
-            {
-                item2->SetCount(item2->GetCount() - count[j]);
-                item2->SetState(ITEM_CHANGED, _player);
-                _player->ItemRemovedQuestCheck(item2->GetEntry(), count[j]);
-                item2->SendUpdateToPlayer(_player);
-
-                SQLTransaction trans = CharacterDatabase.BeginTransaction();
-                item2->SaveToDB(trans);
-                CharacterDatabase.CommitTransaction(trans);
-            }
-        }
-
-        SQLTransaction trans = CharacterDatabase.BeginTransaction();
-        newItem->SaveToDB(trans);
-        AH->SaveToDB(trans);
-        _player->SaveInventoryAndGoldToDB(trans);
-        CharacterDatabase.CommitTransaction(trans);
-
-        SendAuctionCommandResult(AH->Id, AUCTION_SELL_ITEM, ERR_AUCTION_OK);
-
-        GetPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CREATE_AUCTION, 1);
-    }
+    GetPlayer()->UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CREATE_AUCTION, 1);
 
     _player->ModifyMoney(-int32(deposit));
 }
@@ -410,7 +280,14 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recvData)
     AuctionEntry* auction = auctionHouse->GetAuction(auctionId);
     Player* player = GetPlayer();
 
-    if (!auction || auction->owner == player->GetGUIDLow())
+    if (!auction)
+    {
+        //auction not found (already sold ro canceld):
+        SendAuctionCommandResult(0, AUCTION_PLACE_BID, ERR_AUCTION_ITEM_NOT_FOUND);
+        return;
+    }
+
+    if (auction->owner == player->GetGUIDLow())
     {
         //you cannot bid your own auction:
         SendAuctionCommandResult(0, AUCTION_PLACE_BID, ERR_AUCTION_BID_OWN);
@@ -426,22 +303,26 @@ void WorldSession::HandleAuctionPlaceBid(WorldPacket& recvData)
         return;
     }
 
-    // cheating
+    // cheating or client lags
     if (price <= auction->bid || price < auction->startbid)
+    {
+        SendAuctionCommandResult(auction->Id, AUCTION_PLACE_BID, ERR_AUCTION_HIGHER_BID);
         return;
+    }
 
     // price too low for next bid if not buyout
     if ((price < auction->buyout || auction->buyout == 0) &&
         price < auction->bid + auction->GetAuctionOutBid())
     {
-        //auction has already higher bid, client tests it!
+        // client test but possible in result lags
+        SendAuctionCommandResult(auction->Id, AUCTION_PLACE_BID, ERR_AUCTION_BID_INCREMENT);
         return;
     }
 
     if (!player->HasEnoughMoney(price))
     {
         //you don't have enought money!, client tests!
-        //SendAuctionCommandResult(auction->auctionId, AUCTION_PLACE_BID, ???);
+        //SendAuctionCommandResult(auction->auctionId, AUCTION_PLACE_BID, ERR_AUCTION_NOT_ENOUGHT_MONEY);
         return;
     }
 
