@@ -20033,7 +20033,6 @@ void Player::PetSpellInitialize()
 
     WorldPacket data(SMSG_PET_SPELLS, 8+2+4+4+4*MAX_UNIT_ACTION_BAR_INDEX+1+1);
     data << uint64(pet->GetGUID());
-    data << uint16(pet->GetCreatureTemplate()->family);         // creature family (required for pet talents)
     data << uint32(pet->GetDuration());
     data << uint8(pet->GetReactState());
     data << uint8(charmInfo->GetCommandState());
@@ -20073,7 +20072,7 @@ void Player::PetSpellInitialize()
         SpellInfo const* spellInfo = sSpellMgr->GetSpellInfo(itr->first);
         if (!spellInfo)
         {
-            data << uint32(0);
+            data << uint16(0);
             data << uint16(0);
             data << uint32(0);
             data << uint32(0);
@@ -20081,7 +20080,7 @@ void Player::PetSpellInitialize()
         }
 
         time_t cooldown = (itr->second > curTime) ? (itr->second - curTime) * IN_MILLISECONDS : 0;
-        data << uint32(itr->first);                 // spell ID
+        data << uint16(itr->first);                 // spell ID
 
         CreatureSpellCooldowns::const_iterator categoryitr = pet->m_CreatureCategoryCooldowns.find(spellInfo->GetCategory());
         if (categoryitr != pet->m_CreatureCategoryCooldowns.end())
@@ -20118,7 +20117,6 @@ void Player::PossessSpellInitialize()
 
     WorldPacket data(SMSG_PET_SPELLS, 8+2+4+4+4*MAX_UNIT_ACTION_BAR_INDEX+1+1);
     data << uint64(charm->GetGUID());
-    data << uint16(0);
     data << uint32(0);
     data << uint32(0);
 
@@ -20157,7 +20155,6 @@ void Player::CharmSpellInitialize()
 
     WorldPacket data(SMSG_PET_SPELLS, 8+2+4+4+4*MAX_UNIT_ACTION_BAR_INDEX+1+4*addlist+1);
     data << uint64(charm->GetGUID());
-    data << uint16(0);
     data << uint32(0);
 
     if (charm->GetTypeId() != TYPEID_PLAYER)
