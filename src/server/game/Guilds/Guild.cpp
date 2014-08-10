@@ -239,12 +239,12 @@ void Guild::BankEventLogEntry::WritePacket(WorldPacket& data) const
         case GUILD_BANK_LOG_DEPOSIT_ITEM:
         case GUILD_BANK_LOG_WITHDRAW_ITEM:
             data << uint32(m_itemOrMoney);
-            data << uint32(m_itemStackCount);
+            data << uint8(m_itemStackCount);
             break;
         case GUILD_BANK_LOG_MOVE_ITEM:
         case GUILD_BANK_LOG_MOVE_ITEM2:
             data << uint32(m_itemOrMoney);
-            data << uint32(m_itemStackCount);
+            data << uint8(m_itemStackCount);
             data << uint8(m_destTabId);
             break;
         default:
@@ -470,9 +470,6 @@ bool Guild::BankTab::WriteSlotPacket(WorldPacket& data, uint8 slotId, bool ignor
     data << uint32(itemEntry);
     if (itemEntry)
     {
-        data << uint32(0);                                  // 3.3.0 (0x00018020, 0x00018000)
-
-
         if (uint32 random = pItem->GetItemRandomPropertyId())
         {
             data << uint32(random);                         // Random item property id
@@ -481,7 +478,7 @@ bool Guild::BankTab::WriteSlotPacket(WorldPacket& data, uint8 slotId, bool ignor
         else
             data << uint32(0);
 
-        data << uint32(pItem->GetCount());                  // ITEM_FIELD_STACK_COUNT
+        data << uint8(pItem->GetCount());                   // ITEM_FIELD_STACK_COUNT
         data << uint32(0);
         data << uint8(abs(pItem->GetSpellCharges()));       // Spell charges
 
@@ -566,20 +563,23 @@ bool Guild::BankTab::SetItem(SQLTransaction& trans, uint8 slotId, Item* item)
 
 void Guild::BankTab::SendText(Guild const* guild, WorldSession* session) const
 {
-    WorldPacket data(MSG_QUERY_GUILD_BANK_TEXT, 1 + m_text.size() + 1);
-    data << uint8(m_tabId);
-    data << m_text;
-
     if (session)
     {
         TC_LOG_DEBUG("guild", "MSG_QUERY_GUILD_BANK_TEXT [%s]: Tabid: %u, Text: %s"
             , session->GetPlayerInfo().c_str(), m_tabId, m_text.c_str());
+        
+        WorldPacket data(MSG_QUERY_GUILD_BANK_TEXT, 1 + m_text.size() + 1);
+        data << uint8(m_tabId);
+        data << m_text;
         session->SendPacket(&data);
     }
     else
     {
         TC_LOG_DEBUG("guild", "MSG_QUERY_GUILD_BANK_TEXT [Broadcast]: Tabid: %u, Text: %s", m_tabId, m_text.c_str());
-        guild->BroadcastPacket(&data);
+
+        char aux[2];
+        sprintf(aux, "%u", m_tabId);
+        guild->_BroadcastEvent(GE_BANK_TEXT_CHANGED, 0, aux);
     }
 }
 
@@ -2345,8 +2345,12 @@ void Guild::SwapItemsWithInventory(Player* player, bool toChar, uint8 tabId, uin
 }
 
 // Bank tabs
-void Guild::SetBankTabText(uint8 tabId, std::string const& text)
+void Guild::SetBankTabText(WorldSession* session, uint8 tabId, std::string const& text)
 {
+    uint64 guid = session->GetPlayer()->GetGUID();
+    if (!_MemberHasTabRights(guid, tabId, GUILD_BANK_RIGHT_UPDATE_TEXT))
+        return;
+    
     if (BankTab* pTab = GetBankTab(tabId))
     {
         pTab->SetText(text);

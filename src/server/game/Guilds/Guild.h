@@ -736,7 +736,7 @@ public:
     void SwapItemsWithInventory(Player* player, bool toChar, uint8 tabId, uint8 slotId, uint8 playerBag, uint8 playerSlotId, uint32 splitedAmount);
 
     // Bank tabs
-    void SetBankTabText(uint8 tabId, std::string const& text);
+    void SetBankTabText(WorldSession* session, uint8 tabId, std::string const& text);
 
     void ResetTimes();
 

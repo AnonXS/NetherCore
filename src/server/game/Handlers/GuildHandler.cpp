@@ -412,7 +412,7 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recvData)
     uint8 tabId;
     uint8 slotId;
     uint32 itemEntry;
-    uint32 splitedAmount = 0;
+    uint8 splitedAmount = 0;
 
     if (bankToBank)
     {
@@ -446,9 +446,9 @@ void WorldSession::HandleGuildBankSwapItems(WorldPacket& recvData)
         recvData >> autoStore;
         if (autoStore)
         {
-            recvData.read_skip<uint32>();                  // autoStoreCount
+            recvData.read_skip<uint8>();                  // autoStoreCount
             recvData.read_skip<uint8>();                   // ToChar (?), always and expected to be 1 (autostore only triggered in Bank -> Char)
-            recvData.read_skip<uint32>();                  // Always 0
+            recvData.read_skip<uint8>();                   // Always 0
         }
         else
         {
@@ -530,5 +530,5 @@ void WorldSession::HandleSetGuildBankTabText(WorldPacket &recvData)
     TC_LOG_DEBUG("guild", "CMSG_SET_GUILD_BANK_TEXT [%s]: TabId: %u, Text: %s", GetPlayerInfo().c_str(), tabId, text.c_str());
 
     if (Guild* guild = GetPlayer()->GetGuild())
-        guild->SetBankTabText(tabId, text);
+        guild->SetBankTabText(this, tabId, text);
 }
