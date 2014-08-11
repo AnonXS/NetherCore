@@ -17389,6 +17389,10 @@ void Player::_LoadAuras(PreparedQueryResult result, uint32 timediff)
         }
         while (result->NextRow());
     }
+
+    // Battle Stance for warriors
+    if (getClass() == CLASS_WARRIOR && !HasAuraType(SPELL_AURA_MOD_SHAPESHIFT))
+        CastSpell(this, 2457, true);
 }
 
 void Player::LoadCorpse()
