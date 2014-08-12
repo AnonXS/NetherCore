@@ -1060,7 +1060,7 @@ bool SpellInfo::IsStackableWithRanks() const
         {
             case SPELLFAMILY_PALADIN:
                 // Paladin aura Spell
-                if (Effects[i].Effect == SPELL_EFFECT_APPLY_AREA_AURA_RAID)
+                if (Effects[i].Effect == SPELL_EFFECT_APPLY_AREA_AURA_PARTY)
                     return false;
                 break;
             case SPELLFAMILY_DRUID:
@@ -1069,6 +1069,14 @@ bool SpellInfo::IsStackableWithRanks() const
                     Effects[i].ApplyAuraName == SPELL_AURA_MOD_SHAPESHIFT)
                     return false;
                 break;
+            /* Do we need this ? from mangos 2.4.3
+            case SPELLFAMILY_ROGUE:
+                // Rogue Stealth
+                if (spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA &&
+                        spellInfo->EffectApplyAuraName[i] == SPELL_AURA_MOD_SHAPESHIFT)
+                    return false;
+                break;
+            */
         }
     }
     return true;
@@ -1887,21 +1895,24 @@ SpellSpecificType SpellInfo::GetSpellSpecific() const
         }
         case SPELLFAMILY_PALADIN:
         {
-            // Collection of all the seal family flags. No other paladin spell has any of those.
-            if (SpellFamilyFlags[1] & 0x26000C00
-                || SpellFamilyFlags[0] & 0x0A000000)
+            // Seal
+            if (SpellFamilyFlags[0] & 0x0A000200 || SpellFamilyFlags[1] & 0x0000000000000400)
                 return SPELL_SPECIFIC_SEAL;
 
+            // Blessing
             if (SpellFamilyFlags[0] & 0x00002190)
                 return SPELL_SPECIFIC_HAND;
 
-            // Judgement of Wisdom, Judgement of Light, Judgement of Justice
-            if (Id == 20184 || Id == 20185 || Id == 20186)
+            // Judgement
+            if (Id == 20271)
                 return SPELL_SPECIFIC_JUDGEMENT;
 
-            // only paladin auras have this (for palaldin class family)
-            if (SpellFamilyFlags[2] & 0x00000020)
-                return SPELL_SPECIFIC_AURA;
+            // Auras
+            for (int i = 0; i < 3; ++i)
+            {
+                if (Effects[i].IsEffect(SPELL_EFFECT_APPLY_AREA_AURA_PARTY))
+                    return SPELL_SPECIFIC_AURA;
+            }
 
             break;
         }
