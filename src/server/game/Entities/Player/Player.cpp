@@ -3821,9 +3821,8 @@ void Player::LearnSpell(uint32 spell_id, bool dependent, bool fromSkill /*= fals
     // prevent duplicated entires in spell book, also not send if not in world (loading)
     if (learning && IsInWorld())
     {
-        WorldPacket data(SMSG_LEARNED_SPELL, 6);
+        WorldPacket data(SMSG_LEARNED_SPELL, 4);
         data << uint32(spell_id);
-        data << uint16(0);
         GetSession()->SendPacket(&data);
     }
 
@@ -25471,8 +25470,8 @@ bool Player::IsLoading() const
 
 void Player::SendSupercededSpell(uint32 oldSpell, uint32 newSpell)
 {
-    WorldPacket data(SMSG_SUPERCEDED_SPELL, 8);
-    data << uint32(oldSpell) << uint32(newSpell);
+    WorldPacket data(SMSG_SUPERCEDED_SPELL, 4);
+    data << uint16(oldSpell) << uint16(newSpell);
     GetSession()->SendPacket(&data);
 }
 
