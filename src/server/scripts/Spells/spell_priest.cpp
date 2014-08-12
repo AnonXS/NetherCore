@@ -486,7 +486,7 @@ class spell_pri_pain_and_suffering_proc : public SpellScriptLoader
                 Unit* caster = GetCaster();
                 // Refresh Shadow Word: Pain on target
                 if (Unit* target = GetHitUnit())
-                    if (AuraEffect* aur = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, 0, caster->GetGUID()))
+                    if (AuraEffect* aur = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, caster->GetGUID()))
                     {
                         uint32 damage = std::max(aur->GetAmount(), 0);
                         sScriptMgr->ModifyPeriodicDamageAurasTick(target, caster, damage);
@@ -622,7 +622,7 @@ class spell_pri_power_word_shield : public SpellScriptLoader
                     amount += int32(bonus);
 
                     // Twin Disciplines
-                    if (AuraEffect const* twinDisciplines = caster->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_PRIEST, 0x400000, 0, 0, GetCasterGUID()))
+                    if (AuraEffect const* twinDisciplines = caster->GetAuraEffect(SPELL_AURA_ADD_PCT_MODIFIER, SPELLFAMILY_PRIEST, 0x400000, 0, GetCasterGUID()))
                         AddPct(amount, twinDisciplines->GetAmount());
 
                     // Focused Power

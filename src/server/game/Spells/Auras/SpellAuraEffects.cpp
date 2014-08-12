@@ -1077,7 +1077,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
                     if (target->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_DRUID, 0, 0x10000000, 0))
                         target->CastSpell(target, 62071, true);
                     // Nurturing Instinct
-                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT, SPELLFAMILY_DRUID, 2254, 0))
+                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_MOD_SPELL_HEALING_OF_STAT_PERCENT, SPELLFAMILY_DRUID, 2254, uint8(0)))
                     {
                         uint32 spellId3 = 0;
                         switch (aurEff->GetId())
@@ -1107,7 +1107,7 @@ void AuraEffect::HandleShapeshiftBoosts(Unit* target, bool apply) const
                         target->CastCustomSpell(target, 48418, &bp, NULL, NULL, true);
                     }
                     // Survival of the Fittest
-                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, SPELLFAMILY_DRUID, 961, 0))
+                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE, SPELLFAMILY_DRUID, 961, uint8(0)))
                     {
                         int32 bp = aurEff->GetSpellInfo()->Effects[EFFECT_2].CalcValue();
                         target->CastCustomSpell(target, 62069, &bp, NULL, NULL, true, 0, this);

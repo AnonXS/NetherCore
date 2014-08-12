@@ -3038,7 +3038,7 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->ProcCharges = 1;
                 break;
             case 44544: // Fingers of Frost
-                spellInfo->Effects[EFFECT_0].SpellClassMask = flag96(685904631, 1151048, 0);
+                spellInfo->Effects[EFFECT_0].SpellClassMask = flag64(685904631, 1151048);
                 break;
             case 74396: // Fingers of Frost visual buff
                 spellInfo->ProcCharges = 2;
@@ -3083,7 +3083,7 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[EFFECT_1].Effect = SPELL_EFFECT_APPLY_AURA;
                 spellInfo->Effects[EFFECT_1].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
                 spellInfo->Effects[EFFECT_1].MiscValue = SPELLMOD_EFFECT2;
-                spellInfo->Effects[EFFECT_1].SpellClassMask = flag96(0x00000000, 0x00004000, 0x00000000);
+                spellInfo->Effects[EFFECT_1].SpellClassMask = flag64(0x00000000, 0x00004000);
                 break;
             case 47569: // Improved Shadowform (Rank 1)
                 // with this spell atrribute aura can be stacked several times
@@ -3159,7 +3159,7 @@ void SpellMgr::LoadSpellInfoCorrections()
             case 53244: // Marked for Death (Rank 3)
             case 53245: // Marked for Death (Rank 4)
             case 53246: // Marked for Death (Rank 5)
-                spellInfo->Effects[EFFECT_0].SpellClassMask = flag96(0x00067801, 0x10820001, 0x00000801);
+                spellInfo->Effects[EFFECT_0].SpellClassMask = flag64(0x00067801, 0x10820001);
                 break;
             case 70728: // Exploit Weakness (needs target selection script)
             case 70840: // Devious Minds (needs target selection script)
@@ -3171,19 +3171,19 @@ void SpellMgr::LoadSpellInfoCorrections()
                 spellInfo->Effects[EFFECT_0].TargetB = SpellImplicitTargetInfo(TARGET_UNIT_MASTER);
                 break;
             case 64949: // Idol of the Flourishing Life
-                spellInfo->Effects[EFFECT_0].SpellClassMask = flag96(0x00000000, 0x02000000, 0x00000000);
+                spellInfo->Effects[EFFECT_0].SpellClassMask = flag64(0x00000000, 0x02000000);
                 spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
                 break;
             case 34231: // Libram of the Lightbringer
             case 60792: // Libram of Tolerance
             case 64956: // Libram of the Resolute
-                spellInfo->Effects[EFFECT_0].SpellClassMask = flag96(0x80000000, 0x00000000, 0x00000000);
+                spellInfo->Effects[EFFECT_0].SpellClassMask = flag64(0x80000000, 0x00000000);
                 spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
                 break;
             case 28851: // Libram of Light
             case 28853: // Libram of Divinity
             case 32403: // Blessed Book of Nagrand
-                spellInfo->Effects[EFFECT_0].SpellClassMask = flag96(0x40000000, 0x00000000, 0x00000000);
+                spellInfo->Effects[EFFECT_0].SpellClassMask = flag64(0x40000000, 0x00000000);
                 spellInfo->Effects[EFFECT_0].ApplyAuraName = SPELL_AURA_ADD_FLAT_MODIFIER;
                 break;
             case 45602: // Ride Carpet

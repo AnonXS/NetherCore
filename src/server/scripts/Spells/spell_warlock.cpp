@@ -406,7 +406,7 @@ class spell_warl_everlasting_affliction : public SpellScriptLoader
                 Unit* caster = GetCaster();
                 if (Unit* target = GetHitUnit())
                     // Refresh corruption on target
-                    if (AuraEffect* aur = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x2, 0, 0, caster->GetGUID()))
+                    if (AuraEffect* aur = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, 0x2, 0, caster->GetGUID()))
                     {
                         uint32 damage = std::max(aur->GetAmount(), 0);
                         sScriptMgr->ModifyPeriodicDamageAurasTick(target, caster, damage);
@@ -615,7 +615,7 @@ class spell_warl_life_tap : public SpellScriptLoader
 
                     // Mana Feed
                     int32 manaFeedVal = 0;
-                    if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_WARLOCK, WARLOCK_ICON_ID_MANA_FEED, 0))
+                    if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_WARLOCK, WARLOCK_ICON_ID_MANA_FEED, uint8(0)))
                         manaFeedVal = aurEff->GetAmount();
 
                     if (manaFeedVal > 0)

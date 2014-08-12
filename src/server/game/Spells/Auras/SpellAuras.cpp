@@ -1320,7 +1320,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                     case 12536: // Clearcasting
                     case 12043: // Presence of Mind
                         // Arcane Potency
-                        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_MAGE, 2120, 0))
+                        if (AuraEffect const* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_MAGE, 2120, uint8(0)))
                         {
                             uint32 spellId = 0;
 
@@ -1443,7 +1443,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                             for (std::list<Unit*>::iterator itr = PartyMembers.begin(); itr != PartyMembers.end(); ++itr)
                             {
                                 if ((*itr)!= target)
-                                    (*itr)->RemoveAurasWithFamily(SPELLFAMILY_WARRIOR, 0, 0x2, 0, GetCasterGUID());
+                                    (*itr)->RemoveAurasWithFamily(SPELLFAMILY_WARRIOR, 0, 0x2, GetCasterGUID());
                             }
                         }
                     }
@@ -1455,7 +1455,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
                 // Improved Fear
                 if (GetSpellInfo()->SpellFamilyFlags[1] & 0x00000400)
                 {
-                    if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_WARLOCK, 98, 0))
+                    if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_WARLOCK, 98, uint8(0)))
                     {
                         uint32 spellId = 0;
                         switch (aurEff->GetId())
@@ -1555,7 +1555,7 @@ void Aura::HandleAuraSpecificMods(AuraApplication const* aurApp, Unit* caster, b
             case SPELLFAMILY_ROGUE:
                 // Remove Vanish on stealth remove
                 if (GetId() == 1784)
-                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, 0, target->GetGUID());
+                    target->RemoveAurasWithFamily(SPELLFAMILY_ROGUE, 0x0000800, 0, target->GetGUID());
                 break;
             case SPELLFAMILY_PALADIN:
                 // Remove the immunity shield marker on Forbearance removal if AW marker is not present

@@ -441,7 +441,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                     {
                         if (Player* owner = m_caster->GetOwner()->ToPlayer())
                         {
-                            if (AuraEffect* aurEff = owner->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_WARLOCK, 214, 0))
+                            if (AuraEffect* aurEff = owner->GetAuraEffect(SPELL_AURA_ADD_FLAT_MODIFIER, SPELLFAMILY_WARLOCK, 214, uint8(0)))
                             {
                                 int32 bp0 = aurEff->GetId() == 54037 ? 4 : 8;
                                 m_caster->CastCustomSpell(m_caster, 54425, &bp0, NULL, NULL, true);
@@ -505,7 +505,7 @@ void Spell::EffectSchoolDMG(SpellEffIndex effIndex)
                         if (uint32 combo = player->GetComboPoints())
                         {
                             // Lookup for Deadly poison (only attacker applied)
-                            if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x00010000, 0, 0, m_caster->GetGUID()))
+                            if (AuraEffect const* aurEff = unitTarget->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_ROGUE, 0x00010000, 0, m_caster->GetGUID()))
                             {
                                 // count consumed deadly poison doses at target
                                 bool needConsume = true;

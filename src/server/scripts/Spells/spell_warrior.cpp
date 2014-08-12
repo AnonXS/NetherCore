@@ -318,7 +318,7 @@ class spell_warr_execute : public SpellScriptLoader
                     int32 newRage = std::max<int32>(0, caster->GetPower(POWER_RAGE) - rageUsed);
 
                     // Sudden Death rage save
-                    if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_GENERIC, WARRIOR_ICON_ID_SUDDEN_DEATH, EFFECT_0))
+                    if (AuraEffect* aurEff = caster->GetAuraEffect(SPELL_AURA_PROC_TRIGGER_SPELL, SPELLFAMILY_GENERIC, WARRIOR_ICON_ID_SUDDEN_DEATH, uint8(EFFECT_0)))
                     {
                         int32 ragesave = aurEff->GetSpellInfo()->Effects[EFFECT_1].CalcValue() * 10;
                         newRage = std::max(newRage, ragesave);

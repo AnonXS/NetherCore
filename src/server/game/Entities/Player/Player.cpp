@@ -20213,8 +20213,8 @@ void Player::AddSpellMod(SpellModifier* mod, bool apply)
     uint16 Opcode = (mod->type == SPELLMOD_FLAT) ? SMSG_SET_FLAT_SPELL_MODIFIER : SMSG_SET_PCT_SPELL_MODIFIER;
 
     int i = 0;
-    flag96 _mask = 0;
-    for (int eff = 0; eff < 96; ++eff)
+    flag64 _mask = 0;
+    for (int eff = 0; eff < 64; ++eff)
     {
         if (eff != 0 && eff%32 == 0)
             _mask[i++] = 0;

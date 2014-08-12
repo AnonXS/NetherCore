@@ -3734,7 +3734,7 @@ void Unit::RemoveAurasWithInterruptFlags(uint32 flag, uint32 except)
     UpdateInterruptMask();
 }
 
-void Unit::RemoveAurasWithFamily(SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint32 familyFlag3, uint64 casterGUID)
+void Unit::RemoveAurasWithFamily(SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint64 casterGUID)
 {
     for (AuraApplicationMap::iterator iter = m_appliedAuras.begin(); iter != m_appliedAuras.end();)
     {
@@ -3742,7 +3742,7 @@ void Unit::RemoveAurasWithFamily(SpellFamilyNames family, uint32 familyFlag1, ui
         if (!casterGUID || aura->GetCasterGUID() == casterGUID)
         {
             SpellInfo const* spell = aura->GetSpellInfo();
-            if (spell->SpellFamilyName == uint32(family) && spell->SpellFamilyFlags.HasFlag(familyFlag1, familyFlag2, familyFlag3))
+            if (spell->SpellFamilyName == uint32(family) && spell->SpellFamilyFlags.HasFlag(familyFlag1, familyFlag2))
             {
                 RemoveAura(iter);
                 continue;
@@ -3998,13 +3998,13 @@ AuraEffect* Unit::GetAuraEffect(AuraType type, SpellFamilyNames name, uint32 ico
     return NULL;
 }
 
-AuraEffect* Unit::GetAuraEffect(AuraType type, SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint32 familyFlag3, uint64 casterGUID) const
+AuraEffect* Unit::GetAuraEffect(AuraType type, SpellFamilyNames family, uint32 familyFlag1, uint32 familyFlag2, uint64 casterGUID) const
 {
     AuraEffectList const& auras = GetAuraEffectsByType(type);
     for (AuraEffectList::const_iterator i = auras.begin(); i != auras.end(); ++i)
     {
         SpellInfo const* spell = (*i)->GetSpellInfo();
-        if (spell->SpellFamilyName == uint32(family) && spell->SpellFamilyFlags.HasFlag(familyFlag1, familyFlag2, familyFlag3))
+        if (spell->SpellFamilyName == uint32(family) && spell->SpellFamilyFlags.HasFlag(familyFlag1, familyFlag2))
         {
             if (casterGUID && (*i)->GetCasterGUID() != casterGUID)
                 continue;
@@ -5400,7 +5400,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                 return true;
             }
             // Seed of Corruption (Mobs cast) - no die req
-            if (dummySpell->SpellFamilyFlags.IsEqual(0, 0, 0) && dummySpell->SpellIconID == 1932)
+            if (dummySpell->SpellFamilyFlags.IsEqual(0, 0) && dummySpell->SpellIconID == 1932)
             {
                 // if damage is more than need deal finish spell
                 if (triggeredByAura->GetAmount() <= int32(damage))
@@ -5812,7 +5812,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     {
                         if (!victim)
                             return false;
-                        if (AuraEffect const* pEff = victim->GetAuraEffect(SPELL_AURA_PERIODIC_DUMMY, SPELLFAMILY_HUNTER, 0x0, 0x80000000, 0x0, GetGUID()))
+                        if (AuraEffect const* pEff = victim->GetAuraEffect(SPELL_AURA_PERIODIC_DUMMY, SPELLFAMILY_HUNTER, 0x0, 0x80000000, GetGUID()))
                             basepoints0 = pEff->GetSpellInfo()->CalcPowerCost(this, SpellSchoolMask(pEff->GetSpellInfo()->SchoolMask)) * 4/10/3;
                     }
                     else
@@ -6419,7 +6419,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     if (!target)
                         return false;
                     // try to find spell Flame Shock on the target
-                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, 0x10000000, 0x0, 0x0, GetGUID()))
+                    if (AuraEffect const* aurEff = target->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, 0x10000000, 0x0, GetGUID()))
                     {
                         Aura* flameShock  = aurEff->GetBase();
                         int32 maxDuration = flameShock->GetMaxDuration();
@@ -9153,7 +9153,7 @@ float Unit::SpellDamagePctDone(Unit* victim, SpellInfo const* spellProto, Damage
             // Twisted Faith
             case 7377:
             {
-                if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, 0, GetGUID()))
+                if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, GetGUID()))
                     AddPct(DoneTotalMod, (*i)->GetAmount());
                 break;
             }
@@ -9211,9 +9211,9 @@ float Unit::SpellDamagePctDone(Unit* victim, SpellInfo const* spellProto, Damage
             // Mind Flay
             if (spellProto->SpellFamilyFlags[0] & 0x800000)
                 // Twisted Faith - Mind Flay part
-                if (AuraEffect* aurEff = GetAuraEffect(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS, SPELLFAMILY_PRIEST, 2848, 1))
+                if (AuraEffect* aurEff = GetAuraEffect(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS, SPELLFAMILY_PRIEST, 2848, uint8(1)))
                     // Increase Mind Flay damage if Shadow Word: Pain present on target
-                    if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, 0, GetGUID()))
+                    if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, 0x8000, 0, GetGUID()))
                         AddPct(DoneTotalMod, aurEff->GetAmount());
             break;
         case SPELLFAMILY_PALADIN:
@@ -9539,7 +9539,7 @@ float Unit::GetUnitSpellCriticalChance(Unit* victim, SpellInfo const* spellProto
                         // Lava Burst
                         if (spellProto->SpellFamilyFlags[1] & 0x00001000)
                         {
-                            if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, 0x10000000, 0, 0, GetGUID()))
+                            if (victim->GetAuraEffect(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_SHAMAN, 0x10000000, 0, GetGUID()))
                                 if (victim->GetTotalAuraModifier(SPELL_AURA_MOD_ATTACKER_SPELL_AND_WEAPON_CRIT_CHANCE) > -100)
                                     return 100.0f;
                             break;

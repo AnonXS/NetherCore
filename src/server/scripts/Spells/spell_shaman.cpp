@@ -217,7 +217,7 @@ class spell_sha_chain_heal : public SpellScriptLoader
                 if (firstHeal)
                 {
                     // Check if the target has Riptide
-                    if (AuraEffect* aurEff = GetHitUnit()->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0, 0x10, GetCaster()->GetGUID()))
+                    if (AuraEffect* aurEff = GetHitUnit()->GetAuraEffect(SPELL_AURA_PERIODIC_HEAL, SPELLFAMILY_SHAMAN, 0, 0x10, GetCaster()->GetGUID()))
                     {
                         riptide = true;
                         // Consume it
@@ -569,7 +569,7 @@ class spell_sha_healing_stream_totem : public SpellScriptLoader
                                 damage = int32(owner->SpellHealingBonusDone(target, triggeringSpell, damage, HEAL));
 
                             // Restorative Totems
-                            if (AuraEffect* dummy = owner->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, SHAMAN_ICON_ID_RESTORATIVE_TOTEMS, 1))
+                            if (AuraEffect* dummy = owner->GetAuraEffect(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, SHAMAN_ICON_ID_RESTORATIVE_TOTEMS, uint8(1)))
                                 AddPct(damage, dummy->GetAmount());
 
                             damage = int32(target->SpellHealingBonusTaken(owner, triggeringSpell, damage, HEAL));

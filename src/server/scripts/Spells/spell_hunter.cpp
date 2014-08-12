@@ -194,7 +194,7 @@ class spell_hun_chimera_shot : public SpellScriptLoader
                             continue;
 
                         // Search only Serpent Sting, Viper Sting, Scorpid Sting auras
-                        flag96 familyFlag = aura->GetSpellInfo()->SpellFamilyFlags;
+                        flag64 familyFlag = aura->GetSpellInfo()->SpellFamilyFlags;
                         if (!(familyFlag[1] & 0x00000080 || familyFlag[0] & 0x0000C000))
                             continue;
                         if (AuraEffect* aurEff = aura->GetEffect(0))
