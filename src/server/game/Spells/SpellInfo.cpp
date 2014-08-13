@@ -1276,11 +1276,11 @@ bool SpellInfo::IsAuraExclusiveBySpecificPerCasterWith(SpellInfo const* spellInf
     switch (spellSpec)
     {
         case SPELL_SPECIFIC_SEAL:
-        case SPELL_SPECIFIC_HAND:
         case SPELL_SPECIFIC_AURA:
         case SPELL_SPECIFIC_STING:
         case SPELL_SPECIFIC_CURSE:
         case SPELL_SPECIFIC_ASPECT:
+        case SPELL_SPECIFIC_BLESSING:
         case SPELL_SPECIFIC_JUDGEMENT:
         case SPELL_SPECIFIC_WARLOCK_CORRUPTION:
             return spellSpec == spellInfo->GetSpellSpecific();
@@ -1900,12 +1900,14 @@ SpellSpecificType SpellInfo::GetSpellSpecific() const
                 return SPELL_SPECIFIC_SEAL;
 
             // Blessing
-            if (SpellFamilyFlags[0] & 0x00002190)
-                return SPELL_SPECIFIC_HAND;
+            if (SpellFamilyFlags.HasFlag(0x10000100))
+                return SPELL_SPECIFIC_BLESSING;
 
             // Judgement
+            //if (SpellFamilyFlags.HasFlag(0x000008)) //Attributes &SPELL_ATTR3_TRIGGERED_CAN_TRIGGER_PROC_2
             if (Id == 20271)
                 return SPELL_SPECIFIC_JUDGEMENT;
+            
 
             // Auras
             for (int i = 0; i < 3; ++i)
