@@ -1341,7 +1341,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
     // Do effect if any damage done to target
     if (damageInfo->damage)
     {
-        // Refresh judgements on auto attack
+        // Refresh judgements on melee damage
         AuraApplicationMap const& vAuras = victim->GetAppliedAuras();
         for (AuraApplicationMap::const_iterator itr = vAuras.begin(); itr != vAuras.end(); ++itr)
         {
