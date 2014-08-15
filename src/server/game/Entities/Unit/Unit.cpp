@@ -1341,6 +1341,15 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
     // Do effect if any damage done to target
     if (damageInfo->damage)
     {
+        // Refresh judgements on auto attack
+        AuraApplicationMap const& vAuras = victim->GetAppliedAuras();
+        for (AuraApplicationMap::const_iterator itr = vAuras.begin(); itr != vAuras.end(); ++itr)
+        {
+            SpellInfo const* spellInfo = (*itr).second->GetBase()->GetSpellInfo();
+            if (spellInfo->AttributesEx3 & 0x40000 && spellInfo->SpellFamilyName == SPELLFAMILY_PALADIN && ((*itr).second->GetBase()->GetCasterGUID() == GetGUID()))
+                (*itr).second->GetBase()->RefreshDuration();
+        }
+        
         // We're going to call functions which can modify content of the list during iteration over it's elements
         // Let's copy the list so we can prevent iterator invalidation
         AuraEffectList vDamageShieldsCopy(victim->GetAuraEffectsByType(SPELL_AURA_DAMAGE_SHIELD));
@@ -5866,100 +5875,9 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
         }
         case SPELLFAMILY_PALADIN:
         {
-            // Light's Beacon - Beacon of Light
-            if (dummySpell->Id == 53651)
-            {
-                if (!victim)
-                    return false;
-                triggered_spell_id = 0;
-                Unit* beaconTarget = NULL;
-                if (GetTypeId() != TYPEID_PLAYER)
-                {
-                    beaconTarget = triggeredByAura->GetBase()->GetCaster();
-                    if (!beaconTarget || beaconTarget == this || !(beaconTarget->GetAura(53563, victim->GetGUID())))
-                        return false;
-                    basepoints0 = int32(damage);
-                    triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
-                }
-                else
-                {    // Check Party/Raid Group
-                    if (Group* group = ToPlayer()->GetGroup())
-                    {
-                        for (GroupReference* itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
-                        {
-                            if (Player* member = itr->GetSource())
-                            {
-                                // check if it was heal by paladin which cast this beacon of light
-                                if (member->GetAura(53563, victim->GetGUID()))
-                                {
-                                    // do not proc when target of beacon of light is healed
-                                    if (member == this)
-                                        return false;
-
-                                    beaconTarget = member;
-                                    basepoints0 = int32(damage);
-                                    triggered_spell_id = procSpell->IsRankOf(sSpellMgr->GetSpellInfo(635)) ? 53652 : 53654;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (triggered_spell_id && beaconTarget)
-                {
-                    victim->CastCustomSpell(beaconTarget, triggered_spell_id, &basepoints0, NULL, NULL, true);
-                    return true;
-                }
-
-                return false;
-            }
-            // Judgements of the Wise
-            if (dummySpell->SpellIconID == 3017)
-            {
-                target = this;
-                triggered_spell_id = 31930;
-                // replenishment
-                CastSpell(this, 57669, true, castItem, triggeredByAura);
-                break;
-            }
-            // Righteous Vengeance
-            if (dummySpell->SpellIconID == 3025)
-            {
-                // 4 damage tick
-                basepoints0 = triggerAmount * damage / 400;
-                triggered_spell_id = 61840;
-                // Add remaining ticks to damage done
-                basepoints0 += victim->GetRemainingPeriodicAmount(GetGUID(), triggered_spell_id, SPELL_AURA_PERIODIC_DAMAGE);
-                break;
-            }
-            // Sheath of Light
-            if (dummySpell->SpellIconID == 3030)
-            {
-                // 4 healing tick
-                basepoints0 = triggerAmount * damage / 400;
-                triggered_spell_id = 54203;
-                break;
-            }
             switch (dummySpell->Id)
             {
-                // Sacred Shield
-                case 53601:
-                {
-                    if (procFlag & PROC_FLAG_TAKEN_SPELL_MAGIC_DMG_CLASS_POS)
-                        return false;
-
-                    if (damage > 0)
-                        triggered_spell_id = 58597;
-
-                    // Item - Paladin T8 Holy 4P Bonus
-                    if (Unit* caster = triggeredByAura->GetCaster())
-                        if (AuraEffect const* aurEff = caster->GetAuraEffect(64895, 0))
-                            cooldown = aurEff->GetAmount();
-
-                    target = this;
-                    break;
-                }
+                /* Do we need this in TBC ?
                 // Heart of the Crusader
                 case 20335: // rank 1
                     triggered_spell_id = 21183;
@@ -5969,29 +5887,7 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     break;
                 case 20337: // rank 3
                     triggered_spell_id = 54499;
-                    break;
-                // Judgement of Light
-                case 20185:
-                {
-                    if (!victim)
-                        return false;
-
-                    // 2% of maximum health
-                    basepoints0 = int32(victim->CountPctFromMaxHealth(2));
-                    victim->CastCustomSpell(victim, 20267, &basepoints0, 0, 0, true, 0, triggeredByAura);
-                    return true;
-                }
-                // Judgement of Wisdom
-                case 20186:
-                {
-                    if (victim && victim->IsAlive() && victim->getPowerType() == POWER_MANA)
-                    {
-                        // 2% of base mana
-                        basepoints0 = int32(CalculatePct(victim->GetCreateMana(), 2));
-                        victim->CastCustomSpell(victim, 20268, &basepoints0, NULL, NULL, true, 0, triggeredByAura);
-                    }
-                    return true;
-                }
+                    break;*/
                 // Holy Power (Redemption Armor set)
                 case 28789:
                 {
@@ -6023,70 +5919,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     }
                     break;
                 }
-                // Seal of Vengeance (damage calc on apply aura)
-                case 31801:
-                {
-                    if (effIndex != 0)                       // effect 1, 2 used by seal unleashing code
-                        return false;
-
-                    // At melee attack or Hammer of the Righteous spell damage considered as melee attack
-                    bool stacker = !procSpell || procSpell->Id == 53595;
-                    // spells with SPELL_DAMAGE_CLASS_MELEE excluding Judgements
-                    bool damager = procSpell && (procSpell->EquippedItemClass != -1 || (procSpell->SpellIconID == 243 && procSpell->SpellVisual[0] == 39));
-
-                    if (!stacker && !damager)
-                        return false;
-
-                    triggered_spell_id = 31803;
-
-                    // On target with 5 stacks of Holy Vengeance direct damage is done
-                    if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
-                    {
-                        if (aur->GetStackAmount() == 5)
-                        {
-                            if (stacker)
-                                aur->RefreshDuration();
-                            CastSpell(victim, 42463, true);
-                            return true;
-                        }
-                    }
-
-                    if (!stacker)
-                        return false;
-                    break;
-                }
-                // Seal of Corruption
-                case 53736:
-                {
-                    if (effIndex != 0)                       // effect 1, 2 used by seal unleashing code
-                        return false;
-
-                    // At melee attack or Hammer of the Righteous spell damage considered as melee attack
-                    bool stacker = !procSpell || procSpell->Id == 53595;
-                    // spells with SPELL_DAMAGE_CLASS_MELEE excluding Judgements
-                    bool damager = procSpell && (procSpell->EquippedItemClass != -1 || (procSpell->SpellIconID == 243 && procSpell->SpellVisual[0] == 39));
-
-                    if (!stacker && !damager)
-                        return false;
-
-                    triggered_spell_id = 53742;
-
-                    // On target with 5 stacks of Blood Corruption direct damage is done
-                    if (Aura* aur = victim->GetAura(triggered_spell_id, GetGUID()))
-                    {
-                        if (aur->GetStackAmount() == 5)
-                        {
-                            if (stacker)
-                                aur->RefreshDuration();
-                            CastSpell(victim, 53739, true);
-                            return true;
-                        }
-                    }
-
-                    if (!stacker)
-                        return false;
-                    break;
-                }
                 // Spiritual Attunement
                 case 31785:
                 case 33776:
@@ -6101,6 +5933,23 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
 
                     if (basepoints0)
                         triggered_spell_id = 31786;
+                    break;
+                }
+                // Seal of Vengeance (damage calc on apply aura)
+                case 31801:
+                {
+                    if (effIndex != 0)                       // effect 1, 2 used by seal unleashing code
+                        return false;
+
+                    // At melee attack
+                    bool stacker = !procSpell;
+                    // spells with SPELL_DAMAGE_CLASS_MELEE excluding Judgements
+                    bool damager = procSpell && (procSpell->EquippedItemClass != -1 || (procSpell->SpellIconID == 243 && procSpell->SpellVisual[0] == 39));
+
+                    if (!stacker && !damager)
+                        return false;
+
+                    triggered_spell_id = 31803;
                     break;
                 }
                 // Paladin Tier 6 Trinket (Ashtongue Talisman of Zeal)
@@ -6129,72 +5978,6 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     if (!roll_chance_f(chance))
                         return false;
 
-                    break;
-                }
-                // Item - Paladin T8 Holy 2P Bonus
-                case 64890:
-                {
-                    triggered_spell_id = 64891;
-                    basepoints0 = triggerAmount * damage / 300;
-                    break;
-                }
-                case 71406: // Tiny Abomination in a Jar
-                case 71545: // Tiny Abomination in a Jar (Heroic)
-                {
-                    if (!victim || !victim->IsAlive())
-                        return false;
-
-                    CastSpell(this, 71432, true, NULL, triggeredByAura);
-
-                    Aura const* dummy = GetAura(71432);
-                    if (!dummy || dummy->GetStackAmount() < (dummySpell->Id == 71406 ? 8 : 7))
-                        return false;
-
-                    RemoveAurasDueToSpell(71432);
-                    triggered_spell_id = 71433;  // default main hand attack
-                    // roll if offhand
-                    if (Player const* player = ToPlayer())
-                        if (player->GetWeaponForAttack(OFF_ATTACK, true) && urand(0, 1))
-                            triggered_spell_id = 71434;
-                    target = victim;
-                    break;
-                }
-                // Item - Icecrown 25 Normal Dagger Proc
-                case 71880:
-                {
-                    switch (getPowerType())
-                    {
-                        case POWER_MANA:
-                            triggered_spell_id = 71881;
-                            break;
-                        case POWER_RAGE:
-                            triggered_spell_id = 71883;
-                            break;
-                        case POWER_ENERGY:
-                            triggered_spell_id = 71882;
-                            break;
-                        default:
-                            return false;
-                    }
-                    break;
-                }
-                // Item - Icecrown 25 Heroic Dagger Proc
-                case 71892:
-                {
-                    switch (getPowerType())
-                    {
-                        case POWER_MANA:
-                            triggered_spell_id = 71888;
-                            break;
-                        case POWER_RAGE:
-                            triggered_spell_id = 71886;
-                            break;
-                        case POWER_ENERGY:
-                            triggered_spell_id = 71887;
-                            break;
-                        default:
-                            return false;
-                    }
                     break;
                 }
             }
@@ -7109,34 +6892,32 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             }
             case SPELLFAMILY_PALADIN:
             {
+                
+                if (auraSpellInfo->SpellFamilyFlags.HasFlag(0x00080000, 0x00000000))
+                {
+                    switch (auraSpellInfo->Id)
+                    {
+                        // Judgement of Light
+                        case 20185: trigger_spell_id = 20267; break; // Rank 1
+                        case 20344: trigger_spell_id = 20341; break; // Rank 2
+                        case 20345: trigger_spell_id = 20342; break; // Rank 3
+                        case 20346: trigger_spell_id = 20343; break; // Rank 4
+                        case 27162: trigger_spell_id = 27163; break; // Rank 5
+                        // Judgement of Wisdom
+                        case 20186: trigger_spell_id = 20268; break; // Rank 1
+                        case 20354: trigger_spell_id = 20352; break; // Rank 2
+                        case 20355: trigger_spell_id = 20353; break; // Rank 3
+                        case 27164: trigger_spell_id = 27165; break; // Rank 4
+                        default: return false;
+                    }
+                    victim->CastSpell(victim, trigger_spell_id, true, castItem, triggeredByAura);
+                    // Abort here, we dont want the creature to heal too
+                    return true;
+                }
+
                 switch (auraSpellInfo->Id)
                 {
-                    // Soul Preserver
-                    case 60510:
-                    {
-                        switch (getClass())
-                        {
-                            case CLASS_DRUID:
-                                trigger_spell_id = 60512;
-                                break;
-                            case CLASS_PALADIN:
-                                trigger_spell_id = 60513;
-                                break;
-                            case CLASS_PRIEST:
-                                trigger_spell_id = 60514;
-                                break;
-                            case CLASS_SHAMAN:
-                                trigger_spell_id = 60515;
-                                break;
-                        }
-
-                        target = this;
-                        break;
-                    }
                     case 37657: // Lightning Capacitor
-                    case 54841: // Thunder Capacitor
-                    case 67712: // Item - Coliseum 25 Normal Caster Trinket
-                    case 67758: // Item - Coliseum 25 Heroic Caster Trinket
                     {
                         if (!victim || !victim->IsAlive() || GetTypeId() != TYPEID_PLAYER)
                             return false;
@@ -7147,18 +6928,6 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
                             case 37657:
                                 stack_spell_id = 37658;
                                 trigger_spell_id = 37661;
-                                break;
-                            case 54841:
-                                stack_spell_id = 54842;
-                                trigger_spell_id = 54843;
-                                break;
-                            case 67712:
-                                stack_spell_id = 67713;
-                                trigger_spell_id = 67714;
-                                break;
-                            case 67758:
-                                stack_spell_id = 67759;
-                                trigger_spell_id = 67760;
                                 break;
                         }
 
