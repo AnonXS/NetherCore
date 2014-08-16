@@ -404,7 +404,6 @@ void ArenaTeam::Roster(WorldSession* session)
 
     WorldPacket data(SMSG_ARENA_TEAM_ROSTER, 100);
     data << uint32(GetId());                                    // team id
-    data << uint8(unk308);                                      // 3.0.8 unknown value but affect packet structure
     data << uint32(GetMembersSize());                           // members count
     data << uint32(GetType());                                  // arena team type?
 
@@ -423,11 +422,6 @@ void ArenaTeam::Roster(WorldSession* session)
         data << uint32(itr->SeasonGames);                       // played this season
         data << uint32(itr->SeasonWins);                        // wins this season
         data << uint32(itr->PersonalRating);                    // personal rating
-        //if (unk308)
-        //{
-        //    data << float(0.0f);                              // 308 unk
-        //    data << float(0.0f);                              // 308 unk
-        //}
     }
 
     session->SendPacket(&data);
