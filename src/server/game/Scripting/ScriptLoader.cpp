@@ -94,7 +94,6 @@ void AddSC_npc_professions();
 void AddSC_npc_innkeeper();
 void AddSC_npcs_special();
 void AddSC_npc_taxi();
-void AddSC_achievement_scripts();
 void AddSC_action_ip_logger();
 
 //eastern kingdoms
@@ -175,10 +174,6 @@ void AddSC_boss_majordomo();
 void AddSC_boss_ragnaros();
 void AddSC_instance_molten_core();
 void AddSC_instance_ragefire_chasm();        //Ragefire Chasm
-void AddSC_the_scarlet_enclave();            //Scarlet Enclave
-void AddSC_the_scarlet_enclave_c1();
-void AddSC_the_scarlet_enclave_c2();
-void AddSC_the_scarlet_enclave_c5();
 void AddSC_boss_arcanist_doan();             //Scarlet Monastery
 void AddSC_boss_azshir_the_sleepless();
 void AddSC_boss_bloodmage_thalnos();
@@ -637,7 +632,6 @@ void AddWorldScripts()
     AddSC_npc_innkeeper();
     AddSC_npcs_special();
     AddSC_npc_taxi();
-    AddSC_achievement_scripts();
     AddSC_chat_log(); // location: scripts\World\chat_log.cpp
     // To avoid duplicate code, we check once /*ONLY*/ if logging is permitted or not.
     if (sWorld->getBoolConfig(CONFIG_IP_BASED_ACTION_LOGGING))
@@ -725,10 +719,6 @@ void AddEasternKingdomsScripts()
     AddSC_boss_ragnaros();
     AddSC_instance_molten_core();
     AddSC_instance_ragefire_chasm();        //Ragefire Chasm
-    AddSC_the_scarlet_enclave();            //Scarlet Enclave
-    AddSC_the_scarlet_enclave_c1();
-    AddSC_the_scarlet_enclave_c2();
-    AddSC_the_scarlet_enclave_c5();
     AddSC_boss_arcanist_doan();             //Scarlet Monastery
     AddSC_boss_azshir_the_sleepless();
     AddSC_boss_bloodmage_thalnos();

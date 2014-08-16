@@ -71,11 +71,6 @@ class ChatLogScript : public PlayerScript
                             player->GetName().c_str(), group ? group->GetLeaderName() : "<unknown>", msg.c_str());
                     break;
 
-                case CHAT_MSG_PARTY_LEADER:
-                    TC_LOG_DEBUG("chat.log.party", "Leader %s tells group: %s",
-                        player->GetName().c_str(), msg.c_str());
-                    break;
-
                 case CHAT_MSG_RAID:
                     if (lang != LANG_ADDON)
                         TC_LOG_DEBUG("chat.log.raid", "Player %s tells raid with leader %s: %s",

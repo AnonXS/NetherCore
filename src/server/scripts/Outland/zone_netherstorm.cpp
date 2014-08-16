@@ -650,7 +650,7 @@ public:
                     if (GetClosestGameObjectWithEntry(me, GO_DRAENEI_MACHINE, INTERACTION_DISTANCE))
                     {
                         // take the GO -> animation
-                        me->HandleEmoteCommand(EMOTE_STATE_LOOT);
+                        //me->HandleEmoteCommand(EMOTE_STATE_LOOT);
                         SetEscortPaused(true);
                         bTake=true;
                     }

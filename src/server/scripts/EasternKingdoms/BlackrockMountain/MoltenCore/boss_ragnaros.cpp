@@ -121,7 +121,7 @@ class boss_ragnaros : public CreatureScript
                 {
                     if (!_introState)
                     {
-                        me->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
+                        //me->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
                         events.ScheduleEvent(EVENT_INTRO_1, 4000);
                         events.ScheduleEvent(EVENT_INTRO_2, 23000);
                         events.ScheduleEvent(EVENT_INTRO_3, 42000);
@@ -169,7 +169,7 @@ class boss_ragnaros : public CreatureScript
                         me->setFaction(14);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         me->SetUInt32Value(UNIT_NPC_EMOTESTATE, 0);
-                        me->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
+                        //me->HandleEmoteCommand(EMOTE_ONESHOT_EMERGE);
                         if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0))
                             AttackStart(target);
                         instance->SetData(DATA_RAGNAROS_ADDS, 0);
