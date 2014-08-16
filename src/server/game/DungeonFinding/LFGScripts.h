@@ -34,7 +34,7 @@ class LFGPlayerScript : public PlayerScript
         LFGPlayerScript();
 
         // Player Hooks
-        void OnLogout(Player* player);
+        void OnLogout(Player* player) override;
 };
 
 } // namespace lfg

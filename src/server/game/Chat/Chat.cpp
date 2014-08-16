@@ -948,7 +948,7 @@ static char const* const spellKeys[] =
     "Htalent",                                              // talent spell
     "Henchant",                                             // enchanting recipe spell
     "Htrade",                                               // profession/skill spell
-    0
+    nullptr
 };
 
 uint32 ChatHandler::extractSpellIdFromLink(char* text)
@@ -1021,7 +1021,7 @@ static char const* const guidKeys[] =
     "Hplayer",
     "Hcreature",
     "Hgameobject",
-    0
+    nullptr
 };
 
 uint64 ChatHandler::extractGuidFromLink(char* text)
