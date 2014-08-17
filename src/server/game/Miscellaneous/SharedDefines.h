@@ -1962,8 +1962,7 @@ enum LockType
     LOCKTYPE_BLASTING              = 16,
     LOCKTYPE_SLOW_OPEN             = 17,
     LOCKTYPE_SLOW_CLOSE            = 18,
-    LOCKTYPE_FISHING               = 19,
-    LOCKTYPE_INSCRIPTION           = 20
+    LOCKTYPE_FISHING               = 19
 };
 
 enum TrainerType                                            // this is important type for npcs!
@@ -2334,7 +2333,7 @@ enum SkillType
     //SKILL_DK_BLOOD                 = 770,
     //SKILL_DK_FROST                 = 771,
     //SKILL_DK_UNHOLY                = 772,
-    SKILL_INSCRIPTION              = 773,
+    //SKILL_INSCRIPTION              = 773,
     SKILL_PET_MOTH                 = 775,
     //SKILL_RUNEFORGING              = 776,
     SKILL_MOUNTS                   = 777,
@@ -2360,7 +2359,6 @@ inline SkillType SkillByLockType(LockType locktype)
         case LOCKTYPE_HERBALISM:   return SKILL_HERBALISM;
         case LOCKTYPE_MINING:      return SKILL_MINING;
         case LOCKTYPE_FISHING:     return SKILL_FISHING;
-        case LOCKTYPE_INSCRIPTION: return SKILL_INSCRIPTION;
         default: break;
     }
     return SKILL_NONE;
