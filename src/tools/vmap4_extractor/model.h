@@ -41,8 +41,10 @@ private:
     std::string filename;
 public:
     ModelHeader header;
+    ModelVertex* origVertices;
     Vec3D* vertices;
     uint16* indices;
+    size_t nIndices;
 
     bool open();
     bool ConvertToVMAPModel(char const* outfilename);

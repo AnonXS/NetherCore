@@ -84,7 +84,6 @@ private:
     std::string filename;
 public:
     // MOGP
-
     char* MOPY;
     uint16* MOVI;
     uint16* MoviEx;
@@ -125,7 +124,6 @@ public:
     int currx;
     int curry;
     WMOGroup* wmo;
-    int doodadset;
     Vec3D pos;
     Vec3D pos2, pos3, rot;
     uint32 indx, id, d2, d3;

@@ -150,7 +150,7 @@ WMOGroup::WMOGroup(const std::string &filename) :
 bool WMOGroup::open()
 {
     MPQFile f(filename.c_str());
-    if(f.isEof ())
+    if(f.isEof())
     {
         printf("No such file.\n");
         return false;
@@ -281,7 +281,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         if(fwrite(&wsize, sizeof(int), 1, output) != 1)
         {
             printf("Error while writing file wsize");
-            // no need to exit?
+            exit(0);
         }
         if(fwrite(&nIdexes, sizeof(uint32), 1, output) != 1)
         {
@@ -306,7 +306,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
         if(fwrite(&wsize, sizeof(int), 1, output) != 1)
         {
             printf("Error while writing file wsize");
-            // no need to exit?
+            exit(0);
         }
         if(fwrite(&nVertices, sizeof(int), 1, output) != 1)
         {
@@ -440,16 +440,31 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE *output, WMORoot *rootWMO, bool precise
             switch ((liquidEntry - 1) & 3)
             {
                 case 0:
-                    liquidEntry = ((mogpFlags & 0x80000) != 0) + 13;
+                    liquidEntry = ((mogpFlags & 0x80000) != 0) + 1;
+                    if (liquidEntry == 1)   // water type
+                    {
+                        if (filename.find("Coilfang_Raid") != string::npos)
+                        {
+                            // set water type to special coilfang raid water
+                            liquidEntry = 41;
+                        }
+                    }
                     break;
                 case 1:
-                    liquidEntry = 14;
+                    liquidEntry = 2;        // ocean
                     break;
                 case 2:
-                    liquidEntry = 19;
+                    liquidEntry = 3;        // magma
                     break;
                 case 3:
-                    liquidEntry = 20;
+                    if (filename.find("Stratholme_raid") != string::npos)
+                    {
+                        liquidEntry = 21;   // Naxxramas slime
+                    }
+                    else
+                        liquidEntry = 4;    // Normal slime
+                    break;
+                default:
                     break;
             }
         }
@@ -484,7 +499,7 @@ WMOGroup::~WMOGroup()
 }
 
 WMOInstance::WMOInstance(MPQFile& f, char const* WmoInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile)
-    : currx(0), curry(0), wmo(NULL), doodadset(0), pos(), indx(0), id(0), d2(0), d3(0)
+    : currx(0), curry(0), wmo(NULL), pos(), indx(0), id(0), d2(0), d3(0)
 {
     float ff[3];
     f.read(&id, 4);

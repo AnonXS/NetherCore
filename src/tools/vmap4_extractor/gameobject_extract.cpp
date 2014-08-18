@@ -24,7 +24,7 @@
 #include <algorithm>
 #include <stdio.h>
 
-bool ExtractSingleModel(std::string& fname)
+bool ExtractSingleModel(std::string& fname, std::string& fixedName)
 {
     char * name = GetPlainName((char*)fname.c_str());
     char * ext = GetExtension(name);
@@ -39,9 +39,11 @@ bool ExtractSingleModel(std::string& fname)
     // >= 3.1.0 ADT MMDX section store filename.m2 filenames for corresponded .m2 file
     // nothing do
 
+    fixedName = GetPlainName(fname.c_str());
+
     std::string output(szWorkDirWmo);
     output += "/";
-    output += name;
+    output += fixedName;
 
     if (FileExists(output.c_str()))
         return true;
@@ -104,7 +106,8 @@ void ExtractGameobjectModels()
         }
         else //if (!strcmp(ch_ext, ".mdx") || !strcmp(ch_ext, ".m2"))
         {
-            result = ExtractSingleModel(path);
+            std::string fixedName;
+            result = ExtractSingleModel(path, fixedName);
         }
 
         if (result)

@@ -46,16 +46,23 @@ bool Model::open()
     memcpy(&header, f.getBuffer(), sizeof(ModelHeader));
     if(header.nBoundingTriangles > 0)
     {
-        f.seek(0);
-        f.seekRelative(header.ofsBoundingVertices);
-        vertices = new Vec3D[header.nBoundingVertices];
-        f.read(vertices,header.nBoundingVertices*12);
-        for (uint32 i=0; i<header.nBoundingVertices; i++)
-            vertices[i] = fixCoordSystem(vertices[i]);
-        f.seek(0);
-        f.seekRelative(header.ofsBoundingTriangles);
-        indices = new uint16[header.nBoundingTriangles];
-        f.read(indices,header.nBoundingTriangles*2);
+        origVertices = (ModelVertex*)(f.getBuffer() + header.ofsVertices);
+        vertices = new Vec3D[header.nVertices];
+
+        for (uint32 i = 0; i < header.nVertices; i++)
+            vertices[i] = fixCoordSystem(origVertices[i].pos);
+
+        ModelView* view = (ModelView*)(f.getBuffer() + header.ofsViews);
+
+        uint16* indexLookup = (uint16*)(f.getBuffer() + view->ofsIndex);
+        uint16* triangles = (uint16*)(f.getBuffer() + view->ofsTris);
+
+        nIndices = view->nTris;
+        indices = new uint16[nIndices];
+        for (size_t i = 0; i < nIndices; i++)
+        {
+            indices[i] = indexLookup[triangles[i]];
+        }
         f.close();
     }
     else
@@ -67,7 +74,7 @@ bool Model::open()
     return true;
 }
 
-bool Model::ConvertToVMAPModel(const char * outfilename)
+bool Model::ConvertToVMAPModel(char const* outfilename)
 {
     int N[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
     FILE* output=fopen(outfilename, "wb");
@@ -77,7 +84,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
         return false;
     }
     fwrite(szRawVMAPMagic, 8, 1, output);
-    uint32 nVertices = header.nBoundingVertices;
+    uint32 nVertices = header.nVertices;
     fwrite(&nVertices, sizeof(int), 1, output);
     uint32 nofgroups = 1;
     fwrite(&nofgroups,sizeof(uint32), 1, output);
@@ -90,7 +97,7 @@ bool Model::ConvertToVMAPModel(const char * outfilename)
     wsize = sizeof(branches) + sizeof(uint32) * branches;
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&branches,sizeof(branches), 1, output);
-    uint32 nIndexes = header.nBoundingTriangles;
+    uint32 nIndexes = (uint32)nIndices;
     fwrite(&nIndexes,sizeof(uint32), 1, output);
     fwrite("INDX",4, 1, output);
     wsize = sizeof(uint32) + sizeof(unsigned short) * nIndexes;

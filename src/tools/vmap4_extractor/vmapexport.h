@@ -35,7 +35,7 @@ bool FileExists(const char * file);
 void strToLower(char* str);
 
 bool ExtractSingleWmo(std::string& fname);
-bool ExtractSingleModel(std::string& fname);
+bool ExtractSingleModel(std::string& fname, std::string& fixedName);
 
 void ExtractGameobjectModels();
 
