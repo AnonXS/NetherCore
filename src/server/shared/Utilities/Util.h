@@ -28,6 +28,8 @@
 #include <list>
 #include <map>
 
+#include <time.h>
+
 // Searcher for map of structs
 template<typename T, class S> struct Finder
 {
