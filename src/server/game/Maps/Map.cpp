@@ -2184,14 +2184,14 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
 inline bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, WMOAreaTableEntry const* wmoEntry, AreaTableEntry const* atEntry)
 {
     bool outdoor = true;
-
+    /*
     if (wmoEntry && atEntry)
     {
         if (atEntry->flags & AREA_FLAG_OUTSIDE)
             return true;
         if (atEntry->flags & AREA_FLAG_INSIDE)
             return false;
-    }
+    }*/
 
     outdoor = (mogpFlags & 0x8) != 0;
 
