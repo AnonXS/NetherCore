@@ -2184,24 +2184,21 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
 inline bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, WMOAreaTableEntry const* wmoEntry, AreaTableEntry const* atEntry)
 {
     bool outdoor = true;
-    /*
-    if (wmoEntry && atEntry)
-    {
-        if (atEntry->flags & AREA_FLAG_OUTSIDE)
-            return true;
-        if (atEntry->flags & AREA_FLAG_INSIDE)
-            return false;
-    }*/
 
-    outdoor = (mogpFlags & 0x8) != 0;
+    // in flyable areas mounting up is also allowed if 0x0008 flag is set
+    if (atEntry && atEntry->mapid == 530)
+        outdoor = mogpFlags & 0x8008;
 
+    outdoor = mogpFlags & 0x8000;
+
+    /* 2.4.3 dosnt use wmo flags
     if (wmoEntry)
     {
         if (wmoEntry->Flags & 4)
             return true;
         if (wmoEntry->Flags & 2)
             outdoor = false;
-    }
+    }*/
     return outdoor;
 }
 
