@@ -2181,15 +2181,15 @@ float Map::GetHeight(float x, float y, float z, bool checkVMap /*= true*/, float
     return mapHeight;                               // explicitly use map data
 }
 
-inline bool IsOutdoorWMO(uint32 mogpFlags, int32 /*adtId*/, int32 /*rootId*/, int32 /*groupId*/, WMOAreaTableEntry const* wmoEntry, AreaTableEntry const* atEntry)
+inline bool IsOutdoorWMO(uint32 mogpFlags, uint32 mapId, WMOAreaTableEntry const* wmoEntry, AreaTableEntry const* atEntry)
 {
     bool outdoor = true;
 
     // in flyable areas mounting up is also allowed if 0x0008 flag is set
-    if (atEntry && atEntry->mapid == 530)
-        outdoor = mogpFlags & 0x8008;
-
-    outdoor = mogpFlags & 0x8000;
+    if (mapId == 530)
+        outdoor = (mogpFlags & 0x8008) != 0;
+    else 
+        outdoor = (mogpFlags & 0x8000) != 0;
 
     /* 2.4.3 dosnt use wmo flags
     if (wmoEntry)
@@ -2218,7 +2218,7 @@ bool Map::IsOutdoors(float x, float y, float z) const
         TC_LOG_DEBUG("maps", "Got WMOAreaTableEntry! flag %u, areaid %u", wmoEntry->Flags, wmoEntry->areaId);
         atEntry = GetAreaEntryByAreaID(wmoEntry->areaId);
     }
-    return IsOutdoorWMO(mogpFlags, adtId, rootId, groupId, wmoEntry, atEntry);
+    return IsOutdoorWMO(mogpFlags, i_mapEntry->MapID, wmoEntry, atEntry);
 }
 
 bool Map::GetAreaInfo(float x, float y, float z, uint32 &flags, int32 &adtId, int32 &rootId, int32 &groupId) const
@@ -2272,7 +2272,7 @@ uint16 Map::GetAreaFlag(float x, float y, float z, bool *isOutdoors) const
     if (isOutdoors)
     {
         if (haveAreaInfo)
-            *isOutdoors = IsOutdoorWMO(mogpFlags, adtId, rootId, groupId, wmoEntry, atEntry);
+            *isOutdoors = IsOutdoorWMO(mogpFlags, i_mapEntry->MapID, wmoEntry, atEntry);
         else
             *isOutdoors = true;
     }
