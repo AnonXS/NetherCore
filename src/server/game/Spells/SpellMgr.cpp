@@ -1803,7 +1803,6 @@ void SpellMgr::LoadSpellProcEvents()
         spellProcEvent.spellFamilyName    = fields[2].GetUInt16();
         spellProcEvent.spellFamilyMask[0] = fields[3].GetUInt32();
         spellProcEvent.spellFamilyMask[1] = fields[4].GetUInt32();
-        spellProcEvent.spellFamilyMask[2] = fields[5].GetUInt32();
         spellProcEvent.procFlags          = fields[6].GetUInt32();
         spellProcEvent.procEx             = fields[7].GetUInt32();
         spellProcEvent.ppmRate            = fields[8].GetFloat();
