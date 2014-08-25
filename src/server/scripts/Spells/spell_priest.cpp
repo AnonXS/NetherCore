@@ -34,6 +34,7 @@ enum PriestSpells
     SPELL_PRIEST_GUARDIAN_SPIRIT_HEAL               = 48153,
     SPELL_PRIEST_ITEM_EFFICIENCY                    = 37595,
     SPELL_PRIEST_MANA_LEECH_PROC                    = 34650,
+    SPELL_PRIEST_TOUCH_OF_WEAKNESS                  = 28598,
     SPELL_PRIEST_PENANCE_R1                         = 47540,
     SPELL_PRIEST_PENANCE_R1_DAMAGE                  = 47758,
     SPELL_PRIEST_PENANCE_R1_HEAL                    = 47757,
@@ -391,6 +392,51 @@ class spell_pri_mana_burn : public SpellScriptLoader
         {
             return new spell_pri_mana_burn_SpellScript;
         }
+};
+
+// 28598 - Touch of Weakness (trigger spell) 
+class spell_pri_touch_of_weakness : public SpellScriptLoader
+{
+public:
+    spell_pri_touch_of_weakness() : SpellScriptLoader("spell_pri_touch_of_weakness") { }
+
+    class spell_pri_touch_of_weakness_SpellScript : public SpellScript
+    {
+        PrepareSpellScript(spell_pri_touch_of_weakness_SpellScript);
+
+        bool Validate(SpellInfo const* /*spellInfo*/) override
+        {
+            if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_TOUCH_OF_WEAKNESS))
+                return false;
+            return true;
+        }
+
+        void HandleEffectScriptEffect(SpellEffIndex /*effIndex*/)
+        {
+            uint32 spellid = 0;
+            switch (GetTriggeringSpell()->Id)
+            {
+                case 2652:  spellid = 2943; break;  // Rank 1
+                case 19261: spellid = 19249; break; // Rank 2
+                case 19262: spellid = 19251; break; // Rank 3
+                case 19264: spellid = 19252; break; // Rank 4
+                case 19265: spellid = 19253; break; // Rank 5
+                case 19266: spellid = 19254; break; // Rank 6
+                case 25461: spellid = 25460; break; // Rank 7
+            }
+            GetCaster()->CastSpell(GetHitUnit(), spellid, true, NULL);
+        }
+
+        void Register() override
+        {
+            OnEffectHitTarget += SpellEffectFn(spell_pri_touch_of_weakness_SpellScript::HandleEffectScriptEffect, EFFECT_0, SPELL_EFFECT_DUMMY);
+        }
+    };
+
+    SpellScript* GetSpellScript() const override
+    {
+        return new spell_pri_touch_of_weakness_SpellScript();
+    }
 };
 
 // 28305 - Mana Leech (Passive) (Priest Pet Aura)
@@ -819,6 +865,7 @@ void AddSC_priest_spell_scripts()
     new spell_pri_lightwell_renew();
     new spell_pri_mana_burn();
     new spell_pri_mana_leech();
+    new spell_pri_touch_of_weakness();
     new spell_pri_mind_sear();
     new spell_pri_pain_and_suffering_proc();
     new spell_pri_penance();

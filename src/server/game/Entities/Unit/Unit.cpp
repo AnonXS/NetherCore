@@ -6801,8 +6801,25 @@ bool Unit::HandleProcTriggerSpell(Unit* victim, uint32 damage, AuraEffect* trigg
             }
             case SPELLFAMILY_PRIEST:
             {
+                // Shadowguard
+                if (auraSpellInfo->SpellIconID == 19)
+                {
+                    switch (auraSpellInfo->Id)
+                    {
+                        case 18137: trigger_spell_id = 28377; break;   // Rank 1
+                        case 19308: trigger_spell_id = 28378; break;   // Rank 2
+                        case 19309: trigger_spell_id = 28379; break;   // Rank 3
+                        case 19310: trigger_spell_id = 28380; break;   // Rank 4
+                        case 19311: trigger_spell_id = 28381; break;   // Rank 5
+                        case 19312: trigger_spell_id = 28382; break;   // Rank 6
+                        case 25477: trigger_spell_id = 28385; break;   // Rank 7
+                        default:
+                            TC_LOG_ERROR("entities.unit", "Unit::HandleProcTriggerSpell: Spell %u not handled in BR", auraSpellInfo->Id);
+                        return false;
+                    }
+                }
                 // Blessed Recovery
-                if (auraSpellInfo->SpellIconID == 1875)
+                else if (auraSpellInfo->SpellIconID == 1875)
                 {
                     switch (auraSpellInfo->Id)
                     {
