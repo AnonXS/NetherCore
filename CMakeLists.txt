@@ -58,7 +58,10 @@ find_package(OpenSSL REQUIRED)
 find_package(Threads REQUIRED)
 
 include(ConfigureBoost)
-find_package(MySQL REQUIRED)
+
+if( NOT USE_MYSQL_SOURCES )
+  find_package(MySQL REQUIRED)
+endif()
 
 if( UNIX )
   find_package(Readline)
