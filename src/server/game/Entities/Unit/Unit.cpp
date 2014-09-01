@@ -59,7 +59,7 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 
-#include <math.h>
+#include <cmath>
 
 float baseMoveSpeed[MAX_MOVE_TYPE] =
 {
@@ -1309,7 +1309,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
 
     // If this is a creature and it attacks from behind it has a probability to daze it's victim
     if ((damageInfo->hitOutCome == MELEE_HIT_CRIT || damageInfo->hitOutCome == MELEE_HIT_CRUSHING || damageInfo->hitOutCome == MELEE_HIT_NORMAL || damageInfo->hitOutCome == MELEE_HIT_GLANCING) &&
-        GetTypeId() != TYPEID_PLAYER && !ToCreature()->IsControlledByPlayer() && !victim->HasInArc(M_PI, this)
+        GetTypeId() != TYPEID_PLAYER && !ToCreature()->IsControlledByPlayer() && !victim->HasInArc(float(M_PI), this)
         && (victim->GetTypeId() == TYPEID_PLAYER || !victim->ToCreature()->isWorldBoss()))
     {
         // -probability is between 0% and 40%
@@ -1323,7 +1323,7 @@ void Unit::DealMeleeDamage(CalcDamageInfo* damageInfo, bool durabilityLoss)
         uint32 VictimDefense=victim->GetDefenseSkillValue();
         uint32 AttackerMeleeSkill=GetUnitMeleeSkill();
 
-        Probability *= AttackerMeleeSkill/(float)VictimDefense*0.16;
+        Probability *= AttackerMeleeSkill/(float)VictimDefense*0.16f;
 
         if (Probability < 0)
             Probability = 0;
@@ -1522,7 +1522,7 @@ uint32 Unit::CalcSpellResistance(Unit* victim, SpellSchoolMask schoolMask, Spell
     float discreteResistProbability[11];
     for (uint32 i = 0; i < 11; ++i)
     {
-        discreteResistProbability[i] = 0.5f - 2.5f * fabs(0.1f * i - averageResist);
+        discreteResistProbability[i] = 0.5f - 2.5f * std::fabs(0.1f * i - averageResist);
         if (discreteResistProbability[i] < 0.0f)
             discreteResistProbability[i] = 0.0f;
     }
@@ -1865,7 +1865,7 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst (const Unit* victim, WeaponAttackT
     // Dodge chance
 
     // only players can't dodge if attacker is behind
-    if (victim->GetTypeId() == TYPEID_PLAYER && !victim->HasInArc(M_PI, this))
+    if (victim->GetTypeId() == TYPEID_PLAYER && !victim->HasInArc(float(M_PI), this))
     {
         TC_LOG_DEBUG("entities.unit", "RollMeleeOutcomeAgainst: attack came from behind and victim was a player.");
     }
@@ -1894,7 +1894,7 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst (const Unit* victim, WeaponAttackT
     // parry & block chances
 
     // check if attack comes from behind, nobody can parry or block if attacker is behind
-    if (!victim->HasInArc(M_PI, this))
+    if (!victim->HasInArc(float(M_PI), this))
         TC_LOG_DEBUG("entities.unit", "RollMeleeOutcomeAgainst: attack came from behind.");
     else
     {
@@ -2077,7 +2077,7 @@ bool Unit::isSpellBlocked(Unit* victim, SpellInfo const* spellProto, WeaponAttac
     if (spellProto && spellProto->Attributes & SPELL_ATTR0_IMPOSSIBLE_DODGE_PARRY_BLOCK)
         return false;
 
-    if (victim->HasInArc(M_PI, this))
+    if (victim->HasInArc(float(M_PI), this))
     {
         // Check creatures flags_extra for disable block
         if (victim->GetTypeId() == TYPEID_UNIT &&
@@ -2201,7 +2201,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
         canDodge = false;
 
         // only if in front
-        if (victim->HasInArc(M_PI, this))
+        if (victim->HasInArc(float(M_PI), this))
         {
             //placeholder
         }
@@ -2209,7 +2209,7 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit* victim, SpellInfo const* spellInfo
     }
 
     // Check for attack from behind
-    if (!victim->HasInArc(M_PI, this))
+    if (!victim->HasInArc(float(M_PI), this))
     {
         // Can`t dodge from behind in PvP (but its possible in PvE)
         if (victim->GetTypeId() == TYPEID_PLAYER)
@@ -2382,7 +2382,7 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit* victim, SpellInfo const* spellInfo
         return SPELL_MISS_RESIST;
 
     // cast by caster in front of victim
-    if (victim->HasInArc(M_PI, this))
+    if (victim->HasInArc(float(M_PI), this))
     {
         //placeholder
     }
@@ -2949,7 +2949,7 @@ bool Unit::isInFrontInMap(Unit const* target, float distance,  float arc) const
 
 bool Unit::isInBackInMap(Unit const* target, float distance, float arc) const
 {
-    return IsWithinDistInMap(target, distance) && !HasInArc(2 * M_PI - arc, target);
+    return IsWithinDistInMap(target, distance) && !HasInArc(2 * float(M_PI) - arc, target);
 }
 
 bool Unit::isInAccessiblePlaceFor(Creature const* c) const
@@ -10210,7 +10210,7 @@ float Unit::GetPPMProcChance(uint32 WeaponSpeed, float PPM, const SpellInfo* spe
         if (Player* modOwner = GetSpellModOwner())
             modOwner->ApplySpellMod(spellProto->Id, SPELLMOD_PROC_PER_MINUTE, PPM);
 
-    return floor((WeaponSpeed * PPM) / 600.0f);   // result is chance in percents (probability = Speed_in_sec * (PPM / 60))
+    return std::floor((WeaponSpeed * PPM) / 600.0f);   // result is chance in percents (probability = Speed_in_sec * (PPM / 60))
 }
 
 void Unit::Mount(uint32 mount, uint32 creatureEntry)
@@ -12867,7 +12867,18 @@ void Unit::ProcDamageAndSpellFor(bool isVictim, Unit* target, uint32 procFlag, u
 
         // Remove charge (aura can be removed by triggers)
         if (prepare && useCharges && takeCharges)
-            i->aura->DropCharge();
+        {
+            // Set charge drop delay (only for missiles)
+            if ((procExtra & PROC_EX_REFLECT) && target && procSpell && procSpell->Speed > 0.0f)
+            {
+                // Set up missile speed based delay (from Spell.cpp: Spell::AddUnitTarget()::L2237)
+                uint32 delay = uint32(std::floor(std::max<float>(target->GetDistance(this), 5.0f) / procSpell->Speed * 1000.0f));
+                // Schedule charge drop
+                i->aura->DropChargeDelayed(delay);
+            }
+            else
+                i->aura->DropCharge();
+        }
 
         i->aura->CallScriptAfterProcHandlers(aurApp, eventInfo);
 
@@ -14796,8 +14807,6 @@ void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
 
     if (IsInWorld())
     {
-        RemoveNotOwnSingleTargetAuras(newPhaseMask);            // we can lost access to caster or target
-
         // modify hostile references for new phasemask, some special cases deal with hostile references themselves
         if (GetTypeId() == TYPEID_UNIT || (!ToPlayer()->IsGameMaster() && !ToPlayer()->GetSession()->PlayerLogout()))
         {
@@ -14845,6 +14854,8 @@ void Unit::SetPhaseMask(uint32 newPhaseMask, bool update)
             if (m_SummonSlot[i])
                 if (Creature* summon = GetMap()->GetCreature(m_SummonSlot[i]))
                     summon->SetPhaseMask(newPhaseMask, true);
+
+        RemoveNotOwnSingleTargetAuras(newPhaseMask); // we can lost access to caster or target
     }
 
     // Update visibility after phasing pets and summons so they wont despawn
@@ -15202,7 +15213,7 @@ uint32 Unit::GetModelForTotem(PlayerTotemType totemType)
 
 void Unit::JumpTo(float speedXY, float speedZ, bool forward)
 {
-    float angle = forward ? 0 : M_PI;
+    float angle = forward ? 0 : float(M_PI);
     if (GetTypeId() == TYPEID_UNIT)
         GetMotionMaster()->MoveJumpTo(angle, speedXY, speedZ);
     else
