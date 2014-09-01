@@ -163,7 +163,7 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     SHA1Hash sha;
     uint32 clientBuild;
     Builds expectedClientBuild = BUILD_THE_BURNING_CRUSADE;
-    uint32 unk2;
+    uint32 serverId;
     WorldPacket packet, SendAddonPacked;
     BigNumber k;
     bool wardenActive = sWorld->getBoolConfig(CONFIG_WARDEN_ENABLED);
@@ -240,14 +240,6 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     {
         SendAuthResponseError(AUTH_REJECT);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: World closed, denying client (%s).", GetRemoteIpAddress().to_string().c_str());
-        DelayedCloseSocket();
-        return;
-    }
-
-    if (realmIndex != realmID)
-    {
-        SendAuthResponseError(REALM_LIST_REALM_NOT_FOUND);
-        TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Sent Auth Response (bad realm).");
         DelayedCloseSocket();
         return;
     }
